@@ -209,7 +209,8 @@ export default function Header() {
           : "bg-transparent"
       }`}
     >
-      <div className="mx-auto flex h-[5rem] max-w-[92rem] items-center gap-3 px-4 sm:h-[5.25rem] sm:px-5 lg:gap-4 lg:px-6 xl:px-8">
+      <div className="relative mx-auto max-w-[92rem] px-4 sm:px-5 lg:px-6 xl:px-8">
+        <div className="flex h-[5rem] items-center gap-3 sm:h-[5.25rem] lg:gap-4">
         <Link href="/" className="focus-ring relative z-10 shrink-0" aria-label="Ambition Holiday home">
           <Image
             src="/images/ambition-holiday-logo.png"
@@ -232,7 +233,7 @@ export default function Header() {
               const isMega = Boolean(item.groups?.length);
 
               return (
-                <li key={item.label} className="relative">
+                <li key={item.label} className={isMega ? undefined : "relative"}>
                   {menu ? (
                     <>
                       <button
@@ -252,50 +253,7 @@ export default function Header() {
                         {item.label}
                         <Chevron open={isOpen} />
                       </button>
-                      {isOpen ? (
-                        isMega ? (
-                          <div
-                            className={`animate-dropdown absolute top-full z-50 mt-1 rounded-xl border border-white/10 bg-[rgba(10,14,20,0.97)] p-5 shadow-2xl backdrop-blur-md ${
-                              item.label === "Destinations"
-                                ? "left-1/2 w-[min(92vw,58rem)] -translate-x-1/2"
-                                : "left-0 w-[min(92vw,42rem)]"
-                            }`}
-                            onMouseLeave={() => setOpenDropdown(null)}
-                          >
-                            <div
-                              className={`grid gap-6 ${
-                                item.label === "Destinations"
-                                  ? "grid-cols-3"
-                                  : "grid-cols-3"
-                              }`}
-                            >
-                              {item.groups!.map((section) => (
-                                <div key={section.title}>
-                                  <Link
-                                    href={section.href}
-                                    className="focus-ring mb-2 block text-[0.72rem] font-bold uppercase tracking-[0.12em] text-gold"
-                                    onClick={() => setOpenDropdown(null)}
-                                  >
-                                    {section.title}
-                                  </Link>
-                                  <ul className="space-y-0.5">
-                                    {section.links.map((child) => (
-                                      <li key={child.label}>
-                                        <Link
-                                          href={child.href}
-                                          className="focus-ring block rounded-md px-1 py-1.5 text-[0.8rem] text-white/85 transition-colors hover:bg-white/5 hover:text-gold"
-                                          onClick={() => setOpenDropdown(null)}
-                                        >
-                                          {child.label}
-                                        </Link>
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        ) : (
+                      {isOpen && !isMega ? (
                           <div
                             className="animate-dropdown absolute left-1/2 top-full z-50 mt-1 min-w-[14rem] -translate-x-1/2 rounded-lg border border-white/10 bg-[rgba(10,14,20,0.96)] py-2 shadow-xl backdrop-blur-md"
                             onMouseLeave={() => setOpenDropdown(null)}
@@ -315,7 +273,6 @@ export default function Header() {
                               ))}
                             </ul>
                           </div>
-                        )
                       ) : null}
                     </>
                   ) : (
@@ -382,6 +339,56 @@ export default function Header() {
             )}
           </button>
         </div>
+        </div>
+
+        {(() => {
+          const megaItem = NAV_ITEMS.find(
+            (item) => item.label === openDropdown && item.groups?.length,
+          );
+          if (!megaItem) return null;
+
+          return (
+            <div
+              className="animate-dropdown absolute inset-x-0 top-full z-50 hidden pt-2 xl:block"
+              onMouseLeave={() => setOpenDropdown(null)}
+            >
+              <div className="rounded-xl border border-white/10 bg-[rgba(10,14,20,0.97)] p-6 shadow-2xl backdrop-blur-md">
+                <div
+                  className={`grid gap-x-8 gap-y-6 ${
+                    megaItem.label === "Destinations"
+                      ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-3"
+                      : "grid-cols-1 sm:grid-cols-3"
+                  }`}
+                >
+                  {megaItem.groups!.map((section) => (
+                    <div key={section.title} className="min-w-0">
+                      <Link
+                        href={section.href}
+                        className="focus-ring mb-2.5 block text-[0.72rem] font-bold uppercase tracking-[0.12em] text-gold"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        {section.title}
+                      </Link>
+                      <ul className="space-y-0.5">
+                        {section.links.map((child) => (
+                          <li key={child.label}>
+                            <Link
+                              href={child.href}
+                              className="focus-ring block rounded-md px-1 py-1.5 text-[0.82rem] text-white/85 transition-colors hover:bg-white/5 hover:text-gold"
+                              onClick={() => setOpenDropdown(null)}
+                            >
+                              {child.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
       </div>
 
       <div id={navId} className={`xl:hidden ${mobileOpen ? "block" : "hidden"}`}>
