@@ -75,51 +75,15 @@ const features = [
   {
     label: "Responsible tourism",
     icon: (
-      <svg viewBox="0 0 48 48" className={iconClass} fill="none" aria-hidden="true">
-        {/* Two leaves */}
-        <path
-          d="M24.2 20.8c-3.2-3.6-7.2-4.2-9.8-3.2 1.6 3.8 5 6.2 9.8 6.6"
-          stroke="currentColor"
-          strokeWidth="1.9"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M24.2 20.8c3.2-3.6 7.2-4.2 9.8-3.2-1.6 3.8-5 6.2-9.8 6.6"
-          stroke="currentColor"
-          strokeWidth="1.9"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        {/* Stem */}
-        <path
-          d="M24.2 24.2v-5.6"
-          stroke="currentColor"
-          strokeWidth="1.9"
-          strokeLinecap="round"
-        />
-        {/* Soil mound */}
-        <path
-          d="M18 26.4c1.7-1.5 3.8-2.3 6.2-2.3s4.5.8 6.2 2.3"
-          stroke="currentColor"
-          strokeWidth="1.9"
-          strokeLinecap="round"
-        />
-        {/* Hand cupping plant */}
-        <path
-          d="M10.8 30.2c2.4-3.2 5.8-5 9.8-5h7.2c2 0 3.6 1.6 3.6 3.6 0 .7-.2 1.4-.6 2 1.7.2 3 1.6 3 3.4 0 1.9-1.5 3.4-3.4 3.4H19c-4.4 0-8-3.6-8-8 0-.5.1-.9.2-1.3 0-.1 0-.1 0-.1Z"
-          stroke="currentColor"
-          strokeWidth="1.9"
-          strokeLinejoin="round"
-        />
-        {/* Wrist / lower palm line */}
-        <path
-          d="M12.6 38.2h18.2c1.7 0 3.1 1.2 3.4 2.8"
-          stroke="currentColor"
-          strokeWidth="1.9"
-          strokeLinecap="round"
-        />
-      </svg>
+      <Image
+        src="/images/icons/responsible-tourism.png"
+        alt=""
+        width={44}
+        height={44}
+        className={`${iconClass} object-contain`}
+        aria-hidden="true"
+        priority
+      />
     ),
   },
 ];
