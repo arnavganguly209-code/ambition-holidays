@@ -202,25 +202,15 @@ export default function Header() {
           </ul>
         </nav>
 
-        <div className="ml-auto flex items-center gap-2 sm:gap-3 lg:gap-3.5">
-          <button
-            type="button"
-            aria-label="Open search"
-            className="focus-ring hidden rounded-full p-2 text-white/90 transition-colors hover:text-gold md:inline-flex"
-          >
-            <svg viewBox="0 0 24 24" className="h-[1.1rem] w-[1.1rem]" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <circle cx="11" cy="11" r="7" />
-              <path d="m20 20-3.5-3.5" strokeLinecap="round" />
-            </svg>
-          </button>
+        <div className="ml-auto flex items-center gap-1.5 sm:gap-2 lg:gap-2.5">
           <button
             type="button"
             aria-label="Favourites"
-            className="focus-ring hidden rounded-full p-2 text-white/90 transition-colors hover:text-gold md:inline-flex"
+            className="focus-ring mr-1 hidden rounded-full p-2 text-white transition-colors hover:text-gold md:inline-flex lg:mr-1.5"
           >
-            <svg viewBox="0 0 24 24" className="h-[1.1rem] w-[1.1rem]" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <svg viewBox="0 0 24 24" className="h-[1.21rem] w-[1.21rem]" fill="none" stroke="currentColor" strokeWidth="1.9" aria-hidden="true">
               <path
-                d="M12 20s-7-4.4-7-9.2A3.8 3.8 0 0 1 12 7.8a3.8 3.8 0 0 1 7 3C19 15.6 12 20 12 20Z"
+                d="M12 20.4S4.8 15.7 4.8 10.4A3.95 3.95 0 0 1 12 7.35a3.95 3.95 0 0 1 7.2 3.05c0 5.3-7.2 10-7.2 10Z"
                 strokeLinejoin="round"
               />
             </svg>
