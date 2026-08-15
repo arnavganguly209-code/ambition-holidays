@@ -85,6 +85,31 @@ body {
   animation: fade-in 0.18s ease-out both;
 }
 
+@keyframes whatsapp-call-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.55);
+    transform: scale(1);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(37, 211, 102, 0);
+    transform: scale(1.04);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+    transform: scale(1);
+  }
+}
+
+.whatsapp-call-pulse {
+  animation: whatsapp-call-pulse 1.8s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .whatsapp-call-pulse {
+    animation: none;
+  }
+}
+
 .focus-ring:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 3px;

@@ -1,6 +1,20 @@
 const features = [
   {
-    label: "20+ years of experience",
+    label: "408 Clear TripAdvisor Reviews",
+    icon: (
+      <svg viewBox="0 0 48 48" className="h-9 w-9 sm:h-10 sm:w-10" fill="none" aria-hidden="true">
+        <circle cx="24" cy="24" r="14" stroke="currentColor" strokeWidth="1.7" />
+        <path
+          d="M24 14.5 26.4 21h7l-5.6 4.2 2.1 6.8L24 27.8l-5.9 4.2 2.1-6.8L14.6 21h7L24 14.5Z"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinejoin="round"
+        />
+      </svg>
+    ),
+  },
+  {
+    label: "11+ years of experience",
     icon: (
       <svg viewBox="0 0 48 48" className="h-9 w-9 sm:h-10 sm:w-10" fill="none" aria-hidden="true">
         <path
@@ -59,26 +73,6 @@ const features = [
           strokeLinecap="round"
         />
         <path d="M24 19v6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    label: "Run by experts",
-    icon: (
-      <svg viewBox="0 0 48 48" className="h-9 w-9 sm:h-10 sm:w-10" fill="none" aria-hidden="true">
-        <circle cx="24" cy="16" r="5.5" stroke="currentColor" strokeWidth="1.7" />
-        <path
-          d="M12 38c1.8-7 5.8-10.5 12-10.5S34.2 31 36 38"
-          stroke="currentColor"
-          strokeWidth="1.7"
-          strokeLinecap="round"
-        />
-        <path
-          d="M30 14.5c1.2-.8 2.8-1 4.2-.2 1.8 1 2.5 3 1.8 4.8"
-          stroke="currentColor"
-          strokeWidth="1.7"
-          strokeLinecap="round"
-        />
       </svg>
     ),
   },

@@ -55,8 +55,8 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Contact Us", href: "#contact" },
 ];
 
-const WHATSAPP_URL = "https://wa.me/9779851017167";
-const PHONE_DISPLAY = "+977 9851017167";
+const WHATSAPP_URL = "https://wa.me/9779851148898";
+const PHONE_DISPLAY = "+977 9851148898";
 
 function Chevron({ open }: { open?: boolean }) {
   return (
@@ -124,15 +124,15 @@ export default function Header() {
           : "bg-transparent"
       }`}
     >
-      <div className="mx-auto flex h-[4.25rem] max-w-[92rem] items-center gap-3 px-4 sm:h-[4.5rem] sm:px-5 lg:gap-4 lg:px-6 xl:px-8">
+      <div className="mx-auto flex h-[4.75rem] max-w-[92rem] items-center gap-3 px-4 sm:h-[5rem] sm:px-5 lg:gap-4 lg:px-6 xl:px-8">
         <Link href="/" className="focus-ring relative z-10 shrink-0" aria-label="Ambition Holiday home">
           <Image
             src="/images/ambition-holiday-logo.png"
             alt="Ambition Holiday — Journeys Beyond Limits"
-            width={280}
-            height={80}
+            width={322}
+            height={92}
             priority
-            className="h-11 w-auto object-contain sm:h-12 lg:h-[3.35rem]"
+            className="h-[3.16rem] w-auto object-contain sm:h-[3.45rem] lg:h-[3.85rem]"
           />
         </Link>
 
@@ -230,12 +230,14 @@ export default function Header() {
             href={WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="focus-ring hidden items-center gap-2 rounded-md border border-gold/80 px-3 py-2 transition-colors hover:border-gold hover:bg-white/5 lg:inline-flex"
-            aria-label={`WhatsApp ${PHONE_DISPLAY}`}
+            className="focus-ring hidden items-center gap-2.5 rounded-md border border-gold/80 px-2.5 py-1.5 transition-colors hover:border-gold hover:bg-white/5 lg:inline-flex"
+            aria-label={`Call or WhatsApp ${PHONE_DISPLAY}`}
           >
-            <svg viewBox="0 0 24 24" className="h-4 w-4 text-[#25D366]" fill="currentColor" aria-hidden="true">
-              <path d="M20.5 3.5A11 11 0 0 0 2.1 16.7L1 23l6.5-1.7A11 11 0 0 0 20.5 3.5Zm-8.6 17a9.1 9.1 0 0 1-4.6-1.3l-.3-.2-3.9 1 1-3.8-.2-.3a9.1 9.1 0 1 1 8 4.6Zm5-6.8c-.3-.1-1.6-.8-1.9-.9s-.4-.1-.6.1-.7.9-.8 1-.3.2-.6.1a7.4 7.4 0 0 1-2.2-1.4 8.2 8.2 0 0 1-1.5-1.9c-.2-.3 0-.4.1-.6l.4-.5.1-.3c0-.1 0-.3-.1-.4s-.6-1.4-.8-1.9-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3a2 2 0 0 0-.6 1.5 3.5 3.5 0 0 0 .7 1.9 8 8 0 0 0 3.1 3 10.4 10.4 0 0 0 2.3.9 2.8 2.8 0 0 0 1.8.1 2.4 2.4 0 0 0 1.5-1.1 1.9 1.9 0 0 0 .1-1.1c-.1-.1-.3-.2-.6-.3Z" />
-            </svg>
+            <span className="whatsapp-call-pulse relative flex h-9 w-9 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_0_0_0_rgba(37,211,102,0.55)]">
+              <svg viewBox="0 0 24 24" className="h-[1.05rem] w-[1.05rem]" fill="currentColor" aria-hidden="true">
+                <path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.2 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.8 21 3 13.2 3 3.7c0-.6.4-1 1-1H7c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.3 1.1l-2.2 2.2Z" />
+              </svg>
+            </span>
             <span className="text-[0.84rem] font-semibold tracking-wide text-gold">
               {PHONE_DISPLAY}
             </span>
@@ -266,7 +268,7 @@ export default function Header() {
         id={navId}
         className={`xl:hidden ${mobileOpen ? "block" : "hidden"}`}
       >
-        <div className="max-h-[calc(100vh-4.25rem)] overflow-y-auto border-t border-white/10 bg-[rgba(8,12,18,0.96)] px-4 pb-8 pt-3 backdrop-blur-lg">
+        <div className="max-h-[calc(100vh-4.75rem)] overflow-y-auto border-t border-white/10 bg-[rgba(8,12,18,0.96)] px-4 pb-8 pt-3 backdrop-blur-lg">
           <ul className="space-y-1">
             {NAV_ITEMS.map((item) => {
               const hasChildren = Boolean(item.children?.length);
@@ -325,11 +327,13 @@ export default function Header() {
             rel="noopener noreferrer"
             className="focus-ring mt-5 flex items-center gap-3 rounded-xl border border-gold/25 bg-white/5 px-4 py-3"
           >
-            <svg viewBox="0 0 24 24" className="h-5 w-5 text-[#25D366]" fill="currentColor" aria-hidden="true">
-              <path d="M20.5 3.5A11 11 0 0 0 2.1 16.7L1 23l6.5-1.7A11 11 0 0 0 20.5 3.5Zm-8.6 17a9.1 9.1 0 0 1-4.6-1.3l-.3-.2-3.9 1 1-3.8-.2-.3a9.1 9.1 0 1 1 8 4.6Zm5-6.8c-.3-.1-1.6-.8-1.9-.9s-.4-.1-.6.1-.7.9-.8 1-.3.2-.6.1a7.4 7.4 0 0 1-2.2-1.4 8.2 8.2 0 0 1-1.5-1.9c-.2-.3 0-.4.1-.6l.4-.5.1-.3c0-.1 0-.3-.1-.4s-.6-1.4-.8-1.9-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3a2 2 0 0 0-.6 1.5 3.5 3.5 0 0 0 .7 1.9 8 8 0 0 0 3.1 3 10.4 10.4 0 0 0 2.3.9 2.8 2.8 0 0 0 1.8.1 2.4 2.4 0 0 0 1.5-1.1 1.9 1.9 0 0 0 .1-1.1c-.1-.1-.3-.2-.6-.3Z" />
-            </svg>
+            <span className="whatsapp-call-pulse relative flex h-10 w-10 items-center justify-center rounded-full bg-[#25D366] text-white">
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden="true">
+                <path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.2 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.8 21 3 13.2 3 3.7c0-.6.4-1 1-1H7c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.3 1.1l-2.2 2.2Z" />
+              </svg>
+            </span>
             <span>
-              <span className="block text-xs text-white/70">WhatsApp or call us 24/7</span>
+              <span className="block text-xs text-white/70">Call or WhatsApp 24/7</span>
               <span className="text-sm font-semibold text-gold">{PHONE_DISPLAY}</span>
             </span>
           </a>
