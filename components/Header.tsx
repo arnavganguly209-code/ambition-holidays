@@ -4,55 +4,135 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 
+type NavLink = { label: string; href: string };
+
+type NavGroup = {
+  title: string;
+  href: string;
+  links: NavLink[];
+};
+
 type NavItem = {
   label: string;
   href: string;
-  children?: { label: string; href: string }[];
+  groups?: NavGroup[];
+  children?: NavLink[];
 };
+
+function slugify(label: string) {
+  return `#${label
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")}`;
+}
+
+function link(label: string): NavLink {
+  return { label, href: slugify(label) };
+}
+
+function group(title: string, labels: string[]): NavGroup {
+  return {
+    title,
+    href: slugify(title),
+    links: labels.map(link),
+  };
+}
 
 const NAV_ITEMS: NavItem[] = [
   {
     label: "Destinations",
     href: "#destinations",
-    children: [
-      { label: "Nepal", href: "#nepal" },
-      { label: "Tibet", href: "#tibet" },
-      { label: "Bhutan", href: "#bhutan" },
-      { label: "India", href: "#india" },
+    groups: [
+      group("Everest Region", [
+        "Everest Base Camp",
+        "Everest Luxury Lodge Trek",
+        "Gokyo Valley",
+        "Everest Three Passes",
+      ]),
+      group("Annapurna Region", [
+        "Annapurna Base Camp",
+        "Annapurna Circuit",
+        "Mardi Himal",
+        "Ghorepani Poon Hill",
+      ]),
+      group("Manaslu Region", [
+        "Manaslu Circuit",
+        "Tsum Valley",
+        "Manaslu & Tsum Valley",
+      ]),
+      group("Langtang Region", [
+        "Langtang Valley",
+        "Gosaikunda",
+        "Langtang & Gosaikunda",
+      ]),
+      group("Mustang", [
+        "Upper Mustang",
+        "Lower Mustang",
+        "Mustang Luxury Journey",
+      ]),
+      group("Other Himalayan Regions", [
+        "Makalu",
+        "Kanchenjunga",
+        "Dolpo",
+        "Nar Phu Valley",
+      ]),
     ],
   },
   {
-    label: "Trekking In Nepal",
-    href: "#trekking",
-    children: [
-      { label: "Everest Region", href: "#everest" },
-      { label: "Annapurna Region", href: "#annapurna" },
-      { label: "Langtang Region", href: "#langtang" },
-      { label: "Manaslu Circuit", href: "#manaslu" },
+    label: "Luxury Treks",
+    href: "#luxury-treks",
+    groups: [
+      group("Featured Luxury Treks", [
+        "Luxury Everest Base Camp Trek",
+        "Luxury Annapurna Base Camp Trek",
+        "Luxury Annapurna Circuit",
+        "Luxury Manaslu Circuit Trek",
+        "Luxury Upper Mustang Trek",
+        "Luxury Mardi Himal Trek",
+        "Luxury Langtang Valley Trek",
+        "Luxury Ghorepani Poon Hill Trek",
+      ]),
+      group("Luxury Trek Styles", [
+        "Luxury Lodge Treks",
+        "Private Luxury Treks",
+        "Luxury Family Treks",
+        "Luxury Honeymoon Treks",
+        "Luxury Short Treks",
+        "Luxury Helicopter Treks",
+      ]),
+      group("Premium Experiences", [
+        "Helicopter Tours",
+        "Luxury Mountain Experiences",
+        "Private Guided Expeditions",
+      ]),
     ],
   },
   {
-    label: "Travel Info",
-    href: "#travel-info",
+    label: "Experiences",
+    href: "#experiences",
     children: [
-      { label: "Visa & Entry", href: "#visa" },
-      { label: "Best Time to Visit", href: "#best-time" },
-      { label: "Packing Guide", href: "#packing" },
-      { label: "Altitude Tips", href: "#altitude" },
+      link("Helicopter Tours"),
+      link("Luxury Mountain Experiences"),
+      link("Private Guided Expeditions"),
+      link("Cultural Journeys"),
+      link("Photography Treks"),
     ],
   },
   {
-    label: "Company",
-    href: "#company",
+    label: "Travel Guide",
+    href: "#travel-guide",
     children: [
-      { label: "About Us", href: "#about" },
-      { label: "Why Choose Us", href: "#why-us" },
-      { label: "Our Team", href: "#team" },
-      { label: "Testimonials", href: "#testimonials" },
+      link("Visa & Entry"),
+      link("Best Time to Visit"),
+      link("Packing Guide"),
+      link("Altitude Tips"),
+      link("Permits & Fees"),
     ],
   },
-  { label: "Travel Blogs", href: "#blogs" },
-  { label: "Contact Us", href: "#contact" },
+  { label: "About Us", href: "#about" },
+  { label: "Journal", href: "#journal" },
+  { label: "Contact", href: "#contact" },
 ];
 
 const WHATSAPP_URL = "https://wa.me/9779851148898";
@@ -73,10 +153,15 @@ function Chevron({ open }: { open?: boolean }) {
   );
 }
 
+function hasMenu(item: NavItem) {
+  return Boolean(item.groups?.length || item.children?.length);
+}
+
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
+  const [mobileGroup, setMobileGroup] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const navId = useId();
   const headerRef = useRef<HTMLElement>(null);
@@ -142,12 +227,13 @@ export default function Header() {
         >
           <ul className="flex items-center gap-0.5 2xl:gap-1">
             {NAV_ITEMS.map((item) => {
-              const hasChildren = Boolean(item.children?.length);
+              const menu = hasMenu(item);
               const isOpen = openDropdown === item.label;
+              const isMega = Boolean(item.groups?.length);
 
               return (
                 <li key={item.label} className="relative">
-                  {hasChildren ? (
+                  {menu ? (
                     <>
                       <button
                         type="button"
@@ -167,25 +253,69 @@ export default function Header() {
                         <Chevron open={isOpen} />
                       </button>
                       {isOpen ? (
-                        <div
-                          className="animate-dropdown absolute left-1/2 top-full z-50 mt-1 min-w-[13rem] -translate-x-1/2 rounded-lg border border-white/10 bg-[rgba(10,14,20,0.96)] py-2 shadow-xl backdrop-blur-md"
-                          onMouseLeave={() => setOpenDropdown(null)}
-                        >
-                          <ul role="menu">
-                            {item.children!.map((child) => (
-                              <li key={child.label} role="none">
-                                <Link
-                                  href={child.href}
-                                  role="menuitem"
-                                  className="focus-ring block px-4 py-2 text-[0.8rem] text-white/85 transition-colors hover:bg-white/5 hover:text-gold"
-                                  onClick={() => setOpenDropdown(null)}
-                                >
-                                  {child.label}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
+                        isMega ? (
+                          <div
+                            className={`animate-dropdown absolute top-full z-50 mt-1 rounded-xl border border-white/10 bg-[rgba(10,14,20,0.97)] p-5 shadow-2xl backdrop-blur-md ${
+                              item.label === "Destinations"
+                                ? "left-1/2 w-[min(92vw,58rem)] -translate-x-1/2"
+                                : "left-0 w-[min(92vw,42rem)]"
+                            }`}
+                            onMouseLeave={() => setOpenDropdown(null)}
+                          >
+                            <div
+                              className={`grid gap-6 ${
+                                item.label === "Destinations"
+                                  ? "grid-cols-3"
+                                  : "grid-cols-3"
+                              }`}
+                            >
+                              {item.groups!.map((section) => (
+                                <div key={section.title}>
+                                  <Link
+                                    href={section.href}
+                                    className="focus-ring mb-2 block text-[0.72rem] font-bold uppercase tracking-[0.12em] text-gold"
+                                    onClick={() => setOpenDropdown(null)}
+                                  >
+                                    {section.title}
+                                  </Link>
+                                  <ul className="space-y-0.5">
+                                    {section.links.map((child) => (
+                                      <li key={child.label}>
+                                        <Link
+                                          href={child.href}
+                                          className="focus-ring block rounded-md px-1 py-1.5 text-[0.8rem] text-white/85 transition-colors hover:bg-white/5 hover:text-gold"
+                                          onClick={() => setOpenDropdown(null)}
+                                        >
+                                          {child.label}
+                                        </Link>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <div
+                            className="animate-dropdown absolute left-1/2 top-full z-50 mt-1 min-w-[14rem] -translate-x-1/2 rounded-lg border border-white/10 bg-[rgba(10,14,20,0.96)] py-2 shadow-xl backdrop-blur-md"
+                            onMouseLeave={() => setOpenDropdown(null)}
+                          >
+                            <ul role="menu">
+                              {item.children!.map((child) => (
+                                <li key={child.label} role="none">
+                                  <Link
+                                    href={child.href}
+                                    role="menuitem"
+                                    className="focus-ring block px-4 py-2 text-[0.8rem] text-white/85 transition-colors hover:bg-white/5 hover:text-gold"
+                                    onClick={() => setOpenDropdown(null)}
+                                  >
+                                    {child.label}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )
                       ) : null}
                     </>
                   ) : (
@@ -254,47 +384,87 @@ export default function Header() {
         </div>
       </div>
 
-      <div
-        id={navId}
-        className={`xl:hidden ${mobileOpen ? "block" : "hidden"}`}
-      >
+      <div id={navId} className={`xl:hidden ${mobileOpen ? "block" : "hidden"}`}>
         <div className="max-h-[calc(100vh-4.75rem)] overflow-y-auto border-t border-white/10 bg-[rgba(8,12,18,0.96)] px-4 pb-8 pt-3 backdrop-blur-lg">
           <ul className="space-y-1">
             {NAV_ITEMS.map((item) => {
-              const hasChildren = Boolean(item.children?.length);
+              const menu = hasMenu(item);
               const expanded = mobileExpanded === item.label;
 
               return (
                 <li key={item.label} className="border-b border-white/10">
-                  {hasChildren ? (
+                  {menu ? (
                     <>
                       <button
                         type="button"
                         className="focus-ring flex w-full items-center justify-between py-3.5 text-left text-[0.95rem] font-semibold text-white"
                         aria-expanded={expanded}
-                        onClick={() =>
+                        onClick={() => {
                           setMobileExpanded((current) =>
                             current === item.label ? null : item.label,
-                          )
-                        }
+                          );
+                          setMobileGroup(null);
+                        }}
                       >
                         {item.label}
                         <Chevron open={expanded} />
                       </button>
                       {expanded ? (
-                        <ul className="animate-dropdown space-y-1 pb-3 pl-3">
-                          {item.children!.map((child) => (
-                            <li key={child.label}>
-                              <Link
-                                href={child.href}
-                                className="focus-ring block py-2 text-sm text-white/75 hover:text-gold"
-                                onClick={() => setMobileOpen(false)}
-                              >
-                                {child.label}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
+                        item.groups ? (
+                          <div className="animate-dropdown space-y-1 pb-3 pl-1">
+                            {item.groups.map((section) => {
+                              const groupOpen = mobileGroup === `${item.label}:${section.title}`;
+                              return (
+                                <div key={section.title}>
+                                  <button
+                                    type="button"
+                                    className="focus-ring flex w-full items-center justify-between py-2.5 pl-2 text-left text-sm font-semibold text-gold"
+                                    aria-expanded={groupOpen}
+                                    onClick={() =>
+                                      setMobileGroup((current) =>
+                                        current === `${item.label}:${section.title}`
+                                          ? null
+                                          : `${item.label}:${section.title}`,
+                                      )
+                                    }
+                                  >
+                                    {section.title}
+                                    <Chevron open={groupOpen} />
+                                  </button>
+                                  {groupOpen ? (
+                                    <ul className="space-y-0.5 pb-2 pl-4">
+                                      {section.links.map((child) => (
+                                        <li key={child.label}>
+                                          <Link
+                                            href={child.href}
+                                            className="focus-ring block py-2 text-sm text-white/75 hover:text-gold"
+                                            onClick={() => setMobileOpen(false)}
+                                          >
+                                            {child.label}
+                                          </Link>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  ) : null}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <ul className="animate-dropdown space-y-1 pb-3 pl-3">
+                            {item.children!.map((child) => (
+                              <li key={child.label}>
+                                <Link
+                                  href={child.href}
+                                  className="focus-ring block py-2 text-sm text-white/75 hover:text-gold"
+                                  onClick={() => setMobileOpen(false)}
+                                >
+                                  {child.label}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        )
                       ) : null}
                     </>
                   ) : (
