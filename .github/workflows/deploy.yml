@@ -17,26 +17,15 @@ jobs:
     timeout-minutes: 45
 
     steps:
-      - name: Resolve SSH port
-        id: ssh
-        env:
-          VPS_PORT: ${{ secrets.VPS_PORT }}
-        run: |
-          set -euo pipefail
-          PORT="${VPS_PORT:-22}"
-          if [ -z "$PORT" ]; then PORT=22; fi
-          echo "port=${PORT}" >> "$GITHUB_OUTPUT"
-
       - name: Deploy Ambition Holidays only
         uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ steps.ssh.outputs.port }}
+          port: ${{ secrets.VPS_PORT || 22 }}
           command_timeout: 40m
           request_pty: true
-          capture_stdout: true
           script: |
             set -euo pipefail
 
@@ -59,7 +48,6 @@ jobs:
             fi
 
             echo "whoami=$(whoami)"
-            echo "pwd=$(pwd)"
             echo "node=$(command -v node || true) $(node -v 2>/dev/null || true)"
             echo "npm=$(command -v npm || true) $(npm -v 2>/dev/null || true)"
             echo "pm2=$(command -v pm2 || true)"
@@ -120,7 +108,6 @@ jobs:
 
             echo "Checking local port ${APP_PORT}..."
             if command -v ss >/dev/null 2>&1; then
-              ss -ltn || true
               if ! ss -ltn | grep -Eq ":${APP_PORT}\\b"; then
                 echo "ERROR: Port ${APP_PORT} is not listening."
                 exit 1
@@ -147,7 +134,6 @@ jobs:
             PUBLIC_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 -I "$PUBLIC_URL" || true)"
             echo "Public HTTP status: ${PUBLIC_CODE}"
             if [ "$PUBLIC_CODE" != "200" ]; then
-              # Fallback GET in case HEAD is blocked by CDN/proxy.
               PUBLIC_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "$PUBLIC_URL" || true)"
               echo "Public HTTP GET status: ${PUBLIC_CODE}"
             fi
