@@ -35,7 +35,7 @@ export default function HeroSearch() {
         <button
           type="submit"
           aria-label="Search adventures"
-          className="focus-ring ml-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#2f7d32] text-white transition duration-200 hover:bg-[#276a2a] hover:scale-[1.03] sm:h-12 sm:w-12"
+          className="focus-ring ml-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold text-white transition duration-200 hover:bg-gold-soft hover:scale-[1.03] sm:h-12 sm:w-12"
         >
           <svg
             aria-hidden="true"

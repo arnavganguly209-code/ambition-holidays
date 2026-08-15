@@ -1,14 +1,20 @@
 const features = [
   {
-    label: "408 Clear TripAdvisor Reviews",
+    label: "410+ TripAdvisor reviews",
     icon: (
-      <svg viewBox="0 0 48 48" className="h-9 w-9 sm:h-10 sm:w-10" fill="none" aria-hidden="true">
-        <circle cx="24" cy="24" r="14" stroke="currentColor" strokeWidth="1.7" />
+      <svg viewBox="0 0 48 48" className="h-9 w-9 sm:h-10 sm:w-10" fill="currentColor" aria-hidden="true">
+        {/* TripAdvisor-style owl mark */}
+        <path d="M24 8.5c-7.2 0-13.2 4.9-14.8 11.5 1.9-1.4 4.2-2.2 6.7-2.2 3.4 0 6.4 1.6 8.1 4.1 1.7-2.5 4.7-4.1 8.1-4.1 2.5 0 4.8.8 6.7 2.2C37.2 13.4 31.2 8.5 24 8.5Z" />
+        <circle cx="16.8" cy="24.2" r="6.2" fill="none" stroke="currentColor" strokeWidth="1.8" />
+        <circle cx="31.2" cy="24.2" r="6.2" fill="none" stroke="currentColor" strokeWidth="1.8" />
+        <circle cx="16.8" cy="24.2" r="2.4" />
+        <circle cx="31.2" cy="24.2" r="2.4" />
         <path
-          d="M24 14.5 26.4 21h7l-5.6 4.2 2.1 6.8L24 27.8l-5.9 4.2 2.1-6.8L14.6 21h7L24 14.5Z"
+          d="M21.2 30.8c.8 1.6 2.1 2.7 3.8 2.7s3-1.1 3.8-2.7"
+          fill="none"
           stroke="currentColor"
-          strokeWidth="1.7"
-          strokeLinejoin="round"
+          strokeWidth="1.8"
+          strokeLinecap="round"
         />
       </svg>
     ),
@@ -17,41 +23,41 @@ const features = [
     label: "11+ years of experience",
     icon: (
       <svg viewBox="0 0 48 48" className="h-9 w-9 sm:h-10 sm:w-10" fill="none" aria-hidden="true">
+        {/* Award badge with star + ribbons */}
+        <circle cx="24" cy="20" r="10" stroke="currentColor" strokeWidth="1.7" />
         <path
-          d="M24 8c-2.2 3.8-5.2 6.4-8.8 8.2 1.4 4.6 4.6 7.8 8.8 9.8 4.2-2 7.4-5.2 8.8-9.8C29.2 14.4 26.2 11.8 24 8Z"
+          d="M24 14.2 25.7 18l4.1.4-3.1 2.8.9 4-3.6-2.1-3.6 2.1.9-4-3.1-2.8 4.1-.4L24 14.2Z"
           stroke="currentColor"
-          strokeWidth="1.7"
+          strokeWidth="1.5"
           strokeLinejoin="round"
         />
         <path
-          d="M15 28.5c-2.8 1.4-5 3.6-6.5 6.5M33 28.5c2.8 1.4 5 3.6 6.5 6.5"
+          d="M18.2 28.5 15 39l9-4.2L33 39l-3.2-10.5"
           stroke="currentColor"
           strokeWidth="1.7"
-          strokeLinecap="round"
-        />
-        <path
-          d="m18.5 38.5 2.2-2.2 1.8 1.6 2.5-3.2 2.2 2.4 2.3-2.6"
-          stroke="currentColor"
-          strokeWidth="1.7"
-          strokeLinecap="round"
           strokeLinejoin="round"
         />
       </svg>
     ),
   },
   {
-    label: "Supporting local communities",
+    label: "Best price guarantee",
     icon: (
       <svg viewBox="0 0 48 48" className="h-9 w-9 sm:h-10 sm:w-10" fill="none" aria-hidden="true">
+        {/* Thumbs up with motion accents */}
         <path
-          d="M24 8 10 20h4v16h20V20h4L24 8Z"
+          d="M20 40H14.5a2 2 0 0 1-2-2V23.5a2 2 0 0 1 2-2H20"
           stroke="currentColor"
           strokeWidth="1.7"
           strokeLinejoin="round"
         />
-        <path d="M20 36V26h8v10" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-        <circle cx="24" cy="18.5" r="2.2" stroke="currentColor" strokeWidth="1.7" />
-        <path d="M16 40h16" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+        <path
+          d="M20 21.5V17c0-3.2 1.8-5.5 4.6-5.5.9 0 1.6.7 1.6 1.6V18h5.2c2.2 0 3.8 2 3.4 4.1l-1.8 10.2c-.4 2-2.1 3.5-4.2 3.5H20V21.5Z"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinejoin="round"
+        />
+        <path d="M33 12.5c1.1-.9 2.4-1.4 3.8-1.5M34.5 16c1.3-.4 2.6-.5 4-.3M35 19.5c1.2.1 2.4.4 3.5 1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
       </svg>
     ),
   },
@@ -59,20 +65,21 @@ const features = [
     label: "Responsible tourism",
     icon: (
       <svg viewBox="0 0 48 48" className="h-9 w-9 sm:h-10 sm:w-10" fill="none" aria-hidden="true">
+        {/* Hand holding sprout */}
         <path
-          d="M14 28c0-4.5 3.2-8.2 7.5-9.2C20.8 14.5 22.2 11 24 9c1.8 2 3.2 5.5 2.5 9.8 4.3 1 7.5 4.7 7.5 9.2 0 3.2-1.5 5.8-4 7.5"
+          d="M24 8c.2 3.5-1.2 6.2-3.8 8.2 2.8.4 5.2-.6 7-2.6-.1 3.6-2.2 6.2-5.4 7.4"
           stroke="currentColor"
           strokeWidth="1.7"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
+        <path d="M22.8 20.8V28" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
         <path
-          d="M18 38c2-3.5 4.5-5 6-5s4 1.5 6 5"
+          d="M12 32.5c2.2-2.8 5-4.2 8.2-4.2h4.6c1.8 0 3.2 1.4 3.2 3.2 0 .7-.2 1.3-.6 1.8 1.4.2 2.5 1.4 2.5 2.9 0 1.4-1 2.6-2.3 2.9.4.4.6 1 .6 1.7 0 1.6-1.3 2.9-2.9 2.9H16.5C13 43.7 10 40.2 10 35.8c0-1.2.3-2.3.9-3.3Z"
           stroke="currentColor"
           strokeWidth="1.7"
-          strokeLinecap="round"
+          strokeLinejoin="round"
         />
-        <path d="M24 19v6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
       </svg>
     ),
   },

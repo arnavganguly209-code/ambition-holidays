@@ -124,15 +124,15 @@ export default function Header() {
           : "bg-transparent"
       }`}
     >
-      <div className="mx-auto flex h-[4.75rem] max-w-[92rem] items-center gap-3 px-4 sm:h-[5rem] sm:px-5 lg:gap-4 lg:px-6 xl:px-8">
+      <div className="mx-auto flex h-[5rem] max-w-[92rem] items-center gap-3 px-4 sm:h-[5.25rem] sm:px-5 lg:gap-4 lg:px-6 xl:px-8">
         <Link href="/" className="focus-ring relative z-10 shrink-0" aria-label="Ambition Holiday home">
           <Image
             src="/images/ambition-holiday-logo.png"
             alt="Ambition Holiday — Journeys Beyond Limits"
-            width={322}
-            height={92}
+            width={354}
+            height={101}
             priority
-            className="h-[3.16rem] w-auto object-contain sm:h-[3.45rem] lg:h-[3.85rem]"
+            className="h-[3.48rem] w-auto object-contain sm:h-[3.8rem] lg:h-[4.24rem]"
           />
         </Link>
 

@@ -41,8 +41,8 @@ export default function Hero() {
         <div className="flex flex-1 flex-col items-center justify-center px-4 pb-6 pt-24 sm:pt-28 lg:pb-8 lg:pt-24">
           <div className="relative w-full max-w-5xl">
             <div className="relative">
-              <p className="animate-fade-up mb-4 text-center text-[0.72rem] font-medium tracking-wide text-gold sm:mb-5 sm:text-[0.85rem]">
-                Discover and book tours and activities
+              <p className="animate-fade-up mb-4 text-center text-[0.8rem] font-semibold tracking-[0.08em] text-gold sm:mb-5 sm:text-[0.95rem]">
+                Luxury At Every Altitude
               </p>
 
               <h1 className="animate-fade-up-delay-1 mb-7 text-center font-sans text-[clamp(2.15rem,5vw,3.9rem)] font-bold leading-[1.1] tracking-tight text-white drop-shadow-[0_2px_18px_rgba(0,0,0,0.55)] sm:mb-8 sm:whitespace-nowrap">
