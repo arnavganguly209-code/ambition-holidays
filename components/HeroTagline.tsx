@@ -2,57 +2,73 @@
 
 import { useEffect, useState } from "react";
 
-const TEXT = "Discover Your Luxury Trek";
+const WORDS = ["Discover", "Your", "Luxury", "Trek"] as const;
+const WORD_DELAY_MS = 420;
+const HOLD_MS = 2200;
+const RESET_GAP_MS = 500;
 
 export default function HeroTagline() {
-  const [visibleCount, setVisibleCount] = useState(0);
+  const [visibleWords, setVisibleWords] = useState(0);
 
   useEffect(() => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduceMotion) {
-      setVisibleCount(TEXT.length);
+      setVisibleWords(WORDS.length);
       return;
     }
 
-    setVisibleCount(0);
-    let index = 0;
-    const interval = window.setInterval(() => {
-      index += 1;
-      setVisibleCount(index);
-      if (index >= TEXT.length) {
-        window.clearInterval(interval);
-      }
-    }, 42);
+    let cancelled = false;
+    const timers: number[] = [];
 
-    return () => window.clearInterval(interval);
+    const clearTimers = () => {
+      timers.forEach((id) => window.clearTimeout(id));
+      timers.length = 0;
+    };
+
+    const runCycle = () => {
+      if (cancelled) return;
+      clearTimers();
+      setVisibleWords(0);
+
+      WORDS.forEach((_, index) => {
+        timers.push(
+          window.setTimeout(() => {
+            if (!cancelled) setVisibleWords(index + 1);
+          }, RESET_GAP_MS + index * WORD_DELAY_MS),
+        );
+      });
+
+      const cycleEnd = RESET_GAP_MS + WORDS.length * WORD_DELAY_MS + HOLD_MS;
+      timers.push(window.setTimeout(runCycle, cycleEnd));
+    };
+
+    runCycle();
+
+    return () => {
+      cancelled = true;
+      clearTimers();
+    };
   }, []);
 
   return (
     <p
-      className="animate-tagline-enter mb-1.5 text-center text-[0.88rem] font-semibold tracking-[0.1em] text-gold sm:mb-2 sm:text-[1.05rem]"
-      aria-label={TEXT}
+      className="mb-1.5 text-center text-[0.88rem] font-semibold tracking-[0.1em] text-gold sm:mb-2 sm:text-[1.05rem]"
+      aria-label={WORDS.join(" ")}
     >
-      <span className="inline-flex overflow-hidden">
-        {TEXT.split("").map((char, index) => (
+      <span className="inline-flex flex-wrap items-baseline justify-center gap-x-[0.35em]">
+        {WORDS.map((word, index) => (
           <span
-            key={`${char}-${index}`}
-            className={`inline-block transition-[opacity,transform] duration-300 ease-out ${
-              index < visibleCount
+            key={word}
+            className={`inline-block transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+              index < visibleWords
                 ? "translate-x-0 opacity-100"
-                : "-translate-x-2 opacity-0"
+                : "-translate-x-5 opacity-0"
             }`}
-            style={{ transitionDelay: `${Math.min(index, 24) * 12}ms` }}
           >
-            {char === " " ? "\u00A0" : char}
+            {word}
           </span>
         ))}
       </span>
-      <span
-        aria-hidden="true"
-        className={`ml-0.5 inline-block h-[1em] w-[1.5px] translate-y-[0.12em] bg-gold align-baseline ${
-          visibleCount >= TEXT.length ? "animate-tagline-caret-fade" : "animate-tagline-caret"
-        }`}
-      />
     </p>
   );
 }

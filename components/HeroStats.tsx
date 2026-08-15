@@ -1,6 +1,7 @@
 import Image from "next/image";
 
-const iconClass = "h-10 w-10 shrink-0";
+const iconBox = "flex h-11 w-11 shrink-0 items-center justify-center text-white";
+const iconClass = "h-11 w-11";
 
 const features = [
   {
@@ -9,10 +10,11 @@ const features = [
       <Image
         src="/images/icons/tripadvisor.png"
         alt=""
-        width={40}
-        height={40}
+        width={44}
+        height={44}
         className={`${iconClass} object-contain`}
         aria-hidden="true"
+        priority
       />
     ),
   },
@@ -76,10 +78,11 @@ const features = [
       <Image
         src="/images/icons/responsible-tourism.png"
         alt=""
-        width={40}
-        height={40}
+        width={44}
+        height={44}
         className={`${iconClass} object-contain`}
         aria-hidden="true"
+        priority
       />
     ),
   },
@@ -88,15 +91,13 @@ const features = [
 export default function HeroStats() {
   return (
     <div className="animate-fade-up-delay-3 w-full px-4 pb-6 sm:px-8 sm:pb-8 lg:px-10 lg:pb-10">
-      <ul className="mx-auto grid max-w-6xl grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className="mx-auto grid max-w-6xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         {features.map((feature) => (
           <li
             key={feature.label}
-            className="flex min-h-[3.25rem] items-center gap-3 px-3 py-3 sm:justify-center sm:px-4 lg:px-5"
+            className="flex min-h-[3.5rem] items-center gap-3.5 px-3 py-3.5 sm:justify-center sm:px-5 lg:px-6"
           >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center text-white">
-              {feature.icon}
-            </span>
+            <span className={iconBox}>{feature.icon}</span>
             <p className="min-w-0 text-left text-[0.92rem] font-medium leading-snug text-white sm:text-[0.95rem]">
               {feature.label}
             </p>
