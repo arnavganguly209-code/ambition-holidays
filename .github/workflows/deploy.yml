@@ -17,17 +17,61 @@ jobs:
     timeout-minutes: 45
 
     steps:
+      - name: Resolve SSH port
+        id: ssh
+        env:
+          VPS_PORT: ${{ secrets.VPS_PORT }}
+        run: |
+          set -euo pipefail
+          PORT="${VPS_PORT:-22}"
+          if [ -z "$PORT" ]; then PORT=22; fi
+          echo "port=${PORT}" >> "$GITHUB_OUTPUT"
+
       - name: Deploy Ambition Holidays only
         uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_PORT }}
-          script_stop: true
+          port: ${{ steps.ssh.outputs.port }}
           command_timeout: 40m
+          request_pty: true
+          capture_stdout: true
           script: |
             set -euo pipefail
+
+            # Load login PATH so nvm/node/npm/pm2 are available over non-interactive SSH.
+            if [ -f "$HOME/.nvm/nvm.sh" ]; then
+              # shellcheck disable=SC1091
+              . "$HOME/.nvm/nvm.sh"
+            fi
+            if [ -f "$HOME/.profile" ]; then
+              # shellcheck disable=SC1091
+              . "$HOME/.profile"
+            fi
+            if [ -f "$HOME/.bashrc" ]; then
+              # shellcheck disable=SC1091
+              . "$HOME/.bashrc"
+            fi
+            export PATH="/usr/local/bin:/usr/bin:$HOME/.local/bin:$PATH"
+            if command -v nvm >/dev/null 2>&1; then
+              nvm use 22 >/dev/null 2>&1 || nvm use default >/dev/null 2>&1 || true
+            fi
+
+            echo "whoami=$(whoami)"
+            echo "pwd=$(pwd)"
+            echo "node=$(command -v node || true) $(node -v 2>/dev/null || true)"
+            echo "npm=$(command -v npm || true) $(npm -v 2>/dev/null || true)"
+            echo "pm2=$(command -v pm2 || true)"
+
+            if ! command -v node >/dev/null 2>&1 || ! command -v npm >/dev/null 2>&1; then
+              echo "ERROR: node/npm not found in PATH for SSH session."
+              exit 1
+            fi
+            if ! command -v pm2 >/dev/null 2>&1; then
+              echo "ERROR: pm2 not found in PATH for SSH session."
+              exit 1
+            fi
 
             # Hardcoded Ambition Holidays targets only — never other apps/sites/DBs.
             PROJECT_PATH="/var/www/ambition-holidays"
@@ -69,28 +113,24 @@ jobs:
             echo "PM2 describe:"
             pm2 describe "$PM2_APP"
 
-            if ! pm2 describe "$PM2_APP" | grep -Eqi 'status[[:space:]]+online'; then
+            if ! pm2 describe "$PM2_APP" | grep -Eqi 'status.*online'; then
               echo "ERROR: PM2 process ${PM2_APP} is not online."
               exit 1
             fi
 
             echo "Checking local port ${APP_PORT}..."
             if command -v ss >/dev/null 2>&1; then
-              if ! ss -ltn | grep -Eq ":${APP_PORT}([[:space:]]|$)"; then
-                echo "ERROR: Port ${APP_PORT} is not listening."
-                exit 1
-              fi
-            elif command -v netstat >/dev/null 2>&1; then
-              if ! netstat -ltn | grep -Eq ":${APP_PORT}([[:space:]]|$)"; then
+              ss -ltn || true
+              if ! ss -ltn | grep -Eq ":${APP_PORT}\\b"; then
                 echo "ERROR: Port ${APP_PORT} is not listening."
                 exit 1
               fi
             fi
 
-            echo "Local HTTP check..."
+            echo "Local HTTP check (curl -I)..."
             local_ok=0
-            for i in $(seq 1 15); do
-              LOCAL_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 5 "http://127.0.0.1:${APP_PORT}" || true)"
+            for i in $(seq 1 20); do
+              LOCAL_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 5 -I "http://127.0.0.1:${APP_PORT}" || true)"
               echo "Local HTTP status attempt ${i}: ${LOCAL_CODE}"
               if [ "$LOCAL_CODE" = "200" ]; then
                 local_ok=1
@@ -103,9 +143,14 @@ jobs:
               exit 1
             fi
 
-            echo "Public HTTPS check..."
-            PUBLIC_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "$PUBLIC_URL" || true)"
+            echo "Public HTTPS check (curl -I)..."
+            PUBLIC_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 -I "$PUBLIC_URL" || true)"
             echo "Public HTTP status: ${PUBLIC_CODE}"
+            if [ "$PUBLIC_CODE" != "200" ]; then
+              # Fallback GET in case HEAD is blocked by CDN/proxy.
+              PUBLIC_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "$PUBLIC_URL" || true)"
+              echo "Public HTTP GET status: ${PUBLIC_CODE}"
+            fi
             if [ "$PUBLIC_CODE" != "200" ]; then
               echo "ERROR: Public site did not return HTTP 200 (${PUBLIC_URL})"
               exit 1
