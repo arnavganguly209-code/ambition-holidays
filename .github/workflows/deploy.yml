@@ -78,7 +78,12 @@ jobs:
 
             echo "Building production app..."
             # If build fails, set -e stops here — PM2 is NOT restarted.
-            npm run build
+            if ! npm run build; then
+              echo "ERROR: npm run build failed"
+              df -h "${PROJECT_PATH}" || df -h || true
+              free -m || true
+              exit 1
+            fi
 
             echo "Updating PM2 process ${PM2_APP} only..."
             if pm2 describe "${PM2_APP}" >/dev/null 2>&1; then
@@ -89,25 +94,45 @@ jobs:
 
             pm2 save
 
-            echo "PM2 describe:"
-            pm2 describe "${PM2_APP}"
-
-            if ! pm2 describe "${PM2_APP}" | grep -Eqi 'status.*online'; then
+            echo "Waiting for ${PM2_APP} to come online..."
+            online_ok=0
+            for i in $(seq 1 30); do
+              if pm2 describe "${PM2_APP}" 2>/dev/null | grep -Eqi 'status.*online'; then
+                online_ok=1
+                echo "PM2 online on attempt ${i}"
+                break
+              fi
+              sleep 2
+            done
+            if [ "${online_ok}" -ne 1 ]; then
               echo "ERROR: PM2 process ${PM2_APP} is not online."
+              pm2 describe "${PM2_APP}" || true
               exit 1
             fi
 
             echo "Checking local port ${APP_PORT}..."
-            if command -v ss >/dev/null 2>&1; then
-              if ! ss -ltn | grep -Eq ":${APP_PORT}\\b"; then
-                echo "ERROR: Port ${APP_PORT} is not listening."
-                exit 1
+            port_ok=0
+            for i in $(seq 1 30); do
+              if command -v ss >/dev/null 2>&1; then
+                if ss -ltn | grep -Eq ":${APP_PORT}\\b"; then
+                  port_ok=1
+                  echo "Port ${APP_PORT} listening on attempt ${i}"
+                  break
+                fi
+              else
+                port_ok=1
+                break
               fi
+              sleep 2
+            done
+            if [ "${port_ok}" -ne 1 ]; then
+              echo "ERROR: Port ${APP_PORT} is not listening."
+              exit 1
             fi
 
             echo "Local HTTP check (curl -I)..."
             local_ok=0
-            for i in $(seq 1 20); do
+            for i in $(seq 1 30); do
               LOCAL_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 5 -I "http://127.0.0.1:${APP_PORT}" || true)"
               echo "Local HTTP status attempt ${i}: ${LOCAL_CODE}"
               if [ "${LOCAL_CODE}" = "200" ]; then
