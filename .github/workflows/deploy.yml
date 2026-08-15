@@ -1,0 +1,138 @@
+name: Deploy Ambition Holidays
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ambition-holidays-production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Configure SSH agent
+        uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+      - name: Add VPS host key
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
+        run: |
+          set -euo pipefail
+          PORT="${VPS_PORT:-22}"
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          ssh-keyscan -p "$PORT" -H "$VPS_HOST" >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Deploy Ambition Holidays only
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
+        run: |
+          set -euo pipefail
+
+          PORT="${VPS_PORT:-22}"
+
+          ssh -p "$PORT" \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            "${VPS_USER}@${VPS_HOST}" \
+            'bash -s' <<'REMOTE'
+          set -euo pipefail
+
+          # Hardcoded Ambition Holidays targets only — never other apps/sites/DBs.
+          PROJECT_PATH="/var/www/ambition-holidays"
+          PM2_APP="ambition-holidays"
+          APP_PORT="3004"
+          EXPECTED_REPO="arnavganguly209-code/ambition-holidays"
+          PUBLIC_URL="https://ambition.theglobalorbit.com"
+
+          cd "$PROJECT_PATH"
+
+          echo "Verifying git remote..."
+          git remote -v
+          if ! git remote -v | grep -Fq "$EXPECTED_REPO"; then
+            echo "ERROR: Remote does not match expected repository ${EXPECTED_REPO}"
+            exit 1
+          fi
+
+          echo "Syncing origin/main..."
+          git fetch origin main
+          git checkout main
+          git reset --hard origin/main
+
+          echo "Installing dependencies..."
+          npm install --no-audit --no-fund
+
+          echo "Building production app..."
+          # If build fails, set -e stops here — PM2 is NOT restarted.
+          npm run build
+
+          echo "Updating PM2 process ${PM2_APP} only..."
+          if pm2 describe "$PM2_APP" >/dev/null 2>&1; then
+            pm2 restart "$PM2_APP" --update-env
+          else
+            pm2 start npm --name "$PM2_APP" -- start -- -p "$APP_PORT"
+          fi
+
+          pm2 save
+
+          echo "PM2 describe:"
+          pm2 describe "$PM2_APP"
+
+          if ! pm2 describe "$PM2_APP" | grep -Eqi 'status[[:space:]]+online'; then
+            echo "ERROR: PM2 process ${PM2_APP} is not online."
+            exit 1
+          fi
+
+          echo "Checking local port ${APP_PORT}..."
+          if command -v ss >/dev/null 2>&1; then
+            if ! ss -ltn | grep -q ":${APP_PORT} "; then
+              echo "ERROR: Port ${APP_PORT} is not listening."
+              exit 1
+            fi
+          elif command -v netstat >/dev/null 2>&1; then
+            if ! netstat -ltn | grep -q ":${APP_PORT} "; then
+              echo "ERROR: Port ${APP_PORT} is not listening."
+              exit 1
+            fi
+          fi
+
+          echo "Local HTTP check..."
+          local_ok=0
+          for i in $(seq 1 15); do
+            LOCAL_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 5 -I "http://127.0.0.1:${APP_PORT}" || true)"
+            echo "Local HTTP status attempt ${i}: ${LOCAL_CODE}"
+            if [ "$LOCAL_CODE" = "200" ]; then
+              local_ok=1
+              break
+            fi
+            sleep 2
+          done
+          if [ "$local_ok" -ne 1 ]; then
+            echo "ERROR: Local health check failed for http://127.0.0.1:${APP_PORT}"
+            exit 1
+          fi
+
+          echo "Public HTTPS check..."
+          PUBLIC_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 -I "$PUBLIC_URL" || true)"
+          echo "Public HTTP status: ${PUBLIC_CODE}"
+          if [ "$PUBLIC_CODE" != "200" ]; then
+            echo "ERROR: Public site did not return HTTP 200 (${PUBLIC_URL})"
+            exit 1
+          fi
+
+          echo "Deploy complete: ${PM2_APP} online; ${PUBLIC_URL} returned 200."
+          REMOTE
