@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 const iconBox = "flex h-11 w-11 shrink-0 items-center justify-center text-white";
-const iconClass = "h-11 w-11";
+const iconClass = "h-11 w-11 shrink-0";
 
 const features = [
   {
@@ -15,6 +15,7 @@ const features = [
         className={`${iconClass} object-contain`}
         aria-hidden="true"
         priority
+        unoptimized
       />
     ),
   },
@@ -75,14 +76,19 @@ const features = [
   {
     label: "Responsible tourism",
     icon: (
-      <Image
-        src="/images/icons/responsible-tourism.png"
-        alt=""
-        width={44}
-        height={44}
-        className={`${iconClass} object-contain`}
+      <span
+        className={`${iconClass} bg-white`}
+        style={{
+          WebkitMaskImage: "url(/images/icons/responsible-tourism.png)",
+          maskImage: "url(/images/icons/responsible-tourism.png)",
+          WebkitMaskSize: "contain",
+          maskSize: "contain",
+          WebkitMaskRepeat: "no-repeat",
+          maskRepeat: "no-repeat",
+          WebkitMaskPosition: "center",
+          maskPosition: "center",
+        }}
         aria-hidden="true"
-        priority
       />
     ),
   },
