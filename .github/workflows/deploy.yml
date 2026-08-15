@@ -27,25 +27,16 @@ jobs:
           command_timeout: 40m
           request_pty: true
           script: |
-            set -euo pipefail
+            set -e
 
-            # Load login PATH so nvm/node/npm/pm2 are available over non-interactive SSH.
-            if [ -f "$HOME/.nvm/nvm.sh" ]; then
+            # Load nvm/node carefully. Do NOT source full bashrc under nounset.
+            export NVM_DIR="${HOME}/.nvm"
+            if [ -s "${NVM_DIR}/nvm.sh" ]; then
               # shellcheck disable=SC1091
-              . "$HOME/.nvm/nvm.sh"
-            fi
-            if [ -f "$HOME/.profile" ]; then
-              # shellcheck disable=SC1091
-              . "$HOME/.profile"
-            fi
-            if [ -f "$HOME/.bashrc" ]; then
-              # shellcheck disable=SC1091
-              . "$HOME/.bashrc"
-            fi
-            export PATH="/usr/local/bin:/usr/bin:$HOME/.local/bin:$PATH"
-            if command -v nvm >/dev/null 2>&1; then
+              . "${NVM_DIR}/nvm.sh"
               nvm use 22 >/dev/null 2>&1 || nvm use default >/dev/null 2>&1 || true
             fi
+            export PATH="/usr/local/bin:/usr/bin:${HOME}/.local/bin:${PATH}"
 
             echo "whoami=$(whoami)"
             echo "node=$(command -v node || true) $(node -v 2>/dev/null || true)"
@@ -68,11 +59,11 @@ jobs:
             EXPECTED_REPO="arnavganguly209-code/ambition-holidays"
             PUBLIC_URL="https://ambition.theglobalorbit.com"
 
-            cd "$PROJECT_PATH"
+            cd "${PROJECT_PATH}"
 
             echo "Verifying git remote..."
             git remote -v
-            if ! git remote -v | grep -Fq "$EXPECTED_REPO"; then
+            if ! git remote -v | grep -Fq "${EXPECTED_REPO}"; then
               echo "ERROR: Remote does not match expected repository ${EXPECTED_REPO}"
               exit 1
             fi
@@ -90,18 +81,18 @@ jobs:
             npm run build
 
             echo "Updating PM2 process ${PM2_APP} only..."
-            if pm2 describe "$PM2_APP" >/dev/null 2>&1; then
-              pm2 restart "$PM2_APP" --update-env
+            if pm2 describe "${PM2_APP}" >/dev/null 2>&1; then
+              pm2 restart "${PM2_APP}" --update-env
             else
-              pm2 start npm --name "$PM2_APP" -- start -- -p "$APP_PORT"
+              pm2 start npm --name "${PM2_APP}" -- start -- -p "${APP_PORT}"
             fi
 
             pm2 save
 
             echo "PM2 describe:"
-            pm2 describe "$PM2_APP"
+            pm2 describe "${PM2_APP}"
 
-            if ! pm2 describe "$PM2_APP" | grep -Eqi 'status.*online'; then
+            if ! pm2 describe "${PM2_APP}" | grep -Eqi 'status.*online'; then
               echo "ERROR: PM2 process ${PM2_APP} is not online."
               exit 1
             fi
@@ -119,25 +110,25 @@ jobs:
             for i in $(seq 1 20); do
               LOCAL_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 5 -I "http://127.0.0.1:${APP_PORT}" || true)"
               echo "Local HTTP status attempt ${i}: ${LOCAL_CODE}"
-              if [ "$LOCAL_CODE" = "200" ]; then
+              if [ "${LOCAL_CODE}" = "200" ]; then
                 local_ok=1
                 break
               fi
               sleep 2
             done
-            if [ "$local_ok" -ne 1 ]; then
+            if [ "${local_ok}" -ne 1 ]; then
               echo "ERROR: Local health check failed for http://127.0.0.1:${APP_PORT}"
               exit 1
             fi
 
             echo "Public HTTPS check (curl -I)..."
-            PUBLIC_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 -I "$PUBLIC_URL" || true)"
+            PUBLIC_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 -I "${PUBLIC_URL}" || true)"
             echo "Public HTTP status: ${PUBLIC_CODE}"
-            if [ "$PUBLIC_CODE" != "200" ]; then
-              PUBLIC_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "$PUBLIC_URL" || true)"
+            if [ "${PUBLIC_CODE}" != "200" ]; then
+              PUBLIC_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "${PUBLIC_URL}" || true)"
               echo "Public HTTP GET status: ${PUBLIC_CODE}"
             fi
-            if [ "$PUBLIC_CODE" != "200" ]; then
+            if [ "${PUBLIC_CODE}" != "200" ]; then
               echo "ERROR: Public site did not return HTTP 200 (${PUBLIC_URL})"
               exit 1
             fi
