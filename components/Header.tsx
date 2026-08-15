@@ -121,7 +121,7 @@ export default function Header() {
       className={`absolute inset-x-0 top-0 z-50 transition-colors duration-300 ${
         scrolled || mobileOpen
           ? "bg-[rgba(8,12,18,0.88)] backdrop-blur-md"
-          : "bg-[rgba(8,12,18,0.42)] backdrop-blur-[6px]"
+          : "bg-transparent"
       }`}
     >
       <div className="mx-auto flex h-[4.25rem] max-w-[92rem] items-center gap-3 px-4 sm:h-[4.5rem] sm:px-5 lg:gap-4 lg:px-6 xl:px-8">
@@ -129,10 +129,10 @@ export default function Header() {
           <Image
             src="/images/ambition-holiday-logo.png"
             alt="Ambition Holiday — Journeys Beyond Limits"
-            width={210}
-            height={64}
+            width={280}
+            height={80}
             priority
-            className="h-10 w-auto object-contain sm:h-11 lg:h-12"
+            className="h-11 w-auto object-contain sm:h-12 lg:h-[3.35rem]"
           />
         </Link>
 
@@ -151,7 +151,7 @@ export default function Header() {
                     <>
                       <button
                         type="button"
-                        className={`focus-ring inline-flex items-center gap-1 rounded-md px-2.5 py-2 text-[0.78rem] font-medium tracking-wide text-white/90 transition-colors duration-200 hover:text-gold 2xl:px-3 2xl:text-[0.82rem] ${
+                        className={`focus-ring inline-flex items-center gap-1.5 rounded-md px-2.5 py-2 text-[0.82rem] font-semibold tracking-[0.04em] text-white transition-colors duration-200 hover:text-gold 2xl:px-3 2xl:text-[0.88rem] ${
                           isOpen ? "text-gold" : ""
                         }`}
                         aria-expanded={isOpen}
@@ -191,7 +191,7 @@ export default function Header() {
                   ) : (
                     <Link
                       href={item.href}
-                      className="focus-ring inline-flex items-center rounded-md px-2.5 py-2 text-[0.78rem] font-medium tracking-wide text-white/90 transition-colors duration-200 hover:text-gold 2xl:px-3 2xl:text-[0.82rem]"
+                      className="focus-ring inline-flex items-center rounded-md px-2.5 py-2 text-[0.82rem] font-semibold tracking-[0.04em] text-white transition-colors duration-200 hover:text-gold 2xl:px-3 2xl:text-[0.88rem]"
                     >
                       {item.label}
                     </Link>
@@ -230,28 +230,14 @@ export default function Header() {
             href={WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="focus-ring hidden items-center gap-2.5 rounded-md py-1 pl-1 pr-1 transition-opacity hover:opacity-90 lg:flex"
-            aria-label={`WhatsApp or call us 24/7 at ${PHONE_DISPLAY}`}
+            className="focus-ring hidden items-center gap-2 rounded-md border border-gold/80 px-3 py-2 transition-colors hover:border-gold hover:bg-white/5 lg:inline-flex"
+            aria-label={`WhatsApp ${PHONE_DISPLAY}`}
           >
-            <span
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-gold/35 bg-gradient-to-br from-[#1a2430] to-[#0c1218] text-gold"
-              aria-hidden="true"
-            >
-              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.7">
-                <circle cx="12" cy="8" r="3.2" />
-                <path d="M5.5 19c1.2-3.2 3.4-4.8 6.5-4.8s5.3 1.6 6.5 4.8" strokeLinecap="round" />
-              </svg>
-            </span>
-            <span className="leading-tight">
-              <span className="block text-[0.65rem] text-white/75">
-                WhatsApp or call us 24/7
-              </span>
-              <span className="mt-0.5 flex items-center gap-1.5 text-[0.84rem] font-semibold tracking-wide text-gold">
-                {PHONE_DISPLAY}
-                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 text-[#25D366]" fill="currentColor" aria-hidden="true">
-                  <path d="M20.5 3.5A11 11 0 0 0 2.1 16.7L1 23l6.5-1.7A11 11 0 0 0 20.5 3.5Zm-8.6 17a9.1 9.1 0 0 1-4.6-1.3l-.3-.2-3.9 1 1-3.8-.2-.3a9.1 9.1 0 1 1 8 4.6Zm5-6.8c-.3-.1-1.6-.8-1.9-.9s-.4-.1-.6.1-.7.9-.8 1-.3.2-.6.1a7.4 7.4 0 0 1-2.2-1.4 8.2 8.2 0 0 1-1.5-1.9c-.2-.3 0-.4.1-.6l.4-.5.1-.3c0-.1 0-.3-.1-.4s-.6-1.4-.8-1.9-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3a2 2 0 0 0-.6 1.5 3.5 3.5 0 0 0 .7 1.9 8 8 0 0 0 3.1 3 10.4 10.4 0 0 0 2.3.9 2.8 2.8 0 0 0 1.8.1 2.4 2.4 0 0 0 1.5-1.1 1.9 1.9 0 0 0 .1-1.1c-.1-.1-.3-.2-.6-.3Z" />
-                </svg>
-              </span>
+            <svg viewBox="0 0 24 24" className="h-4 w-4 text-[#25D366]" fill="currentColor" aria-hidden="true">
+              <path d="M20.5 3.5A11 11 0 0 0 2.1 16.7L1 23l6.5-1.7A11 11 0 0 0 20.5 3.5Zm-8.6 17a9.1 9.1 0 0 1-4.6-1.3l-.3-.2-3.9 1 1-3.8-.2-.3a9.1 9.1 0 1 1 8 4.6Zm5-6.8c-.3-.1-1.6-.8-1.9-.9s-.4-.1-.6.1-.7.9-.8 1-.3.2-.6.1a7.4 7.4 0 0 1-2.2-1.4 8.2 8.2 0 0 1-1.5-1.9c-.2-.3 0-.4.1-.6l.4-.5.1-.3c0-.1 0-.3-.1-.4s-.6-1.4-.8-1.9-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3a2 2 0 0 0-.6 1.5 3.5 3.5 0 0 0 .7 1.9 8 8 0 0 0 3.1 3 10.4 10.4 0 0 0 2.3.9 2.8 2.8 0 0 0 1.8.1 2.4 2.4 0 0 0 1.5-1.1 1.9 1.9 0 0 0 .1-1.1c-.1-.1-.3-.2-.6-.3Z" />
+            </svg>
+            <span className="text-[0.84rem] font-semibold tracking-wide text-gold">
+              {PHONE_DISPLAY}
             </span>
           </a>
 
@@ -292,7 +278,7 @@ export default function Header() {
                     <>
                       <button
                         type="button"
-                        className="focus-ring flex w-full items-center justify-between py-3.5 text-left text-[0.95rem] text-white"
+                        className="focus-ring flex w-full items-center justify-between py-3.5 text-left text-[0.95rem] font-semibold text-white"
                         aria-expanded={expanded}
                         onClick={() =>
                           setMobileExpanded((current) =>
@@ -322,7 +308,7 @@ export default function Header() {
                   ) : (
                     <Link
                       href={item.href}
-                      className="focus-ring block py-3.5 text-[0.95rem] text-white hover:text-gold"
+                      className="focus-ring block py-3.5 text-[0.95rem] font-semibold text-white hover:text-gold"
                       onClick={() => setMobileOpen(false)}
                     >
                       {item.label}

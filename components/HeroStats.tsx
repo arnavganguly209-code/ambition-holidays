@@ -1,49 +1,84 @@
-const stats = [
+const features = [
   {
-    value: "50+",
-    label: "TREKKING ROUTES",
-    detail: "Handpicked adventures",
+    label: "20+ years of experience",
     icon: (
-      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-        <path d="m3 18 6-10 4 6 2-3 6 7H3Z" strokeLinejoin="round" />
-        <path d="M12 8V5" strokeLinecap="round" />
+      <svg viewBox="0 0 48 48" className="h-9 w-9 sm:h-10 sm:w-10" fill="none" aria-hidden="true">
+        <path
+          d="M24 8c-2.2 3.8-5.2 6.4-8.8 8.2 1.4 4.6 4.6 7.8 8.8 9.8 4.2-2 7.4-5.2 8.8-9.8C29.2 14.4 26.2 11.8 24 8Z"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M15 28.5c-2.8 1.4-5 3.6-6.5 6.5M33 28.5c2.8 1.4 5 3.6 6.5 6.5"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinecap="round"
+        />
+        <path
+          d="m18.5 38.5 2.2-2.2 1.8 1.6 2.5-3.2 2.2 2.4 2.3-2.6"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
       </svg>
     ),
   },
   {
-    value: "1500+",
-    label: "HAPPY ADVENTURERS",
-    detail: "Trusted by many explorers",
+    label: "Supporting local communities",
     icon: (
-      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-        <circle cx="9" cy="8" r="3" />
-        <circle cx="17" cy="9" r="2.5" />
-        <path d="M3.5 19c.8-3 2.8-4.5 5.5-4.5S14 16 14.8 19" strokeLinecap="round" />
-        <path d="M14.5 14.8c1.5-.8 3.2-.7 4.8.4.7.5 1.2 1.3 1.5 2.3" strokeLinecap="round" />
+      <svg viewBox="0 0 48 48" className="h-9 w-9 sm:h-10 sm:w-10" fill="none" aria-hidden="true">
+        <path
+          d="M24 8 10 20h4v16h20V20h4L24 8Z"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinejoin="round"
+        />
+        <path d="M20 36V26h8v10" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+        <circle cx="24" cy="18.5" r="2.2" stroke="currentColor" strokeWidth="1.7" />
+        <path d="M16 40h16" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
       </svg>
     ),
   },
   {
-    value: "10+",
-    label: "YEARS EXPERIENCE",
-    detail: "Expertise you can trust",
+    label: "Responsible tourism",
     icon: (
-      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-        <circle cx="12" cy="12" r="8" />
-        <path d="m12 7 1.4 2.9 3.2.4-2.4 2.2.7 3.1L12 14.2 8.1 15.6l.7-3.1-2.4-2.2 3.2-.4L12 7Z" strokeLinejoin="round" />
+      <svg viewBox="0 0 48 48" className="h-9 w-9 sm:h-10 sm:w-10" fill="none" aria-hidden="true">
+        <path
+          d="M14 28c0-4.5 3.2-8.2 7.5-9.2C20.8 14.5 22.2 11 24 9c1.8 2 3.2 5.5 2.5 9.8 4.3 1 7.5 4.7 7.5 9.2 0 3.2-1.5 5.8-4 7.5"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M18 38c2-3.5 4.5-5 6-5s4 1.5 6 5"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinecap="round"
+        />
+        <path d="M24 19v6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
       </svg>
     ),
   },
   {
-    value: "24/7",
-    label: "SUPPORT",
-    detail: "We're here for you anytime",
+    label: "Run by experts",
     icon: (
-      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-        <path d="M4 12a8 8 0 0 1 16 0v5a2 2 0 0 1-2 2h-1.5" strokeLinecap="round" />
-        <rect x="3" y="11" width="3.5" height="6" rx="1.2" />
-        <rect x="17.5" y="11" width="3.5" height="6" rx="1.2" />
-        <path d="M12 19h2a2 2 0 0 0 2-2" strokeLinecap="round" />
+      <svg viewBox="0 0 48 48" className="h-9 w-9 sm:h-10 sm:w-10" fill="none" aria-hidden="true">
+        <circle cx="24" cy="16" r="5.5" stroke="currentColor" strokeWidth="1.7" />
+        <path
+          d="M12 38c1.8-7 5.8-10.5 12-10.5S34.2 31 36 38"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinecap="round"
+        />
+        <path
+          d="M30 14.5c1.2-.8 2.8-1 4.2-.2 1.8 1 2.5 3 1.8 4.8"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinecap="round"
+        />
       </svg>
     ),
   },
@@ -51,30 +86,20 @@ const stats = [
 
 export default function HeroStats() {
   return (
-    <div className="animate-fade-up-delay-3 w-full px-4 pb-5 sm:px-6 sm:pb-7 lg:px-10 lg:pb-8">
-      <div className="mx-auto max-w-6xl rounded-2xl border border-white/15 bg-[rgba(8,12,18,0.58)] px-2 py-3 shadow-[0_8px_30px_rgba(0,0,0,0.35)] backdrop-blur-md sm:px-3 sm:py-3.5">
-        <ul className="grid grid-cols-2 divide-y divide-white/10 sm:grid-cols-4 sm:divide-x sm:divide-y-0 sm:divide-[rgba(201,162,39,0.35)]">
-          {stats.map((stat) => (
-            <li
-              key={stat.label}
-              className="flex items-center gap-2.5 px-3 py-2.5 sm:justify-center sm:gap-3 sm:px-4 sm:py-1 lg:px-5"
-            >
-              <span className="shrink-0 text-gold">{stat.icon}</span>
-              <div className="min-w-0">
-                <p className="font-serif text-[1.35rem] leading-none tracking-wide text-gold sm:text-[1.45rem] lg:text-[1.6rem]">
-                  {stat.value}
-                </p>
-                <p className="mt-1 text-[0.62rem] font-medium uppercase tracking-[0.12em] text-white sm:text-[0.68rem]">
-                  {stat.label}
-                </p>
-                <p className="mt-0.5 hidden text-[0.68rem] text-white/70 lg:block">
-                  {stat.detail}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
+    <div className="animate-fade-up-delay-3 w-full px-4 pb-6 sm:px-8 sm:pb-8 lg:px-12 lg:pb-10">
+      <ul className="mx-auto grid max-w-6xl grid-cols-1 divide-y divide-white/25 sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x lg:divide-white/30">
+        {features.map((feature) => (
+          <li
+            key={feature.label}
+            className="flex items-center gap-3 px-2 py-4 sm:justify-center sm:px-4 sm:py-2 lg:px-5"
+          >
+            <span className="shrink-0 text-white">{feature.icon}</span>
+            <p className="text-[0.92rem] font-medium leading-snug text-white sm:text-[0.95rem]">
+              {feature.label}
+            </p>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
