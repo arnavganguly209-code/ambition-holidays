@@ -28,6 +28,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="preload" as="image" href="/images/hero-video-poster.jpg" />
+        <link
+          rel="preload"
+          as="video"
+          href="/videos/hero-background.mp4"
+          type="video/mp4"
+        />
+      </head>
       <body className={`${outfit.variable} ${cormorant.variable} antialiased`}>
         {children}
       </body>

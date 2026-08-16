@@ -92,7 +92,7 @@ export default function Header() {
             width={975}
             height={259}
             priority
-            className="h-[3.83rem] w-auto object-contain sm:h-[4.18rem] lg:h-[4.66rem]"
+            className="h-[3.45rem] w-auto object-contain sm:h-[3.76rem] lg:h-[4.19rem]"
           />
         </Link>
 

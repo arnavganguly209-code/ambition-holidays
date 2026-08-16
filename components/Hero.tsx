@@ -5,7 +5,7 @@ import HeroTagline from "@/components/HeroTagline";
 
 export default function Hero() {
   return (
-    <section className="relative isolate flex min-h-[100svh] w-full flex-col overflow-hidden">
+    <section className="relative isolate flex min-h-[100svh] w-full flex-col overflow-hidden bg-black">
       <video
         className="absolute inset-0 h-full w-full object-cover"
         autoPlay
@@ -13,7 +13,7 @@ export default function Hero() {
         loop
         playsInline
         preload="auto"
-        poster="/images/ambition-holiday-hero.png"
+        poster="/images/hero-video-poster.jpg"
         aria-hidden="true"
       >
         <source src="/videos/hero-background.mp4" type="video/mp4" />
