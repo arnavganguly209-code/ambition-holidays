@@ -89,10 +89,10 @@ export default function Header() {
           <Image
             src="/images/ambition-holiday-logo.png"
             alt="Ambition Holidays — Journeys Beyond Limits"
-            width={975}
-            height={259}
+            width={977}
+            height={258}
             priority
-            className="h-[3.45rem] w-auto object-contain sm:h-[3.76rem] lg:h-[4.19rem]"
+            className="h-[3.11rem] w-auto object-contain sm:h-[3.38rem] lg:h-[3.77rem]"
           />
         </Link>
 
@@ -112,7 +112,7 @@ export default function Header() {
                     <>
                       <button
                         type="button"
-                        className={`focus-ring inline-flex items-center gap-1.5 rounded-md px-2.5 py-2 text-[0.82rem] font-semibold tracking-[0.04em] text-white transition-colors duration-200 hover:text-gold 2xl:px-3 2xl:text-[0.88rem] ${
+                        className={`focus-ring inline-flex items-center gap-1.5 rounded-md px-2.5 py-2 text-[0.90rem] font-bold tracking-[0.04em] text-white transition-colors duration-200 hover:text-gold 2xl:px-3 2xl:text-[0.97rem] ${
                           isOpen ? "text-gold" : ""
                         }`}
                         aria-expanded={isOpen}
@@ -152,7 +152,7 @@ export default function Header() {
                   ) : (
                     <Link
                       href={item.href}
-                      className="focus-ring inline-flex items-center rounded-md px-2.5 py-2 text-[0.82rem] font-semibold tracking-[0.04em] text-white transition-colors duration-200 hover:text-gold 2xl:px-3 2xl:text-[0.88rem]"
+                      className="focus-ring inline-flex items-center rounded-md px-2.5 py-2 text-[0.90rem] font-bold tracking-[0.04em] text-white transition-colors duration-200 hover:text-gold 2xl:px-3 2xl:text-[0.97rem]"
                     >
                       {item.label}
                     </Link>
@@ -271,7 +271,7 @@ export default function Header() {
                     <>
                       <button
                         type="button"
-                        className="focus-ring flex w-full items-center justify-between py-3.5 text-left text-[0.95rem] font-semibold text-white"
+                        className="focus-ring flex w-full items-center justify-between py-3.5 text-left text-[1.05rem] font-bold text-white"
                         aria-expanded={expanded}
                         onClick={() => {
                           setMobileExpanded((current) =>
@@ -344,7 +344,7 @@ export default function Header() {
                   ) : (
                     <Link
                       href={item.href}
-                      className="focus-ring block py-3.5 text-[0.95rem] font-semibold text-white hover:text-gold"
+                      className="focus-ring block py-3.5 text-[1.05rem] font-bold text-white hover:text-gold"
                       onClick={() => setMobileOpen(false)}
                     >
                       {item.label}
