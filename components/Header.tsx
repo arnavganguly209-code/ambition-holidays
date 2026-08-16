@@ -88,11 +88,11 @@ export default function Header() {
         <Link href="/" className="focus-ring relative z-10 shrink-0" aria-label="Ambition Holiday home">
           <Image
             src="/images/ambition-holiday-logo.png"
-            alt="Ambition Holiday — Journeys Beyond Limits"
-            width={354}
-            height={101}
+            alt="Ambition Holidays — Journeys Beyond Limits"
+            width={975}
+            height={259}
             priority
-            className="h-[3.48rem] w-auto object-contain sm:h-[3.8rem] lg:h-[4.24rem]"
+            className="h-[3.83rem] w-auto object-contain sm:h-[4.18rem] lg:h-[4.66rem]"
           />
         </Link>
 
