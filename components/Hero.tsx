@@ -1,9 +1,15 @@
+"use client";
+
 import Header from "@/components/Header";
 import HeroSearch from "@/components/HeroSearch";
 import HeroStats from "@/components/HeroStats";
 import HeroTagline from "@/components/HeroTagline";
+import { useSiteContent } from "@/components/SiteContentProvider";
 
 export default function Hero() {
+  const { hero } = useSiteContent();
+  if (!hero.visible) return null;
+
   return (
     <section className="relative isolate flex min-h-[100svh] w-full flex-col overflow-hidden bg-black">
       <video
@@ -13,10 +19,11 @@ export default function Hero() {
         loop
         playsInline
         preload="auto"
-        poster="/images/hero-video-poster.jpg"
+        poster={hero.posterSrc}
         aria-hidden="true"
+        key={`${hero.videoSrc}-${hero.posterSrc}`}
       >
-        <source src="/videos/hero-background.mp4" type="video/mp4" />
+        <source src={hero.videoSrc} type="video/mp4" />
       </video>
 
       <div
@@ -42,18 +49,18 @@ export default function Hero() {
         <div className="flex flex-1 flex-col items-center justify-center px-4 pb-6 pt-24 sm:pt-28 lg:pb-8 lg:pt-24">
           <div className="relative w-full max-w-5xl">
             <div className="relative">
-              <HeroTagline />
+              <HeroTagline words={hero.taglineWords} />
 
               <h1 className="animate-fade-up-delay-1 mb-7 text-center font-sans text-[clamp(2.15rem,5vw,3.9rem)] font-bold leading-[1.1] tracking-tight text-white drop-shadow-[0_2px_18px_rgba(0,0,0,0.55)] sm:mb-8 sm:whitespace-nowrap">
-                Start Planning Your Journey
+                {hero.headline}
               </h1>
 
-              <HeroSearch />
+              <HeroSearch placeholder={hero.searchPlaceholder} />
             </div>
           </div>
         </div>
 
-        <HeroStats />
+        {hero.statsVisible ? <HeroStats stats={hero.stats} /> : null}
       </div>
     </section>
   );

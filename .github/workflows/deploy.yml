@@ -19,6 +19,9 @@ jobs:
     steps:
       - name: Deploy Ambition Holidays only
         uses: appleboy/ssh-action@v1.2.2
+        env:
+          ORBIT_PASSKEY: ${{ secrets.ORBIT_PASSKEY }}
+          ORBIT_SESSION_SECRET: ${{ secrets.ORBIT_SESSION_SECRET }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
@@ -26,6 +29,7 @@ jobs:
           port: ${{ secrets.VPS_PORT || 22 }}
           command_timeout: 40m
           request_pty: true
+          envs: ORBIT_PASSKEY,ORBIT_SESSION_SECRET
           script: |
             set -e
 
@@ -72,6 +76,18 @@ jobs:
             git fetch origin main
             git checkout main
             git reset --hard origin/main
+
+            echo "Ensuring uploads directory..."
+            mkdir -p public/uploads
+
+            if [ -n "${ORBIT_PASSKEY:-}" ] && [ -n "${ORBIT_SESSION_SECRET:-}" ]; then
+              echo "Writing Orbit CMS env (.env.local)..."
+              umask 077
+              printf 'ORBIT_PASSKEY=%s\nORBIT_SESSION_SECRET=%s\n' \
+                "${ORBIT_PASSKEY}" "${ORBIT_SESSION_SECRET}" > .env.local
+            else
+              echo "WARNING: ORBIT_PASSKEY / ORBIT_SESSION_SECRET secrets missing; /orbit login will stay disabled."
+            fi
 
             echo "Installing dependencies..."
             npm install --no-audit --no-fund

@@ -1,12 +1,28 @@
+"use client";
+
 import Image from "next/image";
+import type { StatItem } from "@/lib/content-types";
 
 const iconBox = "flex h-11 w-11 shrink-0 items-center justify-center text-white";
 const iconClass = "h-11 w-11 shrink-0";
 
-const features = [
-  {
-    label: "410+ TripAdvisor reviews",
-    icon: (
+function StatIcon({ item }: { item: StatItem }) {
+  if (item.iconSrc) {
+    return (
+      <Image
+        src={item.iconSrc}
+        alt=""
+        width={44}
+        height={44}
+        className={`${iconClass} object-contain`}
+        aria-hidden="true"
+        unoptimized
+      />
+    );
+  }
+
+  if (item.iconKey === "tripadvisor") {
+    return (
       <Image
         src="/images/icons/tripadvisor.png"
         alt=""
@@ -17,11 +33,11 @@ const features = [
         priority
         unoptimized
       />
-    ),
-  },
-  {
-    label: "11+ years of experience",
-    icon: (
+    );
+  }
+
+  if (item.iconKey === "years") {
+    return (
       <svg viewBox="0 0 48 48" className={iconClass} fill="none" aria-hidden="true">
         <circle cx="24" cy="19.5" r="10.2" stroke="currentColor" strokeWidth="1.85" />
         <path
@@ -37,11 +53,11 @@ const features = [
           strokeLinejoin="round"
         />
       </svg>
-    ),
-  },
-  {
-    label: "Best price guarantee",
-    icon: (
+    );
+  }
+
+  if (item.iconKey === "price") {
+    return (
       <svg viewBox="0 0 48 48" className={iconClass} fill="none" aria-hidden="true">
         <path
           d="M18.5 39.5H13.2a2 2 0 0 1-2-2V23.2a2 2 0 0 1 2-2h5.3"
@@ -63,47 +79,46 @@ const features = [
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-        <path
-          d="m31.8 12.8 2-1 2 1"
-          stroke="currentColor"
-          strokeWidth="1.75"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
       </svg>
-    ),
-  },
-  {
-    label: "Responsible tourism",
-    icon: (
-      <span
-        className={`${iconClass} bg-white`}
-        style={{
-          WebkitMaskImage: "url(/images/icons/responsible-tourism.png)",
-          maskImage: "url(/images/icons/responsible-tourism.png)",
-          WebkitMaskSize: "contain",
-          maskSize: "contain",
-          WebkitMaskRepeat: "no-repeat",
-          maskRepeat: "no-repeat",
-          WebkitMaskPosition: "center",
-          maskPosition: "center",
-        }}
-        aria-hidden="true"
-      />
-    ),
-  },
-];
+    );
+  }
 
-export default function HeroStats() {
+  return (
+    <span
+      className={`${iconClass} bg-white`}
+      style={{
+        WebkitMaskImage: "url(/images/icons/responsible-tourism.png)",
+        maskImage: "url(/images/icons/responsible-tourism.png)",
+        WebkitMaskSize: "contain",
+        maskSize: "contain",
+        WebkitMaskRepeat: "no-repeat",
+        maskRepeat: "no-repeat",
+        WebkitMaskPosition: "center",
+        maskPosition: "center",
+      }}
+      aria-hidden="true"
+    />
+  );
+}
+
+type Props = {
+  stats: StatItem[];
+};
+
+export default function HeroStats({ stats }: Props) {
+  if (!stats.length) return null;
+
   return (
     <div className="animate-fade-up-delay-3 w-full px-4 pb-6 sm:px-8 sm:pb-8 lg:px-10 lg:pb-10">
       <ul className="mx-auto grid max-w-6xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        {features.map((feature) => (
+        {stats.map((feature) => (
           <li
-            key={feature.label}
+            key={feature.id}
             className="flex min-h-[3.5rem] items-center gap-3.5 px-3 py-3.5 sm:justify-center sm:px-5 lg:px-6"
           >
-            <span className={iconBox}>{feature.icon}</span>
+            <span className={iconBox}>
+              <StatIcon item={feature} />
+            </span>
             <p className="min-w-0 text-left text-[0.92rem] font-medium leading-snug text-white sm:text-[0.95rem]">
               {feature.label}
             </p>

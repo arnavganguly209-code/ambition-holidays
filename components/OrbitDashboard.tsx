@@ -1,0 +1,831 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { useMemo, useState } from "react";
+import type {
+  SignatureFeature,
+  SiteContent,
+  StatItem,
+} from "@/lib/content-types";
+
+type Props = {
+  initial: SiteContent;
+};
+
+async function uploadFile(file: File, crop?: "9x16"): Promise<string> {
+  const form = new FormData();
+  form.append("file", file);
+  if (crop) form.append("crop", crop);
+  const res = await fetch("/api/orbit/upload", { method: "POST", body: form });
+  if (!res.ok) throw new Error("Upload failed");
+  const data = (await res.json()) as { url: string };
+  return data.url;
+}
+
+function Field({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="block space-y-1.5">
+      <span className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-white/50">
+        {label}
+      </span>
+      {children}
+    </label>
+  );
+}
+
+const inputClass =
+  "w-full rounded-md border border-white/15 bg-black/35 px-3 py-2 text-sm text-white outline-none focus:border-gold/50";
+
+export default function OrbitDashboard({ initial }: Props) {
+  const [content, setContent] = useState(initial);
+  const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState("");
+  const [tab, setTab] = useState<"hero" | "header" | "stats" | "signature" | "media">(
+    "signature",
+  );
+  const [uploads, setUploads] = useState<string[]>([]);
+
+  const updatedLabel = useMemo(() => {
+    try {
+      return new Date(content.updatedAt).toLocaleString();
+    } catch {
+      return content.updatedAt;
+    }
+  }, [content.updatedAt]);
+
+  async function save(next: SiteContent) {
+    setSaving(true);
+    setStatus("");
+    try {
+      const res = await fetch("/api/content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(next),
+      });
+      if (!res.ok) throw new Error("Save failed");
+      const saved = (await res.json()) as SiteContent;
+      setContent(saved);
+      setStatus("Saved — live site updates instantly.");
+    } catch {
+      setStatus("Save failed.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function logout() {
+    await fetch("/api/orbit/login", { method: "DELETE" });
+    window.location.href = "/orbit/login";
+  }
+
+  async function refreshMedia() {
+    const res = await fetch("/api/orbit/media", { cache: "no-store" });
+    if (!res.ok) return;
+    const data = (await res.json()) as { files: string[] };
+    setUploads(data.files);
+  }
+
+  async function deleteMedia(path: string) {
+    const res = await fetch("/api/orbit/media", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path }),
+    });
+    if (!res.ok) return;
+    const saved = (await res.json()) as SiteContent;
+    setContent(saved);
+    await refreshMedia();
+    setStatus("Media deleted — removed from site.");
+  }
+
+  return (
+    <div className="min-h-screen">
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#070a10]/95 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4">
+          <div>
+            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-gold">
+              Orbit Control
+            </p>
+            <h1 className="font-[family-name:var(--font-cormorant)] text-2xl font-semibold">
+              Ambition Holidays
+            </h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/"
+              target="_blank"
+              className="rounded-md border border-white/15 px-3 py-2 text-xs font-semibold text-white/80 hover:border-gold/40 hover:text-gold"
+            >
+              Open site
+            </Link>
+            <button
+              type="button"
+              onClick={() => void logout()}
+              className="rounded-md border border-white/15 px-3 py-2 text-xs font-semibold text-white/70 hover:border-red-400/40 hover:text-red-200"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div className="mx-auto max-w-6xl px-5 py-8">
+        <div className="mb-6 flex flex-wrap gap-2">
+          {(
+            [
+              ["signature", "Signature"],
+              ["hero", "Hero"],
+              ["header", "Header / Logo"],
+              ["stats", "Trust bar"],
+              ["media", "Media"],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => {
+                setTab(id);
+                if (id === "media") void refreshMedia();
+              }}
+              className={`rounded-full px-4 py-2 text-xs font-bold tracking-wide ${
+                tab === id
+                  ? "bg-gold/20 text-gold"
+                  : "bg-white/5 text-white/65 hover:bg-white/10"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-xs text-white/45">Last saved: {updatedLabel}</p>
+          <div className="flex items-center gap-3">
+            {status ? <p className="text-xs text-gold/90">{status}</p> : null}
+            <button
+              type="button"
+              disabled={saving}
+              onClick={() => void save(content)}
+              className="rounded-md border border-gold/70 bg-gold/15 px-4 py-2 text-xs font-bold tracking-wide text-gold hover:bg-gold/25 disabled:opacity-50"
+            >
+              {saving ? "Saving…" : "Save changes"}
+            </button>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
+          {tab === "header" ? (
+            <div className="space-y-5">
+              <Field label="Logo preview">
+                <div className="relative h-20 w-64 overflow-hidden rounded-md border border-white/10 bg-black/40">
+                  <Image
+                    src={content.header.logoSrc}
+                    alt="Logo"
+                    fill
+                    className="object-contain p-2"
+                    unoptimized
+                  />
+                </div>
+              </Field>
+              <div className="flex flex-wrap gap-3">
+                <label className="cursor-pointer rounded-md border border-gold/40 px-3 py-2 text-xs font-semibold text-gold">
+                  Upload / Replace logo
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const url = await uploadFile(file);
+                      const next = {
+                        ...content,
+                        header: { logoSrc: url },
+                      };
+                      setContent(next);
+                      await save(next);
+                    }}
+                  />
+                </label>
+                <button
+                  type="button"
+                  className="rounded-md border border-white/20 px-3 py-2 text-xs text-white/70"
+                  onClick={async () => {
+                    const next = {
+                      ...content,
+                      header: { logoSrc: "/images/ambition-holiday-logo.png" },
+                    };
+                    setContent(next);
+                    await save(next);
+                  }}
+                >
+                  Reset to default logo
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          {tab === "hero" ? (
+            <div className="space-y-4">
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={content.hero.visible}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      hero: { ...content.hero, visible: e.target.checked },
+                    })
+                  }
+                />
+                Show hero section
+              </label>
+              <Field label="Tagline words (comma separated)">
+                <input
+                  className={inputClass}
+                  value={content.hero.taglineWords.join(", ")}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      hero: {
+                        ...content.hero,
+                        taglineWords: e.target.value
+                          .split(",")
+                          .map((w) => w.trim())
+                          .filter(Boolean),
+                      },
+                    })
+                  }
+                />
+              </Field>
+              <Field label="Headline">
+                <input
+                  className={inputClass}
+                  value={content.hero.headline}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      hero: { ...content.hero, headline: e.target.value },
+                    })
+                  }
+                />
+              </Field>
+              <Field label="Search placeholder">
+                <input
+                  className={inputClass}
+                  value={content.hero.searchPlaceholder}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      hero: {
+                        ...content.hero,
+                        searchPlaceholder: e.target.value,
+                      },
+                    })
+                  }
+                />
+              </Field>
+              <Field label="Video path">
+                <input
+                  className={inputClass}
+                  value={content.hero.videoSrc}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      hero: { ...content.hero, videoSrc: e.target.value },
+                    })
+                  }
+                />
+              </Field>
+              <Field label="Poster path">
+                <input
+                  className={inputClass}
+                  value={content.hero.posterSrc}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      hero: { ...content.hero, posterSrc: e.target.value },
+                    })
+                  }
+                />
+              </Field>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={content.hero.statsVisible}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      hero: { ...content.hero, statsVisible: e.target.checked },
+                    })
+                  }
+                />
+                Show trust / stats bar
+              </label>
+            </div>
+          ) : null}
+
+          {tab === "stats" ? (
+            <div className="space-y-4">
+              {content.hero.stats.map((stat, index) => (
+                <div
+                  key={stat.id}
+                  className="rounded-lg border border-white/10 p-4 space-y-3"
+                >
+                  <Field label="Label">
+                    <input
+                      className={inputClass}
+                      value={stat.label}
+                      onChange={(e) => {
+                        const stats = [...content.hero.stats];
+                        stats[index] = { ...stat, label: e.target.value };
+                        setContent({
+                          ...content,
+                          hero: { ...content.hero, stats },
+                        });
+                      }}
+                    />
+                  </Field>
+                  <Field label="Icon key">
+                    <select
+                      className={inputClass}
+                      value={stat.iconKey}
+                      onChange={(e) => {
+                        const stats = [...content.hero.stats];
+                        stats[index] = {
+                          ...stat,
+                          iconKey: e.target.value as StatItem["iconKey"],
+                        };
+                        setContent({
+                          ...content,
+                          hero: { ...content.hero, stats },
+                        });
+                      }}
+                    >
+                      <option value="tripadvisor">tripadvisor</option>
+                      <option value="years">years</option>
+                      <option value="price">price</option>
+                      <option value="responsible">responsible</option>
+                      <option value="custom">custom</option>
+                    </select>
+                  </Field>
+                  <div className="flex flex-wrap gap-2">
+                    <label className="cursor-pointer rounded-md border border-gold/40 px-3 py-1.5 text-xs text-gold">
+                      Upload custom icon
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          const url = await uploadFile(file);
+                          const stats = [...content.hero.stats];
+                          stats[index] = {
+                            ...stat,
+                            iconKey: "custom",
+                            iconSrc: url,
+                          };
+                          const next = {
+                            ...content,
+                            hero: { ...content.hero, stats },
+                          };
+                          setContent(next);
+                          await save(next);
+                        }}
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      className="rounded-md border border-red-400/30 px-3 py-1.5 text-xs text-red-200"
+                      onClick={async () => {
+                        const stats = content.hero.stats.filter(
+                          (_, i) => i !== index,
+                        );
+                        const next = {
+                          ...content,
+                          hero: { ...content.hero, stats },
+                        };
+                        setContent(next);
+                        await save(next);
+                      }}
+                    >
+                      Delete item
+                    </button>
+                  </div>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="rounded-md border border-white/20 px-3 py-2 text-xs"
+                onClick={() => {
+                  setContent({
+                    ...content,
+                    hero: {
+                      ...content.hero,
+                      stats: [
+                        ...content.hero.stats,
+                        {
+                          id: `stat-${Date.now()}`,
+                          label: "New trust item",
+                          iconKey: "years",
+                        },
+                      ],
+                    },
+                  });
+                }}
+              >
+                Add trust item
+              </button>
+            </div>
+          ) : null}
+
+          {tab === "signature" ? (
+            <div className="space-y-5">
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={content.signature.visible}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      signature: {
+                        ...content.signature,
+                        visible: e.target.checked,
+                      },
+                    })
+                  }
+                />
+                Show signature section
+              </label>
+              <Field label="Eyebrow">
+                <input
+                  className={inputClass}
+                  value={content.signature.eyebrow}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      signature: {
+                        ...content.signature,
+                        eyebrow: e.target.value,
+                      },
+                    })
+                  }
+                />
+              </Field>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Headline (white)">
+                  <input
+                    className={inputClass}
+                    value={content.signature.headlineWhite}
+                    onChange={(e) =>
+                      setContent({
+                        ...content,
+                        signature: {
+                          ...content.signature,
+                          headlineWhite: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                </Field>
+                <Field label="Headline (gold)">
+                  <input
+                    className={inputClass}
+                    value={content.signature.headlineGold}
+                    onChange={(e) =>
+                      setContent({
+                        ...content,
+                        signature: {
+                          ...content.signature,
+                          headlineGold: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                </Field>
+              </div>
+              <Field label="Body">
+                <textarea
+                  className={`${inputClass} min-h-28`}
+                  value={content.signature.body}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      signature: {
+                        ...content.signature,
+                        body: e.target.value,
+                      },
+                    })
+                  }
+                />
+              </Field>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="CTA label">
+                  <input
+                    className={inputClass}
+                    value={content.signature.ctaLabel}
+                    onChange={(e) =>
+                      setContent({
+                        ...content,
+                        signature: {
+                          ...content.signature,
+                          ctaLabel: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                </Field>
+                <Field label="CTA href">
+                  <input
+                    className={inputClass}
+                    value={content.signature.ctaHref}
+                    onChange={(e) =>
+                      setContent({
+                        ...content,
+                        signature: {
+                          ...content.signature,
+                          ctaHref: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                </Field>
+              </div>
+
+              <div>
+                <p className="mb-1 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-white/50">
+                  Gallery images (max 6 · 9:16 · drag/swipe on site)
+                </p>
+                <p className="mb-3 text-xs text-white/40">
+                  Uploads auto-crop to exact 9:16 (center cover) so frames always
+                  fill — no empty bars. Max 6 swipeable frames.
+                </p>
+                <div className="grid gap-4 sm:grid-cols-3">
+                  {content.signature.images.slice(0, 6).map((image, index) => (
+                    <div
+                      key={image.id}
+                      className="space-y-2 rounded-lg border border-white/10 p-3"
+                    >
+                      <div className="relative aspect-[9/16] overflow-hidden rounded-md bg-[#d7dde5]">
+                        <Image
+                          src={image.src}
+                          alt={image.alt}
+                          fill
+                          className="object-cover object-center"
+                          unoptimized
+                        />
+                      </div>
+                      <input
+                        className={inputClass}
+                        value={image.alt}
+                        onChange={(e) => {
+                          const images = [...content.signature.images];
+                          images[index] = { ...image, alt: e.target.value };
+                          setContent({
+                            ...content,
+                            signature: { ...content.signature, images },
+                          });
+                        }}
+                      />
+                      <div className="flex flex-wrap gap-2">
+                        <label className="cursor-pointer rounded-md border border-gold/40 px-2 py-1 text-[0.7rem] text-gold">
+                          Replace
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              const url = await uploadFile(file, "9x16");
+                              const images = [...content.signature.images];
+                              images[index] = { ...image, src: url };
+                              const next = {
+                                ...content,
+                                signature: { ...content.signature, images },
+                              };
+                              setContent(next);
+                              await save(next);
+                            }}
+                          />
+                        </label>
+                        <button
+                          type="button"
+                          className="rounded-md border border-red-400/30 px-2 py-1 text-[0.7rem] text-red-200"
+                          onClick={async () => {
+                            const images = content.signature.images.filter(
+                              (_, i) => i !== index,
+                            );
+                            const next = {
+                              ...content,
+                              signature: { ...content.signature, images },
+                            };
+                            setContent(next);
+                            await save(next);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {content.signature.images.length < 6 ? (
+                  <label className="mt-3 inline-flex cursor-pointer rounded-md border border-white/20 px-3 py-2 text-xs">
+                    Upload new gallery image ({content.signature.images.length}/6)
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        if (content.signature.images.length >= 6) return;
+                        const url = await uploadFile(file, "9x16");
+                        const next = {
+                          ...content,
+                          signature: {
+                            ...content.signature,
+                            images: [
+                              ...content.signature.images,
+                              {
+                                id: `sig-${Date.now()}`,
+                                src: url,
+                                alt: "Signature image",
+                              },
+                            ].slice(0, 6),
+                          },
+                        };
+                        setContent(next);
+                        await save(next);
+                      }}
+                    />
+                  </label>
+                ) : (
+                  <p className="mt-3 text-xs text-gold/80">
+                    Maximum 6 gallery images reached.
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <p className="mb-3 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-white/50">
+                  Features
+                </p>
+                <div className="space-y-3">
+                  {content.signature.features.map((feature, index) => (
+                    <div
+                      key={feature.id}
+                      className="grid gap-3 rounded-lg border border-white/10 p-3 sm:grid-cols-3"
+                    >
+                      <select
+                        className={inputClass}
+                        value={feature.icon}
+                        onChange={(e) => {
+                          const features = [...content.signature.features];
+                          features[index] = {
+                            ...feature,
+                            icon: e.target.value as SignatureFeature["icon"],
+                          };
+                          setContent({
+                            ...content,
+                            signature: { ...content.signature, features },
+                          });
+                        }}
+                      >
+                        <option value="hiker">hiker</option>
+                        <option value="peaks">peaks</option>
+                        <option value="lodge">lodge</option>
+                      </select>
+                      <input
+                        className={inputClass}
+                        value={feature.title}
+                        onChange={(e) => {
+                          const features = [...content.signature.features];
+                          features[index] = {
+                            ...feature,
+                            title: e.target.value,
+                          };
+                          setContent({
+                            ...content,
+                            signature: { ...content.signature, features },
+                          });
+                        }}
+                      />
+                      <div className="flex gap-2">
+                        <input
+                          className={inputClass}
+                          value={feature.subtitle}
+                          onChange={(e) => {
+                            const features = [...content.signature.features];
+                            features[index] = {
+                              ...feature,
+                              subtitle: e.target.value,
+                            };
+                            setContent({
+                              ...content,
+                              signature: { ...content.signature, features },
+                            });
+                          }}
+                        />
+                        <button
+                          type="button"
+                          className="shrink-0 rounded-md border border-red-400/30 px-2 text-xs text-red-200"
+                          onClick={async () => {
+                            const features = content.signature.features.filter(
+                              (_, i) => i !== index,
+                            );
+                            const next = {
+                              ...content,
+                              signature: { ...content.signature, features },
+                            };
+                            setContent(next);
+                            await save(next);
+                          }}
+                        >
+                          Del
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  className="mt-3 rounded-md border border-white/20 px-3 py-2 text-xs"
+                  onClick={() => {
+                    setContent({
+                      ...content,
+                      signature: {
+                        ...content.signature,
+                        features: [
+                          ...content.signature.features,
+                          {
+                            id: `feat-${Date.now()}`,
+                            icon: "peaks",
+                            title: "New feature",
+                            subtitle: "Subtitle",
+                          },
+                        ],
+                      },
+                    });
+                  }}
+                >
+                  Add feature
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          {tab === "media" ? (
+            <div className="space-y-4">
+              <button
+                type="button"
+                onClick={() => void refreshMedia()}
+                className="rounded-md border border-white/20 px-3 py-2 text-xs"
+              >
+                Refresh uploads
+              </button>
+              <ul className="grid gap-3 sm:grid-cols-3">
+                {uploads.map((file) => (
+                  <li
+                    key={file}
+                    className="rounded-lg border border-white/10 p-3 space-y-2"
+                  >
+                    <div className="relative aspect-video overflow-hidden rounded-md bg-black/40">
+                      <Image
+                        src={file}
+                        alt=""
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    </div>
+                    <p className="truncate text-[0.7rem] text-white/50">{file}</p>
+                    <button
+                      type="button"
+                      className="rounded-md border border-red-400/30 px-2 py-1 text-xs text-red-200"
+                      onClick={() => void deleteMedia(file)}
+                    >
+                      Delete from site
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              {!uploads.length ? (
+                <p className="text-sm text-white/45">No uploads yet.</p>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}

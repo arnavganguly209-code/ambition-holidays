@@ -1,0 +1,89 @@
+import { promises as fs } from "fs";
+import path from "path";
+import { DEFAULT_CONTENT, type SiteContent } from "@/lib/content-types";
+
+const DATA_DIR = path.join(process.cwd(), "data");
+const CONTENT_FILE = path.join(DATA_DIR, "site-content.json");
+
+export async function ensureContentFile(): Promise<void> {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+  try {
+    await fs.access(CONTENT_FILE);
+  } catch {
+    await fs.writeFile(CONTENT_FILE, JSON.stringify(DEFAULT_CONTENT, null, 2), "utf8");
+  }
+}
+
+export async function readContent(): Promise<SiteContent> {
+  try {
+    await ensureContentFile();
+    const raw = await fs.readFile(CONTENT_FILE, "utf8");
+    const parsed = JSON.parse(raw) as SiteContent;
+    return {
+      ...DEFAULT_CONTENT,
+      ...parsed,
+      header: { ...DEFAULT_CONTENT.header, ...parsed.header },
+      hero: {
+        ...DEFAULT_CONTENT.hero,
+        ...parsed.hero,
+        stats: parsed.hero?.stats ?? DEFAULT_CONTENT.hero.stats,
+      },
+      signature: {
+        ...DEFAULT_CONTENT.signature,
+        ...parsed.signature,
+        images: parsed.signature?.images ?? DEFAULT_CONTENT.signature.images,
+        features: parsed.signature?.features ?? DEFAULT_CONTENT.signature.features,
+      },
+    };
+  } catch {
+    return structuredClone(DEFAULT_CONTENT);
+  }
+}
+
+export async function writeContent(content: SiteContent): Promise<SiteContent> {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+  const next: SiteContent = {
+    ...content,
+    updatedAt: new Date().toISOString(),
+  };
+  await fs.writeFile(CONTENT_FILE, JSON.stringify(next, null, 2), "utf8");
+  return next;
+}
+
+export function scrubUploadRefs(content: SiteContent, publicPath: string): SiteContent {
+  const fallbackLogo = DEFAULT_CONTENT.header.logoSrc;
+  const fallbackImages = DEFAULT_CONTENT.signature.images;
+
+  return {
+    ...content,
+    header: {
+      logoSrc: content.header.logoSrc === publicPath ? fallbackLogo : content.header.logoSrc,
+    },
+    hero: {
+      ...content.hero,
+      posterSrc:
+        content.hero.posterSrc === publicPath
+          ? DEFAULT_CONTENT.hero.posterSrc
+          : content.hero.posterSrc,
+      videoSrc:
+        content.hero.videoSrc === publicPath
+          ? DEFAULT_CONTENT.hero.videoSrc
+          : content.hero.videoSrc,
+      stats: content.hero.stats
+        .map((stat) =>
+          stat.iconSrc === publicPath ? { ...stat, iconSrc: undefined, iconKey: "custom" as const } : stat,
+        )
+        .filter((stat) => !(stat.iconSrc === undefined && stat.iconKey === "custom" && !stat.label)),
+    },
+    signature: {
+      ...content.signature,
+      images: content.signature.images
+        .filter((img) => img.src !== publicPath)
+        .map((img, index) =>
+          img.src === publicPath
+            ? fallbackImages[index] ?? img
+            : img,
+        ),
+    },
+  };
+}

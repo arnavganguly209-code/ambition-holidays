@@ -2,14 +2,17 @@
 
 import { FormEvent, useState } from "react";
 
-export default function HeroSearch() {
+type Props = {
+  placeholder: string;
+};
+
+export default function HeroSearch({ placeholder }: Props) {
   const [query, setQuery] = useState("");
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmed = query.trim();
     if (!trimmed) return;
-    // Search wiring will be connected in a later stage.
     console.info("Search query:", trimmed);
   }
 
@@ -28,7 +31,7 @@ export default function HeroSearch() {
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="Find an Adventure"
+          placeholder={placeholder}
           className="min-w-0 flex-1 bg-transparent text-[0.95rem] text-neutral-700 placeholder:text-neutral-400 outline-none sm:text-[1.05rem]"
           autoComplete="off"
         />

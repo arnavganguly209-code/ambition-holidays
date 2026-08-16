@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import { NAV_ITEMS, type NavItem } from "@/lib/nav";
+import { useSiteContent } from "@/components/SiteContentProvider";
 
 const WHATSAPP_URL = "https://wa.me/9779851148898";
 const PHONE_DISPLAY = "+977 9851148898";
@@ -28,6 +29,7 @@ function hasMenu(item: NavItem) {
 }
 
 export default function Header() {
+  const { header } = useSiteContent();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
@@ -87,12 +89,13 @@ export default function Header() {
         <div className="flex h-[5rem] items-center gap-3 sm:h-[5.25rem] lg:gap-4">
         <Link href="/" className="focus-ring relative z-10 shrink-0" aria-label="Ambition Holiday home">
           <Image
-            src="/images/ambition-holiday-logo.png"
+            src={header.logoSrc}
             alt="Ambition Holidays — Journeys Beyond Limits"
             width={977}
             height={258}
             priority
-            className="h-[3.11rem] w-auto object-contain sm:h-[3.38rem] lg:h-[3.77rem]"
+            className="h-[2.60rem] w-auto object-contain sm:h-[2.83rem] lg:h-[3.16rem]"
+            key={header.logoSrc}
           />
         </Link>
 

@@ -2,18 +2,24 @@
 
 import { useEffect, useState } from "react";
 
-const WORDS = ["Discover", "Your", "Luxury", "Trek"] as const;
 const WORD_DELAY_MS = 420;
 const HOLD_MS = 2200;
 const RESET_GAP_MS = 500;
 
-export default function HeroTagline() {
+type Props = {
+  words: string[];
+};
+
+export default function HeroTagline({ words }: Props) {
   const [visibleWords, setVisibleWords] = useState(0);
+  const safeWords = words.length ? words : ["Discover", "Your", "Luxury", "Trek"];
+
+  const wordsKey = safeWords.join("|");
 
   useEffect(() => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduceMotion) {
-      setVisibleWords(WORDS.length);
+      setVisibleWords(safeWords.length);
       return;
     }
 
@@ -30,7 +36,7 @@ export default function HeroTagline() {
       clearTimers();
       setVisibleWords(0);
 
-      WORDS.forEach((_, index) => {
+      safeWords.forEach((_, index) => {
         timers.push(
           window.setTimeout(() => {
             if (!cancelled) setVisibleWords(index + 1);
@@ -38,7 +44,7 @@ export default function HeroTagline() {
         );
       });
 
-      const cycleEnd = RESET_GAP_MS + WORDS.length * WORD_DELAY_MS + HOLD_MS;
+      const cycleEnd = RESET_GAP_MS + safeWords.length * WORD_DELAY_MS + HOLD_MS;
       timers.push(window.setTimeout(runCycle, cycleEnd));
     };
 
@@ -48,17 +54,18 @@ export default function HeroTagline() {
       cancelled = true;
       clearTimers();
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- restart animation when word list changes
+  }, [wordsKey]);
 
   return (
     <p
       className="mb-1.5 text-center text-[0.88rem] font-semibold tracking-[0.1em] text-gold sm:mb-2 sm:text-[1.05rem]"
-      aria-label={WORDS.join(" ")}
+      aria-label={safeWords.join(" ")}
     >
       <span className="inline-flex flex-wrap items-baseline justify-center gap-x-[0.35em]">
-        {WORDS.map((word, index) => (
+        {safeWords.map((word, index) => (
           <span
-            key={word}
+            key={`${word}-${index}`}
             className={`inline-block transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
               index < visibleWords
                 ? "translate-x-0 opacity-100"
