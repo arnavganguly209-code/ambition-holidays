@@ -1,46 +1,119 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Header from "@/components/Header";
 import HeroSearch from "@/components/HeroSearch";
 import HeroStats from "@/components/HeroStats";
 import HeroTagline from "@/components/HeroTagline";
 import { useSiteContent } from "@/components/SiteContentProvider";
 
+const DEFAULT_DESKTOP_VIDEO = "/videos/hero-bg.mp4";
+const DEFAULT_MOBILE_VIDEO = "/videos/hero-bg-mobile.mp4";
+
 export default function Hero() {
   const { hero } = useSiteContent();
-  const [playVideo, setPlayVideo] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoSrc, setVideoSrc] = useState(hero.videoSrc);
+  const [showVideo, setShowVideo] = useState(false);
 
   useEffect(() => {
-    const motionOk = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const desktop = window.matchMedia("(min-width: 768px)").matches;
-    const nav = navigator as Navigator & {
-      connection?: { saveData?: boolean; effectiveType?: string };
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) return;
+
+    const mobile = window.matchMedia("(max-width: 767px)").matches;
+    const src =
+      mobile && hero.videoSrc === DEFAULT_DESKTOP_VIDEO
+        ? DEFAULT_MOBILE_VIDEO
+        : hero.videoSrc;
+    setVideoSrc(src);
+    setShowVideo(true);
+  }, [hero.videoSrc]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    const section = sectionRef.current;
+    if (!showVideo || !video || !section) return;
+
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.setAttribute("webkit-playsinline", "true");
+    video.setAttribute("playsinline", "true");
+
+    let inView = true;
+    let scrolling = false;
+    let timer = 0;
+
+    const sync = () => {
+      if (inView && !scrolling && !document.hidden) {
+        const play = video.play();
+        if (play) play.catch(() => {});
+      } else {
+        video.pause();
+      }
     };
-    const slow =
-      Boolean(nav.connection?.saveData) ||
-      nav.connection?.effectiveType === "slow-2g" ||
-      nav.connection?.effectiveType === "2g";
-    setPlayVideo(motionOk && desktop && !slow);
-  }, []);
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        inView = Boolean(entry?.isIntersecting && entry.intersectionRatio >= 0.28);
+        sync();
+      },
+      { threshold: [0, 0.28, 0.6] },
+    );
+    io.observe(section);
+
+    const onScroll = () => {
+      if (!scrolling) {
+        scrolling = true;
+        video.pause();
+      }
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        scrolling = false;
+        sync();
+      }, 120);
+    };
+
+    const onVisibility = () => sync();
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    document.addEventListener("visibilitychange", onVisibility);
+    video.addEventListener("canplay", sync);
+    video.addEventListener("loadeddata", sync);
+    sync();
+
+    return () => {
+      io.disconnect();
+      window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("visibilitychange", onVisibility);
+      video.removeEventListener("canplay", sync);
+      video.removeEventListener("loadeddata", sync);
+      window.clearTimeout(timer);
+    };
+  }, [showVideo, videoSrc]);
 
   if (!hero.visible) return null;
 
   return (
-    <section className="relative isolate flex min-h-[100svh] w-full flex-col overflow-hidden bg-black">
-      {/* Poster is the LCP on mobile; video never downloads on phones. */}
+    <section
+      ref={sectionRef}
+      className="relative isolate flex min-h-[100svh] w-full flex-col overflow-hidden bg-black"
+    >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={hero.posterSrc}
         alt=""
         fetchPriority="high"
         decoding="async"
-        className="absolute inset-0 h-full w-full object-cover"
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover"
         aria-hidden="true"
       />
-      {playVideo ? (
+      {showVideo ? (
         <video
-          className="absolute inset-0 h-full w-full object-cover"
+          ref={videoRef}
+          key={videoSrc}
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover [backface-visibility:hidden] [transform:translateZ(0)]"
           autoPlay
           muted
           loop
@@ -48,18 +121,17 @@ export default function Hero() {
           preload="metadata"
           poster={hero.posterSrc}
           aria-hidden="true"
-        >
-          <source src={hero.videoSrc} type="video/mp4" />
-        </video>
+          src={videoSrc}
+        />
       ) : null}
 
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/25 to-black/65"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/55 via-black/25 to-black/65"
       />
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,rgba(0,0,0,0.35)_100%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,rgba(0,0,0,0.35)_100%)]"
       />
       <div
         aria-hidden="true"

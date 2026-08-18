@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import OrbitJourneysEditor from "@/components/OrbitJourneysEditor";
@@ -186,15 +185,14 @@ export default function OrbitDashboard({ initial }: Props) {
           {tab === "header" ? (
             <div className="space-y-5">
               <Field label="Logo preview">
-                <div className="relative h-20 w-64 overflow-hidden rounded-md border border-white/10 bg-black/40">
-                  <Image
-                    src={content.header.logoSrc}
-                    alt="Logo"
-                    fill
-                    className="object-contain p-2"
-                    unoptimized
-                  />
-                </div>
+                  <div className="relative h-20 w-64 overflow-hidden rounded-md border border-white/10 bg-black/40">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={content.header.logoSrc}
+                      alt="Logo"
+                      className="h-full w-full object-contain p-2"
+                    />
+                  </div>
               </Field>
               <div className="flex flex-wrap gap-3">
                 <label className="cursor-pointer rounded-md border border-gold/40 px-3 py-2 text-xs font-semibold text-gold">
@@ -235,7 +233,7 @@ export default function OrbitDashboard({ initial }: Props) {
           ) : null}
 
           {tab === "hero" ? (
-            <div className="space-y-4">
+            <div className="space-y-5">
               <label className="flex items-center gap-2 text-sm">
                 <input
                   type="checkbox"
@@ -294,30 +292,86 @@ export default function OrbitDashboard({ initial }: Props) {
                   }
                 />
               </Field>
-              <Field label="Video path">
-                <input
-                  className={inputClass}
-                  value={content.hero.videoSrc}
-                  onChange={(e) =>
-                    setContent({
-                      ...content,
-                      hero: { ...content.hero, videoSrc: e.target.value },
-                    })
-                  }
-                />
-              </Field>
-              <Field label="Poster path">
-                <input
-                  className={inputClass}
-                  value={content.hero.posterSrc}
-                  onChange={(e) =>
-                    setContent({
-                      ...content,
-                      hero: { ...content.hero, posterSrc: e.target.value },
-                    })
-                  }
-                />
-              </Field>
+
+              <div className="grid gap-4 lg:grid-cols-2">
+                <div className="space-y-2">
+                  <p className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-white/50">
+                    Hero video
+                  </p>
+                  <video
+                    key={content.hero.videoSrc}
+                    className="aspect-video w-full rounded-md border border-white/10 bg-black object-cover"
+                    src={content.hero.videoSrc}
+                    poster={content.hero.posterSrc}
+                    muted
+                    playsInline
+                    controls
+                    preload="metadata"
+                  />
+                  <label className="inline-flex cursor-pointer rounded-md border border-gold/40 px-3 py-2 text-xs font-semibold text-gold">
+                    Upload video (MP4, max 32MB)
+                    <input
+                      type="file"
+                      accept="video/mp4,video/webm,video/quicktime"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        e.target.value = "";
+                        if (!file) return;
+                        try {
+                          const url = await uploadFile(file);
+                          const next = {
+                            ...content,
+                            hero: { ...content.hero, videoSrc: url },
+                          };
+                          setContent(next);
+                          await save(next);
+                        } catch {
+                          setStatus("Video upload failed. Use an MP4 under 32MB.");
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-white/50">
+                    Hero poster image
+                  </p>
+                  <div className="relative aspect-video overflow-hidden rounded-md border border-white/10 bg-black/40">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={content.hero.posterSrc}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  </div>
+                  <label className="inline-flex cursor-pointer rounded-md border border-gold/40 px-3 py-2 text-xs font-semibold text-gold">
+                    Upload poster image
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        e.target.value = "";
+                        if (!file) return;
+                        try {
+                          const url = await uploadFile(file);
+                          const next = {
+                            ...content,
+                            hero: { ...content.hero, posterSrc: url },
+                          };
+                          setContent(next);
+                          await save(next);
+                        } catch {
+                          setStatus("Poster upload failed. Try a JPG or PNG.");
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+              </div>
+
               <label className="flex items-center gap-2 text-sm">
                 <input
                   type="checkbox"

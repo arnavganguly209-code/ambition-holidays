@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import path from "path";
 import sharp from "sharp";
 import {
   readSessionFromCookieHeader,
@@ -9,6 +10,7 @@ import { writeUpload } from "@/lib/uploads";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 function isAuthed(req: Request) {
   return verifySessionToken(readSessionFromCookieHeader(req.headers.get("cookie")));
@@ -72,8 +74,25 @@ export async function POST(req: Request) {
   }
 
   const type = file.type || "";
+  const stamp = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const isVideo =
+    type.startsWith("video/") || /\.(mp4|webm|mov)$/i.test(file.name || "");
+
+  if (isVideo) {
+    if (file.size > 32 * 1024 * 1024) {
+      return NextResponse.json({ error: "Video max 32MB" }, { status: 400 });
+    }
+    const ext = path.extname(file.name || "").toLowerCase();
+    const safeExt = [".mp4", ".webm", ".mov"].includes(ext) ? ext : ".mp4";
+    const name = `upload-${stamp}${safeExt}`;
+    const raw = Buffer.from(await file.arrayBuffer());
+    await writeUpload(name, raw);
+    revalidatePath("/");
+    return NextResponse.json({ url: `/uploads/${name}` });
+  }
+
   if (type && !type.startsWith("image/") && type !== "application/octet-stream") {
-    return NextResponse.json({ error: "Images only" }, { status: 400 });
+    return NextResponse.json({ error: "Images or MP4 video only" }, { status: 400 });
   }
 
   if (file.size > 12 * 1024 * 1024) {
@@ -81,7 +100,6 @@ export async function POST(req: Request) {
   }
 
   const raw = Buffer.from(await file.arrayBuffer());
-  const stamp = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
   try {
     if (crop === "9x16") {

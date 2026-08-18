@@ -296,7 +296,7 @@ export default function LuxuryTreksSection() {
   if (!journeys.visible) return null;
 
   return (
-    <section className="relative border-t border-gold/15 px-4 pb-5 pt-10 [content-visibility:auto] [contain-intrinsic-size:auto_900px] sm:px-8 sm:pb-6 sm:pt-12 lg:px-10">
+    <section className="relative border-t border-gold/15 px-4 pb-5 pt-10 sm:px-8 sm:pb-6 sm:pt-12 lg:px-10">
       <div className="mx-auto max-w-[88rem]">
         <div className="mx-auto max-w-3xl text-center">
           <div className="mb-3 flex items-center justify-center gap-4">
