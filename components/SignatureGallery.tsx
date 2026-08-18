@@ -102,7 +102,7 @@ export default function SignatureGallery({ images }: Props) {
         className={`flex items-start gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] sm:gap-3.5 [&::-webkit-scrollbar]:hidden ${
           grabbing ? "cursor-grabbing" : "cursor-grab"
         }`}
-        style={{ touchAction: "pan-x" }}
+        style={{ touchAction: "pan-x pan-y" }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}

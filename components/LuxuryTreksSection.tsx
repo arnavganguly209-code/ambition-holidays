@@ -377,7 +377,7 @@ export default function LuxuryTreksSection() {
 
           <div
             ref={trackRef}
-            className="flex snap-x snap-mandatory gap-5 overflow-x-auto overscroll-x-contain touch-pan-x [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:px-12"
+            className="flex snap-x snap-mandatory gap-5 overflow-x-auto overscroll-x-contain [touch-action:pan-x_pan-y] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:px-12"
           >
             {packages.map((pkg, index) => (
               <div

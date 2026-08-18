@@ -46,9 +46,14 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    const body = document.body;
+    if (mobileOpen) {
+      body.style.overflow = "hidden";
+    } else {
+      body.style.removeProperty("overflow");
+    }
     return () => {
-      document.body.style.overflow = "";
+      body.style.removeProperty("overflow");
     };
   }, [mobileOpen]);
 

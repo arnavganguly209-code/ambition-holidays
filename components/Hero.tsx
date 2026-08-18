@@ -42,11 +42,9 @@ export default function Hero() {
     video.setAttribute("playsinline", "true");
 
     let inView = true;
-    let scrolling = false;
-    let timer = 0;
 
     const sync = () => {
-      if (inView && !scrolling && !document.hidden) {
+      if (inView && !document.hidden) {
         const play = video.play();
         if (play) play.catch(() => {});
       } else {
@@ -56,40 +54,22 @@ export default function Hero() {
 
     const io = new IntersectionObserver(
       ([entry]) => {
-        inView = Boolean(entry?.isIntersecting && entry.intersectionRatio >= 0.28);
+        inView = Boolean(entry?.isIntersecting);
         sync();
       },
-      { threshold: [0, 0.28, 0.6] },
+      { threshold: 0.08 },
     );
     io.observe(section);
 
-    const onScroll = () => {
-      if (!scrolling) {
-        scrolling = true;
-        video.pause();
-      }
-      window.clearTimeout(timer);
-      timer = window.setTimeout(() => {
-        scrolling = false;
-        sync();
-      }, 120);
-    };
-
     const onVisibility = () => sync();
-
-    window.addEventListener("scroll", onScroll, { passive: true });
     document.addEventListener("visibilitychange", onVisibility);
     video.addEventListener("canplay", sync);
-    video.addEventListener("loadeddata", sync);
-    sync();
 
     return () => {
       io.disconnect();
-      window.removeEventListener("scroll", onScroll);
       document.removeEventListener("visibilitychange", onVisibility);
       video.removeEventListener("canplay", sync);
-      video.removeEventListener("loadeddata", sync);
-      window.clearTimeout(timer);
+      video.pause();
     };
   }, [showVideo, videoSrc]);
 
@@ -98,7 +78,7 @@ export default function Hero() {
   return (
     <section
       ref={sectionRef}
-      className="relative isolate flex min-h-[100svh] w-full flex-col overflow-hidden bg-black"
+      className="relative isolate flex min-h-[100dvh] w-full flex-col overflow-hidden bg-black"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -113,7 +93,7 @@ export default function Hero() {
         <video
           ref={videoRef}
           key={videoSrc}
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover [backface-visibility:hidden] [transform:translateZ(0)]"
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover"
           autoPlay
           muted
           loop
