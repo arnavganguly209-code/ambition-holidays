@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import HeroSearch from "@/components/HeroSearch";
 import HeroStats from "@/components/HeroStats";
@@ -8,23 +9,49 @@ import { useSiteContent } from "@/components/SiteContentProvider";
 
 export default function Hero() {
   const { hero } = useSiteContent();
+  const [playVideo, setPlayVideo] = useState(false);
+
+  useEffect(() => {
+    const motionOk = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const desktop = window.matchMedia("(min-width: 768px)").matches;
+    const nav = navigator as Navigator & {
+      connection?: { saveData?: boolean; effectiveType?: string };
+    };
+    const slow =
+      Boolean(nav.connection?.saveData) ||
+      nav.connection?.effectiveType === "slow-2g" ||
+      nav.connection?.effectiveType === "2g";
+    setPlayVideo(motionOk && desktop && !slow);
+  }, []);
+
   if (!hero.visible) return null;
 
   return (
     <section className="relative isolate flex min-h-[100svh] w-full flex-col overflow-hidden bg-black">
-      <video
+      {/* Poster is the LCP on mobile; video never downloads on phones. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={hero.posterSrc}
+        alt=""
+        fetchPriority="high"
+        decoding="async"
         className="absolute inset-0 h-full w-full object-cover"
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        poster={hero.posterSrc}
         aria-hidden="true"
-        key={`${hero.videoSrc}-${hero.posterSrc}`}
-      >
-        <source src={hero.videoSrc} type="video/mp4" />
-      </video>
+      />
+      {playVideo ? (
+        <video
+          className="absolute inset-0 h-full w-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster={hero.posterSrc}
+          aria-hidden="true"
+        >
+          <source src={hero.videoSrc} type="video/mp4" />
+        </video>
+      ) : null}
 
       <div
         aria-hidden="true"

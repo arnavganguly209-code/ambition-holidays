@@ -15,7 +15,7 @@ export default function DuskAtmosphere() {
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-[0.22]"
+        className="pointer-events-none absolute inset-0 hidden opacity-[0.18] sm:block"
         style={{
           backgroundImage:
             "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cpath fill='none' stroke='%23c9a227' stroke-opacity='0.22' stroke-width='0.5' d='M0 36h200M0 72h200M0 108h200M0 144h200M0 180h200M36 0v200M72 0v200M108 0v200M144 0v200M180 0v200'/%3E%3C/svg%3E\")",

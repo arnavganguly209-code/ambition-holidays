@@ -6,12 +6,13 @@ const outfit = Outfit({
   variable: "--font-outfit",
   subsets: ["latin"],
   display: "swap",
+  weight: ["400", "500", "600", "700"],
 });
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["500", "600"],
   display: "swap",
 });
 
@@ -30,12 +31,6 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="preload" as="image" href="/images/hero-video-poster.jpg" />
-        <link
-          rel="preload"
-          as="video"
-          href="/videos/hero-background.mp4"
-          type="video/mp4"
-        />
       </head>
       <body className={`${outfit.variable} ${cormorant.variable} antialiased`}>
         {children}

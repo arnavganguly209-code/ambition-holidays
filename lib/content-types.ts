@@ -93,7 +93,7 @@ export const DEFAULT_CONTENT: SiteContent = {
     taglineWords: ["Discover", "Your", "Luxury", "Trek"],
     headline: "Start Planning Your Journey",
     searchPlaceholder: "Find an Adventure",
-    videoSrc: "/videos/hero-background.mp4",
+    videoSrc: "/videos/hero-bg.mp4",
     posterSrc: "/images/hero-video-poster.jpg",
     statsVisible: true,
     stats: [

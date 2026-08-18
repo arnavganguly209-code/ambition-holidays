@@ -39,9 +39,9 @@ export default function SignatureGallery({ images }: Props) {
     if (!mq.matches) return;
 
     const id = window.setInterval(() => {
-      if (pauseRef.current || drag.current.active) return;
+      if (document.hidden || pauseRef.current || drag.current.active) return;
       scrollByCard(1);
-    }, 3200);
+    }, 4200);
 
     const onChange = () => {
       if (!mq.matches) window.clearInterval(id);
@@ -132,6 +132,8 @@ export default function SignatureGallery({ images }: Props) {
               src={image.src}
               alt={image.alt}
               draggable={false}
+              loading={index < 2 ? "eager" : "lazy"}
+              decoding="async"
               className="pointer-events-none absolute inset-0 h-full w-full select-none object-cover object-center"
             />
           </figure>

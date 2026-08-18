@@ -19,26 +19,26 @@ export function useSiteContent() {
 type Props = {
   initial: SiteContent;
   children: ReactNode;
+  /** Public pages omit this so visitors are not polled every few seconds. */
   pollMs?: number;
 };
 
 export default function SiteContentProvider({
   initial,
   children,
-  pollMs = 2000,
+  pollMs = 0,
 }: Props) {
   const [content, setContent] = useState(initial);
 
   const refresh = useCallback(async () => {
+    if (document.visibilityState === "hidden") return;
     try {
       const res = await fetch(`/api/content?t=${Date.now()}`, {
         cache: "no-store",
       });
       if (!res.ok) return;
       const data = (await res.json()) as SiteContent;
-      setContent((prev) =>
-        prev.updatedAt === data.updatedAt ? prev : data,
-      );
+      setContent((prev) => (prev.updatedAt === data.updatedAt ? prev : data));
     } catch {
       // ignore network blips
     }
@@ -49,16 +49,23 @@ export default function SiteContentProvider({
   }, [initial]);
 
   useEffect(() => {
-    const onFocus = () => {
+    const onWake = () => {
       void refresh();
     };
-    window.addEventListener("focus", onFocus);
-    const id = window.setInterval(() => {
-      void refresh();
-    }, pollMs);
+    window.addEventListener("focus", onWake);
+    document.addEventListener("visibilitychange", onWake);
+
+    let id: number | undefined;
+    if (pollMs > 0) {
+      id = window.setInterval(() => {
+        void refresh();
+      }, pollMs);
+    }
+
     return () => {
-      window.removeEventListener("focus", onFocus);
-      window.clearInterval(id);
+      window.removeEventListener("focus", onWake);
+      document.removeEventListener("visibilitychange", onWake);
+      if (id) window.clearInterval(id);
     };
   }, [pollMs, refresh]);
 

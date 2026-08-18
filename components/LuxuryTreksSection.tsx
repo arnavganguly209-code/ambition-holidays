@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import MediaImage from "@/components/MediaImage";
 import { useSiteContent } from "@/components/SiteContentProvider";
 import type { JourneyCategoryIcon, JourneyPackage } from "@/lib/content-types";
 
@@ -96,20 +97,25 @@ function PackageCard({
   pkg,
   saved,
   onToggleSave,
+  priority,
 }: {
   pkg: JourneyPackage;
   saved: boolean;
   onToggleSave: () => void;
+  priority?: boolean;
 }) {
   return (
     <article className="flex h-full min-w-0 snap-start flex-col overflow-hidden rounded-[1.15rem] border border-gold/35 bg-[#1c222c]/80 shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
       <div className="relative mx-3 mt-3 overflow-hidden rounded-[0.9rem] border border-gold/25">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={pkg.imageSrc}
-          alt={pkg.imageAlt}
-          className="aspect-[16/10] w-full object-cover sm:aspect-[16/9.4]"
-        />
+        <div className="relative aspect-[16/10] w-full sm:aspect-[16/9.4]">
+          <MediaImage
+            src={pkg.imageSrc}
+            alt={pkg.imageAlt}
+            sizes="(max-width: 640px) 86vw, (max-width: 1024px) 50vw, 640px"
+            priority={priority}
+            className="object-cover"
+          />
+        </div>
 
         {pkg.badge ? (
           <div className="absolute left-0 top-4">
@@ -130,7 +136,7 @@ function PackageCard({
           type="button"
           onClick={onToggleSave}
           aria-label={saved ? `Remove ${pkg.title} from saved` : `Save ${pkg.title}`}
-          className={`focus-ring absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white backdrop-blur-[2px] transition-colors ${
+          className={`focus-ring absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/55 text-white transition-colors ${
             saved ? "text-gold" : "hover:text-gold"
           }`}
         >
@@ -290,7 +296,7 @@ export default function LuxuryTreksSection() {
   if (!journeys.visible) return null;
 
   return (
-    <section className="relative border-t border-gold/15 px-4 pb-5 pt-10 sm:px-8 sm:pb-6 sm:pt-12 lg:px-10">
+    <section className="relative border-t border-gold/15 px-4 pb-5 pt-10 [content-visibility:auto] [contain-intrinsic-size:auto_900px] sm:px-8 sm:pb-6 sm:pt-12 lg:px-10">
       <div className="mx-auto max-w-[88rem]">
         <div className="mx-auto max-w-3xl text-center">
           <div className="mb-3 flex items-center justify-center gap-4">
@@ -373,13 +379,14 @@ export default function LuxuryTreksSection() {
             ref={trackRef}
             className="flex snap-x snap-mandatory gap-5 overflow-x-auto overscroll-x-contain touch-pan-x [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:px-12"
           >
-            {packages.map((pkg) => (
+            {packages.map((pkg, index) => (
               <div
                 key={pkg.id}
                 className="w-[min(86vw,22.75rem)] shrink-0 sm:w-[min(78vw,30rem)] lg:w-[calc(50%-0.625rem)]"
               >
                 <PackageCard
                   pkg={pkg}
+                  priority={index < 2}
                   saved={Boolean(saved[pkg.id])}
                   onToggleSave={() =>
                     setSaved((prev) => ({ ...prev, [pkg.id]: !prev[pkg.id] }))
