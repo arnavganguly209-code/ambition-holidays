@@ -34,6 +34,12 @@ export async function readContent(): Promise<SiteContent> {
         images: parsed.signature?.images ?? DEFAULT_CONTENT.signature.images,
         features: parsed.signature?.features ?? DEFAULT_CONTENT.signature.features,
       },
+      journeys: {
+        ...DEFAULT_CONTENT.journeys,
+        ...parsed.journeys,
+        categories: parsed.journeys?.categories ?? DEFAULT_CONTENT.journeys.categories,
+        packages: parsed.journeys?.packages ?? DEFAULT_CONTENT.journeys.packages,
+      },
     };
   } catch {
     return structuredClone(DEFAULT_CONTENT);
@@ -52,7 +58,6 @@ export async function writeContent(content: SiteContent): Promise<SiteContent> {
 
 export function scrubUploadRefs(content: SiteContent, publicPath: string): SiteContent {
   const fallbackLogo = DEFAULT_CONTENT.header.logoSrc;
-  const fallbackImages = DEFAULT_CONTENT.signature.images;
 
   return {
     ...content,
@@ -77,13 +82,15 @@ export function scrubUploadRefs(content: SiteContent, publicPath: string): SiteC
     },
     signature: {
       ...content.signature,
-      images: content.signature.images
-        .filter((img) => img.src !== publicPath)
-        .map((img, index) =>
-          img.src === publicPath
-            ? fallbackImages[index] ?? img
-            : img,
-        ),
+      images: content.signature.images.filter((img) => img.src !== publicPath),
+    },
+    journeys: {
+      ...content.journeys,
+      packages: content.journeys.packages.map((pkg) =>
+        pkg.imageSrc === publicPath
+          ? { ...pkg, imageSrc: DEFAULT_CONTENT.journeys.packages[0]?.imageSrc ?? pkg.imageSrc }
+          : pkg,
+      ),
     },
   };
 }

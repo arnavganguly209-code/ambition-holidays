@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import OrbitJourneysEditor from "@/components/OrbitJourneysEditor";
 import type {
   SignatureFeature,
   SiteContent,
@@ -47,9 +48,9 @@ export default function OrbitDashboard({ initial }: Props) {
   const [content, setContent] = useState(initial);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("");
-  const [tab, setTab] = useState<"hero" | "header" | "stats" | "signature" | "media">(
-    "signature",
-  );
+  const [tab, setTab] = useState<
+    "hero" | "header" | "stats" | "signature" | "journeys" | "media"
+  >("journeys");
   const [uploads, setUploads] = useState<string[]>([]);
 
   const updatedLabel = useMemo(() => {
@@ -140,6 +141,7 @@ export default function OrbitDashboard({ initial }: Props) {
         <div className="mb-6 flex flex-wrap gap-2">
           {(
             [
+              ["journeys", "Luxury treks"],
               ["signature", "Signature"],
               ["hero", "Hero"],
               ["header", "Header / Logo"],
@@ -445,6 +447,14 @@ export default function OrbitDashboard({ initial }: Props) {
                 Add trust item
               </button>
             </div>
+          ) : null}
+
+          {tab === "journeys" ? (
+            <OrbitJourneysEditor
+              content={content}
+              setContent={setContent}
+              save={save}
+            />
           ) : null}
 
           {tab === "signature" ? (
