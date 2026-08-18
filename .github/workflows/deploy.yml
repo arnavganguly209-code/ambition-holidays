@@ -78,7 +78,7 @@ jobs:
             git reset --hard origin/main
 
             echo "Ensuring uploads directory..."
-            mkdir -p public/uploads
+            mkdir -p public/uploads data/uploads
 
             if [ -n "${ORBIT_PASSKEY:-}" ] && [ -n "${ORBIT_SESSION_SECRET:-}" ]; then
               echo "Writing Orbit CMS env (.env.local)..."

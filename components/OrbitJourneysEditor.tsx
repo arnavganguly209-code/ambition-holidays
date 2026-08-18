@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import type {
   JourneyCategoryIcon,
   JourneyPackage,
@@ -252,15 +251,14 @@ export default function OrbitJourneysEditor({ content, setContent, save }: Props
                 </button>
               </div>
 
-              <div className="grid gap-4 lg:grid-cols-[11rem_1fr]">
+              <div className="grid gap-4 lg:grid-cols-[20rem_1fr]">
                 <div className="space-y-2">
                   <div className="relative aspect-[16/10] overflow-hidden rounded-md border border-white/10 bg-black/40">
-                    <Image
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
                       src={pkg.imageSrc}
                       alt={pkg.imageAlt}
-                      fill
-                      className="object-cover"
-                      unoptimized
+                      className="absolute inset-0 h-full w-full object-cover"
                     />
                   </div>
                   <label className="inline-flex cursor-pointer rounded-md border border-gold/40 px-3 py-1.5 text-[0.7rem] text-gold">
@@ -270,17 +268,24 @@ export default function OrbitJourneysEditor({ content, setContent, save }: Props
                       accept="image/*"
                       className="hidden"
                       onChange={async (e) => {
-                        const file = e.target.files?.[0];
+                        const input = e.currentTarget;
+                        const file = input.files?.[0];
                         if (!file) return;
-                        const url = await uploadFile(file);
-                        const packages = [...journeys.packages];
-                        packages[index] = { ...pkg, imageSrc: url };
-                        const next = {
-                          ...content,
-                          journeys: { ...journeys, packages },
-                        };
-                        setContent(next);
-                        await save(next);
+                        try {
+                          const url = await uploadFile(file);
+                          const packages = [...journeys.packages];
+                          packages[index] = { ...pkg, imageSrc: url };
+                          const next = {
+                            ...content,
+                            journeys: { ...journeys, packages },
+                          };
+                          setContent(next);
+                          await save(next);
+                        } catch {
+                          window.alert("Image upload failed. Try a JPG or PNG under 12MB.");
+                        } finally {
+                          input.value = "";
+                        }
                       }}
                     />
                   </label>

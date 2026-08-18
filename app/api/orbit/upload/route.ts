@@ -1,16 +1,14 @@
-import { promises as fs } from "fs";
-import path from "path";
-import sharp from "sharp";
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import sharp from "sharp";
 import {
   readSessionFromCookieHeader,
   verifySessionToken,
 } from "@/lib/orbit-auth";
+import { writeUpload } from "@/lib/uploads";
 
 export const dynamic = "force-dynamic";
-
-const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
+export const runtime = "nodejs";
 
 function isAuthed(req: Request) {
   return verifySessionToken(readSessionFromCookieHeader(req.headers.get("cookie")));
@@ -31,11 +29,9 @@ async function toNineSixteen(buffer: Buffer): Promise<Buffer> {
   let top = 0;
 
   if (currentRatio > targetRatio) {
-    // too wide — crop sides
     extractW = Math.round(height * targetRatio);
     left = Math.max(0, Math.round((width - extractW) / 2));
   } else if (currentRatio < targetRatio) {
-    // too tall — crop top/bottom
     extractH = Math.round(width / targetRatio);
     top = Math.max(0, Math.round((height - extractH) / 2));
   }
@@ -49,7 +45,16 @@ async function toNineSixteen(buffer: Buffer): Promise<Buffer> {
       height: Math.min(extractH, height),
     })
     .resize(1080, 1920, { fit: "fill" })
-    .jpeg({ quality: 88, mozjpeg: true })
+    .jpeg({ quality: 86, mozjpeg: true })
+    .toBuffer();
+}
+
+/** Landscape-friendly web jpeg so Orbit previews and the homepage stay sharp. */
+async function toWebPhoto(buffer: Buffer): Promise<Buffer> {
+  return sharp(buffer, { failOn: "none" })
+    .rotate()
+    .resize(1600, 1600, { fit: "inside", withoutEnlargement: true })
+    .jpeg({ quality: 84, mozjpeg: true })
     .toBuffer();
 }
 
@@ -66,35 +71,36 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "No file" }, { status: 400 });
   }
 
-  if (!file.type.startsWith("image/")) {
+  const type = file.type || "";
+  if (type && !type.startsWith("image/") && type !== "application/octet-stream") {
     return NextResponse.json({ error: "Images only" }, { status: 400 });
   }
 
-  if (file.size > 8 * 1024 * 1024) {
-    return NextResponse.json({ error: "Max 8MB" }, { status: 400 });
+  if (file.size > 12 * 1024 * 1024) {
+    return NextResponse.json({ error: "Max 12MB" }, { status: 400 });
   }
 
-  await fs.mkdir(UPLOAD_DIR, { recursive: true });
   const raw = Buffer.from(await file.arrayBuffer());
+  const stamp = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
-  let out: Buffer;
-  let name: string;
+  try {
+    if (crop === "9x16") {
+      const out = await toNineSixteen(raw);
+      const name = `upload-${stamp}-9x16.jpg`;
+      await writeUpload(name, out);
+      revalidatePath("/");
+      return NextResponse.json({ url: `/uploads/${name}` });
+    }
 
-  if (crop === "9x16") {
-    out = await toNineSixteen(raw);
-    name = `upload-${Date.now()}-${Math.random().toString(36).slice(2, 8)}-9x16.jpg`;
-  } else {
-    out = raw;
-    const ext = path.extname(file.name || "").toLowerCase() || ".jpg";
-    const safeExt = [".jpg", ".jpeg", ".png", ".webp", ".gif"].includes(ext)
-      ? ext
-      : ".jpg";
-    name = `upload-${Date.now()}-${Math.random().toString(36).slice(2, 8)}${safeExt}`;
+    const out = await toWebPhoto(raw);
+    const name = `upload-${stamp}.jpg`;
+    await writeUpload(name, out);
+    revalidatePath("/");
+    return NextResponse.json({ url: `/uploads/${name}` });
+  } catch {
+    return NextResponse.json(
+      { error: "Could not process that image. Try a JPG or PNG." },
+      { status: 400 },
+    );
   }
-
-  await fs.writeFile(path.join(UPLOAD_DIR, name), out);
-
-  const publicPath = `/uploads/${name}`;
-  revalidatePath("/");
-  return NextResponse.json({ url: publicPath });
 }

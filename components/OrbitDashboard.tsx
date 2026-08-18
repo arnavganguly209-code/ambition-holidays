@@ -585,12 +585,11 @@ export default function OrbitDashboard({ initial }: Props) {
                       className="space-y-2 rounded-lg border border-white/10 p-3"
                     >
                       <div className="relative aspect-[9/16] overflow-hidden rounded-md bg-[#d7dde5]">
-                        <Image
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
                           src={image.src}
                           alt={image.alt}
-                          fill
-                          className="object-cover object-center"
-                          unoptimized
+                          className="absolute inset-0 h-full w-full object-cover object-center"
                         />
                       </div>
                       <input
@@ -810,12 +809,11 @@ export default function OrbitDashboard({ initial }: Props) {
                     className="rounded-lg border border-white/10 p-3 space-y-2"
                   >
                     <div className="relative aspect-video overflow-hidden rounded-md bg-black/40">
-                      <Image
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
                         src={file}
                         alt=""
-                        fill
-                        className="object-cover"
-                        unoptimized
+                        className="absolute inset-0 h-full w-full object-cover"
                       />
                     </div>
                     <p className="truncate text-[0.7rem] text-white/50">{file}</p>

@@ -6,6 +6,16 @@ const nextConfig: NextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200],
     imageSizes: [96, 128, 256, 384],
   },
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: "/uploads/:filename",
+          destination: "/api/media/:filename",
+        },
+      ],
+    };
+  },
 };
 
 export default nextConfig;

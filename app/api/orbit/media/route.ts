@@ -3,6 +3,7 @@ import path from "path";
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { readContent, scrubUploadRefs, writeContent } from "@/lib/content";
+import { UPLOAD_DIRS, safeUploadName } from "@/lib/uploads";
 import {
   readSessionFromCookieHeader,
   verifySessionToken,
@@ -31,12 +32,16 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: "Only uploads can be deleted" }, { status: 400 });
   }
 
-  const filename = path.basename(publicPath);
-  const abs = path.join(process.cwd(), "public", "uploads", filename);
-  try {
-    await fs.unlink(abs);
-  } catch {
-    // file may already be gone
+  const filename = safeUploadName(path.basename(publicPath));
+  if (!filename) {
+    return NextResponse.json({ error: "Invalid file" }, { status: 400 });
+  }
+  for (const dir of UPLOAD_DIRS) {
+    try {
+      await fs.unlink(path.join(dir, filename));
+    } catch {
+      // file may already be gone
+    }
   }
 
   const content = await readContent();
@@ -67,16 +72,20 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const dir = path.join(process.cwd(), "public", "uploads");
-  try {
-    await fs.mkdir(dir, { recursive: true });
-    const files = await fs.readdir(dir);
-    return NextResponse.json({
-      files: files
-        .filter((f) => !f.startsWith("."))
-        .map((f) => `/uploads/${f}`),
-    });
-  } catch {
-    return NextResponse.json({ files: [] });
+  const names = new Set<string>();
+  for (const dir of UPLOAD_DIRS) {
+    try {
+      await fs.mkdir(dir, { recursive: true });
+      const files = await fs.readdir(dir);
+      for (const file of files) {
+        if (!file.startsWith(".")) names.add(file);
+      }
+    } catch {
+      // directory may not exist yet
+    }
   }
+
+  return NextResponse.json({
+    files: Array.from(names).map((file) => `/uploads/${file}`),
+  });
 }
