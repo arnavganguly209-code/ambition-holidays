@@ -1,0 +1,133 @@
+// Ambition Holidays — Phase 1 schema only.
+// Do NOT add Booking / ContactMessage / Review / Newsletter / SEO / Backup models here.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AdminRole {
+  OWNER
+  EDITOR
+}
+
+enum MediaKind {
+  IMAGE
+  VIDEO
+  OTHER
+}
+
+/// Orbit CMS operator. Password is stored as a hash only (see lib/password.ts).
+model AdminUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String?
+  passwordHash String
+  role         AdminRole @default(EDITOR)
+  isActive     Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  sessions       AdminSession[]
+  auditLogs      AuditLog[]
+  mediaAssets    MediaAsset[]
+  contentUpdates SiteContentDocument[]
+
+  @@index([isActive])
+  @@index([role])
+}
+
+/// Server-side Orbit session. Store tokenHash only — never the raw cookie token.
+model AdminSession {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  ip        String?
+  userAgent String?
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([revokedAt])
+}
+
+/// Login / passkey attempt log for rate limiting and lockout (wired in a later step).
+model LoginAttempt {
+  id         String   @id @default(cuid())
+  emailOrKey String
+  ip         String?
+  success    Boolean
+  createdAt  DateTime @default(now())
+
+  @@index([emailOrKey, createdAt])
+  @@index([ip, createdAt])
+  @@index([success, createdAt])
+}
+
+/// Who changed CMS / media / settings.
+model AuditLog {
+  id       String   @id @default(cuid())
+  userId   String?
+  action   String
+  entity   String
+  entityId String?
+  meta     Json?
+  ip       String?
+  createdAt DateTime @default(now())
+
+  user AdminUser? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([entity, createdAt])
+  @@index([action, createdAt])
+}
+
+/// Thin key/value site flags (Phase 1). Not used by the public UI yet.
+model SiteSettings {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// CMS document matching SiteContent JSON shape. data/site-content.json remains fallback.
+model SiteContentDocument {
+  id          String   @id @default(cuid())
+  slug        String   @unique @default("home")
+  data        Json
+  updatedById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  updatedBy AdminUser? @relation(fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@index([updatedById])
+}
+
+/// Metadata for files under data/uploads + public/uploads. Binaries stay on disk.
+model MediaAsset {
+  id          String    @id @default(cuid())
+  filename    String
+  publicPath  String    @unique
+  mimeType    String
+  byteSize    Int
+  kind        MediaKind @default(IMAGE)
+  createdById String?
+  createdAt   DateTime  @default(now())
+
+  createdBy AdminUser? @relation(fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([kind, createdAt])
+  @@index([createdById])
+  @@index([filename])
+}

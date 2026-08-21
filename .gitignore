@@ -30,8 +30,15 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files (never commit secrets; allow committed example only)
+.env
+.env.*
+.env*.local
+!.env.example
+
+# prisma local sqlite experiments (unused — Postgres only)
+/prisma/*.db
+/prisma/*.db-journal
 
 # temp encode/compress artifacts
 *.tmp
