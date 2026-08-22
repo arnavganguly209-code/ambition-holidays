@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useSiteContent } from "@/components/SiteContentProvider";
 import type { ExperienceIcon } from "@/lib/content-types";
+import { mediaSrc } from "@/lib/media-src";
 
 function CircleIcon({ children }: { children: React.ReactNode }) {
   return (
@@ -138,7 +139,7 @@ function CardIcon({ icon, iconSrc }: { icon: ExperienceIcon; iconSrc?: string })
 }
 
 export default function ExperiencesSection() {
-  const { experiences } = useSiteContent();
+  const { experiences, updatedAt } = useSiteContent();
   if (!experiences?.visible) return null;
 
   return (
@@ -171,7 +172,7 @@ export default function ExperiencesSection() {
               <div className="mt-4 overflow-hidden rounded-md">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={card.imageSrc}
+                  src={mediaSrc(card.imageSrc, updatedAt)}
                   alt={card.imageAlt}
                   className="h-[7.4rem] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 sm:h-[8.1rem]"
                 />

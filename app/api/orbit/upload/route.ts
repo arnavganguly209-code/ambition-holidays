@@ -106,25 +106,20 @@ export async function POST(req: Request) {
   }
 
   const raw = Buffer.from(await file.arrayBuffer());
+  const name = `upload-${stamp}.jpg`;
 
   try {
-    if (crop === "9x16") {
-      const out = await toNineSixteen(raw);
-      const name = `upload-${stamp}-9x16.jpg`;
-      await writeUpload(name, out);
-      revalidatePath("/");
-      return NextResponse.json({ url: `/uploads/${name}` });
-    }
-
-    const out = await toWebPhoto(raw);
-    const name = `upload-${stamp}.jpg`;
-    await writeUpload(name, out);
+    const out = crop === "9x16" ? await toNineSixteen(raw) : await toWebPhoto(raw);
+    await writeUpload(crop === "9x16" ? `upload-${stamp}-9x16.jpg` : name, out);
+    const saved = crop === "9x16" ? `upload-${stamp}-9x16.jpg` : name;
     revalidatePath("/");
-    return NextResponse.json({ url: `/uploads/${name}` });
+    return NextResponse.json({ url: `/uploads/${saved}` });
   } catch {
-    return NextResponse.json(
-      { error: "Could not process that image. Try a JPG or PNG." },
-      { status: 400 },
-    );
+    const ext = path.extname(file.name || "").toLowerCase();
+    const safeExt = [".jpg", ".jpeg", ".png", ".webp", ".gif"].includes(ext) ? ext : ".jpg";
+    const fallback = `upload-${stamp}${safeExt === ".jpeg" ? ".jpg" : safeExt}`;
+    await writeUpload(fallback, raw);
+    revalidatePath("/");
+    return NextResponse.json({ url: `/uploads/${fallback}` });
   }
 }

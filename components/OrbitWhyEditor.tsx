@@ -1,6 +1,7 @@
 "use client";
 
 import type { SiteContent, WhyCard, WhyCardIcon, WhyRating } from "@/lib/content-types";
+import { mediaSrc } from "@/lib/media-src";
 
 const inputClass =
   "w-full rounded-md border border-white/15 bg-black/35 px-3 py-2 text-sm text-white outline-none focus:border-gold/50";
@@ -37,7 +38,8 @@ async function uploadFile(file: File): Promise<string> {
   form.append("file", file);
   const res = await fetch("/api/orbit/upload", { method: "POST", body: form });
   if (!res.ok) throw new Error("Upload failed");
-  const data = (await res.json()) as { url: string };
+  const data = (await res.json()) as { url?: string; error?: string };
+  if (!data.url) throw new Error(data.error || "Upload failed");
   return data.url;
 }
 
@@ -110,7 +112,7 @@ export default function OrbitWhyEditor({ content, setContent, save }: Props) {
               <div className="relative aspect-[16/10] overflow-hidden rounded-md bg-black/40">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={card.imageSrc}
+                  src={mediaSrc(card.imageSrc, content.updatedAt)}
                   alt=""
                   className="absolute inset-0 h-full w-full object-cover"
                 />
@@ -125,13 +127,17 @@ export default function OrbitWhyEditor({ content, setContent, save }: Props) {
                     const file = e.target.files?.[0];
                     e.target.value = "";
                     if (!file) return;
-                    const url = await uploadFile(file);
-                    const nextCard = { ...card, imageSrc: url };
-                    const cards = [...why.cards];
-                    cards[index] = nextCard;
-                    const next = { ...content, why: { ...why, cards } };
-                    setContent(next);
-                    await save(next);
+                    try {
+                      const url = await uploadFile(file);
+                      const nextCard = { ...card, imageSrc: url };
+                      const cards = [...why.cards];
+                      cards[index] = nextCard;
+                      const next = { ...content, why: { ...why, cards } };
+                      setContent(next);
+                      await save(next);
+                    } catch {
+                      window.alert("Image upload failed. Try a JPG or PNG under 12MB.");
+                    }
                   }}
                 />
               </label>

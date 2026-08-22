@@ -1,6 +1,7 @@
 "use client";
 
 import { DEFAULT_CONTENT, type ExperienceCard, type ExperienceIcon, type SiteContent } from "@/lib/content-types";
+import { mediaSrc } from "@/lib/media-src";
 
 const inputClass =
   "w-full rounded-md border border-white/15 bg-black/35 px-3 py-2 text-sm text-white outline-none focus:border-gold/50";
@@ -37,7 +38,8 @@ async function uploadFile(file: File): Promise<string> {
   form.append("file", file);
   const res = await fetch("/api/orbit/upload", { method: "POST", body: form });
   if (!res.ok) throw new Error("Upload failed");
-  const data = (await res.json()) as { url: string };
+  const data = (await res.json()) as { url?: string; error?: string };
+  if (!data.url) throw new Error(data.error || "Upload failed");
   return data.url;
 }
 
@@ -182,7 +184,7 @@ export default function OrbitExperiencesEditor({ content, setContent, save }: Pr
               </div>
               <div className="relative aspect-[16/10] overflow-hidden rounded-md bg-black/40">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={card.imageSrc} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                <img src={mediaSrc(card.imageSrc, content.updatedAt)} alt="" className="absolute inset-0 h-full w-full object-cover" />
               </div>
               <label className="inline-flex cursor-pointer rounded-md border border-gold/40 px-3 py-2 text-xs font-semibold text-gold">
                 Replace image

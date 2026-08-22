@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-22T16:35:38.318Z",
+  "updatedAt": "2026-08-22T16:43:30.320Z",
   "header": {
     "logoSrc": "/images/ambition-holiday-logo.png"
   },
@@ -232,7 +232,7 @@
         "id": "years",
         "title": "11+ Years of Experience",
         "body": "Over a decade of crafting extraordinary Himalayan journeys with excellence and passion.",
-        "imageSrc": "/images/why/years.jpg",
+        "imageSrc": "/images/why/years-photo.jpg",
         "imageAlt": "Hiker watching a Himalayan sunrise",
         "icon": "years"
       },
@@ -240,7 +240,7 @@
         "id": "reviews",
         "title": "410+ TripAdvisor Reviews",
         "body": "Consistently trusted by hundreds of happy travelers who recommend us for our service and reliability.",
-        "imageSrc": "/images/why/reviews.jpg",
+        "imageSrc": "/images/why/reviews-photo.jpg",
         "imageAlt": "Luxury lodge terrace at dusk",
         "icon": "tripadvisor"
       },
@@ -248,7 +248,7 @@
         "id": "guides",
         "title": "Expert Local Guides",
         "body": "Our professional, certified local guides ensure your journey is safe, insightful, and unforgettable.",
-        "imageSrc": "/images/why/guides.jpg",
+        "imageSrc": "/images/why/guides-photo.jpg",
         "imageAlt": "Trekkers walking toward a snow peak",
         "icon": "guide"
       },
@@ -256,7 +256,7 @@
         "id": "stays",
         "title": "Handpicked Stays",
         "body": "Carefully selected luxury lodges and hotels that offer comfort, character, and exceptional service.",
-        "imageSrc": "/images/why/stays.jpg",
+        "imageSrc": "/images/why/stays-photo.jpg",
         "imageAlt": "Warmly lit mountain lodge at night",
         "icon": "stay"
       },
@@ -264,7 +264,7 @@
         "id": "support",
         "title": "24/7 Guest Support",
         "body": "We're with you at every step of your journey with round-the-clock care and personal attention.",
-        "imageSrc": "/images/why/support.jpg",
+        "imageSrc": "/images/why/support-photo.jpg",
         "imageAlt": "Guest support planning a Himalayan journey",
         "icon": "support"
       },
@@ -272,7 +272,7 @@
         "id": "responsible",
         "title": "Responsible Tourism",
         "body": "We travel with purpose—supporting local communities and preserving the natural beauty of Nepal.",
-        "imageSrc": "/images/why/responsible.jpg",
+        "imageSrc": "/images/why/responsible-photo.jpg",
         "imageAlt": "Local community in a Himalayan village",
         "icon": "responsible"
       }

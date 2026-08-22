@@ -1,5 +1,6 @@
 import { useSiteContent } from "@/components/SiteContentProvider";
 import type { WhyCardIcon, WhyRating } from "@/lib/content-types";
+import { mediaSrc } from "@/lib/media-src";
 
 function CircleIcon({ children }: { children: React.ReactNode }) {
   return (
@@ -169,7 +170,7 @@ function RatingLogo({ rating }: { rating: WhyRating }) {
 }
 
 export default function WhyAmbitionSection() {
-  const { why } = useSiteContent();
+  const { why, updatedAt } = useSiteContent();
   if (!why?.visible) return null;
 
   return (
@@ -200,7 +201,7 @@ export default function WhyAmbitionSection() {
           {why.cards?.map((card) => (
             <article
               key={card.id}
-              className="group flex h-full origin-center flex-col overflow-hidden rounded-[0.9rem] border border-gold/55 bg-[#1c222c]/55 transition-transform duration-500 ease-out hover:z-10 hover:scale-[1.06] hover:border-gold"
+              className="group flex h-full origin-center flex-col overflow-visible rounded-[0.9rem] border border-gold/55 bg-[#1c222c]/55 transition-transform duration-500 ease-out hover:z-10 hover:scale-[1.06] hover:border-gold"
             >
               <div className="flex flex-1 flex-col px-3.5 pb-3 pt-5 text-center sm:px-4">
                 <CardIcon icon={card.icon} iconSrc={card.iconSrc} />
@@ -211,12 +212,14 @@ export default function WhyAmbitionSection() {
                   {card.body}
                 </p>
               </div>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={card.imageSrc}
-                alt={card.imageAlt}
-                className="h-[6.6rem] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 sm:h-[7.2rem]"
-              />
+              <div className="overflow-hidden rounded-b-[0.85rem]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={mediaSrc(card.imageSrc, updatedAt)}
+                  alt={card.imageAlt}
+                  className="h-[6.6rem] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 sm:h-[7.2rem]"
+                />
+              </div>
             </article>
           ))}
         </div>
