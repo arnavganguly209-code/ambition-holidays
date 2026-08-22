@@ -46,6 +46,11 @@ export async function readContent(): Promise<SiteContent> {
         cards: parsed.why?.cards ?? DEFAULT_CONTENT.why.cards,
         ratings: parsed.why?.ratings ?? DEFAULT_CONTENT.why.ratings,
       },
+      experiences: {
+        ...DEFAULT_CONTENT.experiences,
+        ...parsed.experiences,
+        cards: parsed.experiences?.cards ?? DEFAULT_CONTENT.experiences.cards,
+      },
     };
   } catch {
     return structuredClone(DEFAULT_CONTENT);
@@ -111,6 +116,18 @@ export function scrubUploadRefs(content: SiteContent, publicPath: string): SiteC
       ratings: content.why.ratings.map((rating) => ({
         ...rating,
         logoSrc: rating.logoSrc === publicPath ? undefined : rating.logoSrc,
+      })),
+    },
+    experiences: {
+      ...content.experiences,
+      cards: (content.experiences?.cards ?? []).map((card, index) => ({
+        ...card,
+        imageSrc:
+          card.imageSrc === publicPath
+            ? DEFAULT_CONTENT.experiences.cards[index]?.imageSrc ??
+              DEFAULT_CONTENT.experiences.cards[0].imageSrc
+            : card.imageSrc,
+        iconSrc: card.iconSrc === publicPath ? undefined : card.iconSrc,
       })),
     },
   };

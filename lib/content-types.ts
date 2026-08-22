@@ -92,6 +92,37 @@ export type WhyContent = {
   ratings: WhyRating[];
 };
 
+export type ExperienceIcon =
+  | "heli"
+  | "lodge"
+  | "culture"
+  | "flight"
+  | "wellness"
+  | "wildlife"
+  | "custom";
+
+export type ExperienceCard = {
+  id: string;
+  title: string;
+  body: string;
+  imageSrc: string;
+  imageAlt: string;
+  icon: ExperienceIcon;
+  iconSrc?: string;
+  href: string;
+};
+
+export type ExperiencesContent = {
+  visible: boolean;
+  eyebrow: string;
+  headlineWhite: string;
+  headlineGold: string;
+  body: string;
+  ctaLabel: string;
+  ctaHref: string;
+  cards: ExperienceCard[];
+};
+
 export type SiteContent = {
   updatedAt: string;
   header: {
@@ -120,6 +151,7 @@ export type SiteContent = {
   };
   journeys: JourneysContent;
   why: WhyContent;
+  experiences: ExperiencesContent;
 };
 
 export const DEFAULT_CONTENT: SiteContent = {
@@ -362,6 +394,71 @@ export const DEFAULT_CONTENT: SiteContent = {
       { id: "google", label: "Google", value: "4.9 Rating", brand: "google" },
       { id: "facebook", label: "Facebook", value: "4.8 Rating", brand: "facebook" },
       { id: "instagram", label: "Instagram", value: "4.9 Rating", brand: "instagram" },
+    ],
+  },
+  experiences: {
+    visible: true,
+    eyebrow: "OUR SIGNATURE EXPERIENCES",
+    headlineWhite: "More Than Treks.",
+    headlineGold: "Extraordinary Experiences.",
+    body: "Go beyond the ordinary and discover the Himalayas in the most exclusive ways. Curated experiences that elevate your journey and create memories for a lifetime.",
+    ctaLabel: "Explore All Experiences",
+    ctaHref: "/luxury-treks",
+    cards: [
+      {
+        id: "heli",
+        title: "Helicopter Experiences",
+        body: "Scenic flights, heli-tours and private transfers to explore Nepal from the sky.",
+        imageSrc: "/images/experiences/heli-photo.jpg",
+        imageAlt: "Helicopter flying over snow-capped Himalayan peaks",
+        icon: "heli",
+        href: "/luxury-helicopter-treks",
+      },
+      {
+        id: "lodges",
+        title: "Luxury Lodges & Stays",
+        body: "Handpicked luxury lodges and hotels offering comfort, elegance and world-class hospitality.",
+        imageSrc: "/images/experiences/lodges-photo.jpg",
+        imageAlt: "Luxury mountain lodge interior with a fireplace and peak views",
+        icon: "lodge",
+        href: "/luxury-treks",
+      },
+      {
+        id: "culture",
+        title: "Private Cultural Journeys",
+        body: "Immerse in authentic local culture, heritage sites and spiritual experiences with private guides.",
+        imageSrc: "/images/experiences/culture-photo.jpg",
+        imageAlt: "Nepalese stupa and temples at sunset",
+        icon: "culture",
+        href: "/luxury-treks",
+      },
+      {
+        id: "flights",
+        title: "Mountain Flights",
+        body: "Breathtaking scenic flights over Everest and the Himalayas for unforgettable views.",
+        imageSrc: "/images/experiences/flights-photo.jpg",
+        imageAlt: "Small aircraft flying past Himalayan snow peaks",
+        icon: "flight",
+        href: "/luxury-helicopter-treks",
+      },
+      {
+        id: "wellness",
+        title: "Wellness Journeys",
+        body: "Rejuvenate your mind, body and soul with yoga retreats, spa therapies and mindful experiences.",
+        imageSrc: "/images/experiences/wellness-photo.jpg",
+        imageAlt: "Guest meditating toward a Himalayan sunrise",
+        icon: "wellness",
+        href: "/luxury-treks",
+      },
+      {
+        id: "wildlife",
+        title: "Wildlife & Jungle Safaris",
+        body: "Explore Nepal's rich wildlife with private jungle safaris in Chitwan and beyond.",
+        imageSrc: "/images/experiences/wildlife-photo.jpg",
+        imageAlt: "Leopard resting in a jungle setting",
+        icon: "wildlife",
+        href: "/luxury-treks",
+      },
     ],
   },
 };
