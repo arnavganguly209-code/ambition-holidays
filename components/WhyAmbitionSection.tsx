@@ -196,11 +196,11 @@ export default function WhyAmbitionSection() {
           </p>
         </div>
 
-        <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 xl:gap-3.5">
+        <div className="relative z-0 mt-8 grid grid-cols-1 gap-3 overflow-visible sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 xl:gap-3.5">
           {why.cards?.map((card) => (
             <article
               key={card.id}
-              className="flex h-full flex-col overflow-hidden rounded-[0.9rem] border border-gold/55 bg-[#1c222c]/55"
+              className="group flex h-full origin-center flex-col overflow-hidden rounded-[0.9rem] border border-gold/55 bg-[#1c222c]/55 transition-transform duration-500 ease-out hover:z-10 hover:scale-[1.06] hover:border-gold"
             >
               <div className="flex flex-1 flex-col px-3.5 pb-3 pt-5 text-center sm:px-4">
                 <CardIcon icon={card.icon} iconSrc={card.iconSrc} />
@@ -215,7 +215,7 @@ export default function WhyAmbitionSection() {
               <img
                 src={card.imageSrc}
                 alt={card.imageAlt}
-                className="h-[6.6rem] w-full object-cover sm:h-[7.2rem]"
+                className="h-[6.6rem] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 sm:h-[7.2rem]"
               />
             </article>
           ))}
