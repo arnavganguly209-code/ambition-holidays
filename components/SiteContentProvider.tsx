@@ -38,7 +38,17 @@ export default function SiteContentProvider({
       });
       if (!res.ok) return;
       const data = (await res.json()) as SiteContent;
-      setContent((prev) => (prev.updatedAt === data.updatedAt ? prev : data));
+      const merged: SiteContent = {
+        ...DEFAULT_CONTENT,
+        ...data,
+        why: {
+          ...DEFAULT_CONTENT.why,
+          ...data.why,
+          cards: data.why?.cards ?? DEFAULT_CONTENT.why.cards,
+          ratings: data.why?.ratings ?? DEFAULT_CONTENT.why.ratings,
+        },
+      };
+      setContent((prev) => (prev.updatedAt === merged.updatedAt ? prev : merged));
     } catch {
       // ignore network blips
     }

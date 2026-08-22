@@ -54,6 +54,44 @@ export type JourneysContent = {
   packages: JourneyPackage[];
 };
 
+export type WhyCardIcon =
+  | "years"
+  | "tripadvisor"
+  | "guide"
+  | "stay"
+  | "support"
+  | "responsible"
+  | "custom";
+
+export type WhyCard = {
+  id: string;
+  title: string;
+  body: string;
+  imageSrc: string;
+  imageAlt: string;
+  icon: WhyCardIcon;
+  iconSrc?: string;
+};
+
+export type WhyRating = {
+  id: string;
+  label: string;
+  value: string;
+  brand: "tripadvisor" | "google" | "facebook" | "instagram" | "custom";
+  logoSrc?: string;
+};
+
+export type WhyContent = {
+  visible: boolean;
+  eyebrow: string;
+  headline: string;
+  body: string;
+  cards: WhyCard[];
+  awardTitle: string;
+  awardSubtitle: string;
+  ratings: WhyRating[];
+};
+
 export type SiteContent = {
   updatedAt: string;
   header: {
@@ -81,6 +119,7 @@ export type SiteContent = {
     features: SignatureFeature[];
   };
   journeys: JourneysContent;
+  why: WhyContent;
 };
 
 export const DEFAULT_CONTENT: SiteContent = {
@@ -259,6 +298,70 @@ export const DEFAULT_CONTENT: SiteContent = {
         imageSrc: "/images/packages/helicopter.jpg",
         imageAlt: "Helicopter on a luxury lodge helipad in the Everest region",
       },
+    ],
+  },
+  why: {
+    visible: true,
+    eyebrow: "WHY TRAVEL WITH US",
+    headline: "Why Ambition Holidays",
+    body: "We don't just organize trips — we craft transformative journeys with unmatched care, local expertise, and a passion for the Himalayas.",
+    awardTitle: "Proudly Recognized for Excellence",
+    awardSubtitle: "Awarded by TripAdvisor & our incredible guests",
+    cards: [
+      {
+        id: "years",
+        title: "11+ Years of Experience",
+        body: "Over a decade of crafting extraordinary Himalayan journeys with excellence and passion.",
+        imageSrc: "/images/why/years.jpg",
+        imageAlt: "Hiker watching a Himalayan sunrise",
+        icon: "years",
+      },
+      {
+        id: "reviews",
+        title: "410+ TripAdvisor Reviews",
+        body: "Consistently trusted by hundreds of happy travelers who recommend us for our service and reliability.",
+        imageSrc: "/images/why/reviews.jpg",
+        imageAlt: "Luxury lodge terrace at dusk",
+        icon: "tripadvisor",
+      },
+      {
+        id: "guides",
+        title: "Expert Local Guides",
+        body: "Our professional, certified local guides ensure your journey is safe, insightful, and unforgettable.",
+        imageSrc: "/images/why/guides.jpg",
+        imageAlt: "Trekkers walking toward a snow peak",
+        icon: "guide",
+      },
+      {
+        id: "stays",
+        title: "Handpicked Stays",
+        body: "Carefully selected luxury lodges and hotels that offer comfort, character, and exceptional service.",
+        imageSrc: "/images/why/stays.jpg",
+        imageAlt: "Warmly lit mountain lodge at night",
+        icon: "stay",
+      },
+      {
+        id: "support",
+        title: "24/7 Guest Support",
+        body: "We're with you at every step of your journey with round-the-clock care and personal attention.",
+        imageSrc: "/images/why/support.jpg",
+        imageAlt: "Guest support planning a Himalayan journey",
+        icon: "support",
+      },
+      {
+        id: "responsible",
+        title: "Responsible Tourism",
+        body: "We travel with purpose—supporting local communities and preserving the natural beauty of Nepal.",
+        imageSrc: "/images/why/responsible.jpg",
+        imageAlt: "Local community in a Himalayan village",
+        icon: "responsible",
+      },
+    ],
+    ratings: [
+      { id: "ta", label: "Tripadvisor", value: "410+ Reviews", brand: "tripadvisor" },
+      { id: "google", label: "Google", value: "4.9 Rating", brand: "google" },
+      { id: "facebook", label: "Facebook", value: "4.8 Rating", brand: "facebook" },
+      { id: "instagram", label: "Instagram", value: "4.9 Rating", brand: "instagram" },
     ],
   },
 };

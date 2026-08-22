@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import path from "path";
-import sharp from "sharp";
 import {
   readSessionFromCookieHeader,
   verifySessionToken,
@@ -17,7 +16,13 @@ function isAuthed(req: Request) {
 }
 
 /** Center-cover crop to exact 9:16 portrait so frames never show empty bars. */
+async function loadSharp() {
+  const { default: sharp } = await import("sharp");
+  return sharp;
+}
+
 async function toNineSixteen(buffer: Buffer): Promise<Buffer> {
+  const sharp = await loadSharp();
   const image = sharp(buffer, { failOn: "none" }).rotate();
   const meta = await image.metadata();
   const width = meta.width ?? 1080;
@@ -53,6 +58,7 @@ async function toNineSixteen(buffer: Buffer): Promise<Buffer> {
 
 /** Landscape-friendly web jpeg so Orbit previews and the homepage stay sharp. */
 async function toWebPhoto(buffer: Buffer): Promise<Buffer> {
+  const sharp = await loadSharp();
   return sharp(buffer, { failOn: "none" })
     .rotate()
     .resize(1600, 1600, { fit: "inside", withoutEnlargement: true })

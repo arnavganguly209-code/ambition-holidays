@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import OrbitJourneysEditor from "@/components/OrbitJourneysEditor";
+import OrbitWhyEditor from "@/components/OrbitWhyEditor";
 import type {
   SignatureFeature,
   SiteContent,
@@ -48,7 +49,7 @@ export default function OrbitDashboard({ initial }: Props) {
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("");
   const [tab, setTab] = useState<
-    "hero" | "header" | "stats" | "signature" | "journeys" | "media"
+    "hero" | "header" | "stats" | "signature" | "journeys" | "why" | "media"
   >("journeys");
   const [uploads, setUploads] = useState<string[]>([]);
 
@@ -141,6 +142,7 @@ export default function OrbitDashboard({ initial }: Props) {
           {(
             [
               ["journeys", "Luxury treks"],
+              ["why", "Why Ambition"],
               ["signature", "Signature"],
               ["hero", "Hero"],
               ["header", "Header / Logo"],
@@ -509,6 +511,10 @@ export default function OrbitDashboard({ initial }: Props) {
               setContent={setContent}
               save={save}
             />
+          ) : null}
+
+          {tab === "why" ? (
+            <OrbitWhyEditor content={content} setContent={setContent} save={save} />
           ) : null}
 
           {tab === "signature" ? (

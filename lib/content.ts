@@ -40,6 +40,12 @@ export async function readContent(): Promise<SiteContent> {
         categories: parsed.journeys?.categories ?? DEFAULT_CONTENT.journeys.categories,
         packages: parsed.journeys?.packages ?? DEFAULT_CONTENT.journeys.packages,
       },
+      why: {
+        ...DEFAULT_CONTENT.why,
+        ...parsed.why,
+        cards: parsed.why?.cards ?? DEFAULT_CONTENT.why.cards,
+        ratings: parsed.why?.ratings ?? DEFAULT_CONTENT.why.ratings,
+      },
     };
   } catch {
     return structuredClone(DEFAULT_CONTENT);
@@ -91,6 +97,21 @@ export function scrubUploadRefs(content: SiteContent, publicPath: string): SiteC
           ? { ...pkg, imageSrc: DEFAULT_CONTENT.journeys.packages[0]?.imageSrc ?? pkg.imageSrc }
           : pkg,
       ),
+    },
+    why: {
+      ...content.why,
+      cards: content.why.cards.map((card, index) => ({
+        ...card,
+        imageSrc:
+          card.imageSrc === publicPath
+            ? DEFAULT_CONTENT.why.cards[index]?.imageSrc ?? DEFAULT_CONTENT.why.cards[0].imageSrc
+            : card.imageSrc,
+        iconSrc: card.iconSrc === publicPath ? undefined : card.iconSrc,
+      })),
+      ratings: content.why.ratings.map((rating) => ({
+        ...rating,
+        logoSrc: rating.logoSrc === publicPath ? undefined : rating.logoSrc,
+      })),
     },
   };
 }
