@@ -57,6 +57,12 @@ export async function readContent(): Promise<SiteContent> {
         cards: parsed.availability?.cards ?? DEFAULT_CONTENT.availability.cards,
         footItems: parsed.availability?.footItems ?? DEFAULT_CONTENT.availability.footItems,
       },
+      journal: {
+        ...DEFAULT_CONTENT.journal,
+        ...parsed.journal,
+        videos: parsed.journal?.videos ?? DEFAULT_CONTENT.journal.videos,
+        features: parsed.journal?.features ?? DEFAULT_CONTENT.journal.features,
+      },
     };
   } catch {
     return structuredClone(DEFAULT_CONTENT);
@@ -153,6 +159,22 @@ export function scrubUploadRefs(content: SiteContent, publicPath: string): SiteC
       footItems: (content.availability?.footItems ?? []).map((item) => ({
         ...item,
         iconSrc: item.iconSrc === publicPath ? undefined : item.iconSrc,
+      })),
+    },
+    journal: {
+      ...content.journal,
+      videos: (content.journal?.videos ?? []).map((video, index) => ({
+        ...video,
+        imageSrc:
+          video.imageSrc === publicPath
+            ? DEFAULT_CONTENT.journal.videos[index]?.imageSrc ??
+              DEFAULT_CONTENT.journal.videos[0].imageSrc
+            : video.imageSrc,
+        videoSrc: video.videoSrc === publicPath ? "" : video.videoSrc,
+      })),
+      features: (content.journal?.features ?? []).map((feature) => ({
+        ...feature,
+        iconSrc: feature.iconSrc === publicPath ? undefined : feature.iconSrc,
       })),
     },
   };

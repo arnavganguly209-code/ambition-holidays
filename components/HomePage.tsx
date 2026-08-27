@@ -7,6 +7,7 @@ import SignatureSection from "@/components/SignatureSection";
 import WhyAmbitionSection from "@/components/WhyAmbitionSection";
 import ExperiencesSection from "@/components/ExperiencesSection";
 import AvailabilitySection from "@/components/AvailabilitySection";
+import VideoJournalSection from "@/components/VideoJournalSection";
 import SiteContentProvider, { useSiteContent } from "@/components/SiteContentProvider";
 import type { SiteContent } from "@/lib/content-types";
 
@@ -22,6 +23,7 @@ function HomeSections() {
         <WhyAmbitionSection />
         <ExperiencesSection />
         <AvailabilitySection />
+        <VideoJournalSection />
       </div>
     </>
   );

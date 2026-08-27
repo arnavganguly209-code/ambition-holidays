@@ -58,6 +58,12 @@ export default function SiteContentProvider({
           cards: data.availability?.cards ?? DEFAULT_CONTENT.availability.cards,
           footItems: data.availability?.footItems ?? DEFAULT_CONTENT.availability.footItems,
         },
+        journal: {
+          ...DEFAULT_CONTENT.journal,
+          ...data.journal,
+          videos: data.journal?.videos ?? DEFAULT_CONTENT.journal.videos,
+          features: data.journal?.features ?? DEFAULT_CONTENT.journal.features,
+        },
       };
       setContent((prev) => (prev.updatedAt === merged.updatedAt ? prev : merged));
     } catch {

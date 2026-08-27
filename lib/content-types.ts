@@ -167,6 +167,44 @@ export type AvailabilityContent = {
   liveTimestamp: string;
 };
 
+export type JournalVideo = {
+  id: string;
+  title: string;
+  subtitle: string;
+  duration: string;
+  /** Poster / thumbnail image */
+  imageSrc: string;
+  imageAlt: string;
+  /**
+   * YouTube watch/share URL or ID, or uploaded /uploads/*.mp4 path.
+   * Empty = preview-only until Orbit adds a video.
+   */
+  videoSrc: string;
+};
+
+export type JournalFeatureIcon = "peaks" | "camera" | "play" | "heart" | "custom";
+
+export type JournalFeature = {
+  id: string;
+  title: string;
+  body: string;
+  icon: JournalFeatureIcon;
+  iconSrc?: string;
+};
+
+export type JournalContent = {
+  visible: boolean;
+  eyebrow: string;
+  headlineBefore: string;
+  headlineGold: string;
+  headlineAfter: string;
+  body: string;
+  ctaLabel: string;
+  ctaHref: string;
+  videos: JournalVideo[];
+  features: JournalFeature[];
+};
+
 export type SiteContent = {
   updatedAt: string;
   header: {
@@ -197,6 +235,7 @@ export type SiteContent = {
   why: WhyContent;
   experiences: ExperiencesContent;
   availability: AvailabilityContent;
+  journal: JournalContent;
 };
 
 export const DEFAULT_CONTENT: SiteContent = {
@@ -591,5 +630,70 @@ export const DEFAULT_CONTENT: SiteContent = {
     ],
     liveLabel: "UPDATED LIVE",
     liveTimestamp: "24 May 2025, 10:30 AM NPT",
+  },
+  journal: {
+    visible: true,
+    eyebrow: "VIDEO JOURNAL",
+    headlineBefore: "HIMALAYAN",
+    headlineGold: "TRAVEL",
+    headlineAfter: "MOMENTS",
+    body: "Real journeys. Real experiences. Witness the Himalayas through the eyes of our travellers.",
+    ctaLabel: "EXPLORE ALL VIDEOS",
+    ctaHref: "#",
+    videos: [
+      {
+        id: "everest",
+        title: "Everest Base Camp Trek",
+        subtitle: "14 Days Journey",
+        duration: "04:28",
+        imageSrc: "/images/journal/everest-clean.jpg",
+        imageAlt: "Hikers at sunset on the Everest Base Camp trail",
+        videoSrc: "",
+      },
+      {
+        id: "annapurna",
+        title: "Annapurna Circuit Trek",
+        subtitle: "16 Days Adventure",
+        duration: "05:12",
+        imageSrc: "/images/journal/annapurna-clean.jpg",
+        imageAlt: "Traveller overlooking Annapurna peaks",
+        videoSrc: "",
+      },
+      {
+        id: "mustang",
+        title: "Upper Mustang Expedition",
+        subtitle: "13 Days Journey",
+        duration: "03:55",
+        imageSrc: "/images/journal/mustang-clean.jpg",
+        imageAlt: "Stupa and prayer flags with Himalayan peaks",
+        videoSrc: "",
+      },
+    ],
+    features: [
+      {
+        id: "real",
+        title: "REAL EXPERIENCES",
+        body: "Authentic stories from travellers like you.",
+        icon: "peaks",
+      },
+      {
+        id: "moments",
+        title: "BEAUTIFUL MOMENTS",
+        body: "Capturing the raw beauty of the Himalayas.",
+        icon: "camera",
+      },
+      {
+        id: "expert",
+        title: "EXPERTLY CREATED",
+        body: "Professional videos crafted by our travel experts.",
+        icon: "play",
+      },
+      {
+        id: "passion",
+        title: "MADE WITH PASSION",
+        body: "Our love for the mountains in every frame.",
+        icon: "heart",
+      },
+    ],
   },
 };
