@@ -112,8 +112,62 @@ body {
   animation: whatsapp-call-pulse 1.8s ease-out infinite;
 }
 
+@keyframes live-dot-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 10px rgba(52, 211, 153, 0);
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
+    opacity: 1;
+  }
+}
+
+.live-dot-pulse {
+  animation: live-dot-pulse 1.6s ease-out infinite;
+}
+
+@keyframes avail-card-glow {
+  0%,
+  100% {
+    border-color: rgba(52, 211, 153, 0.4);
+    box-shadow:
+      0 0 0 1px rgba(52, 211, 153, 0.35),
+      0 0 22px rgba(52, 211, 153, 0.16);
+  }
+  50% {
+    border-color: rgba(52, 211, 153, 0.85);
+    box-shadow:
+      0 0 0 1px rgba(52, 211, 153, 0.7),
+      0 0 34px rgba(52, 211, 153, 0.38);
+  }
+}
+
+.avail-card-glow {
+  animation: avail-card-glow 2.4s ease-in-out infinite;
+}
+
+.avail-card-glow:hover {
+  box-shadow:
+    0 0 0 1px rgba(52, 211, 153, 0.75),
+    0 0 36px rgba(52, 211, 153, 0.35);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .whatsapp-call-pulse {
+    animation: none;
+  }
+  .live-dot-pulse {
+    animation: none;
+  }
+  .avail-card-glow {
     animation: none;
   }
 }

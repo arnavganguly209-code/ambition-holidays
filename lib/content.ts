@@ -51,6 +51,12 @@ export async function readContent(): Promise<SiteContent> {
         ...parsed.experiences,
         cards: parsed.experiences?.cards ?? DEFAULT_CONTENT.experiences.cards,
       },
+      availability: {
+        ...DEFAULT_CONTENT.availability,
+        ...parsed.availability,
+        cards: parsed.availability?.cards ?? DEFAULT_CONTENT.availability.cards,
+        footItems: parsed.availability?.footItems ?? DEFAULT_CONTENT.availability.footItems,
+      },
     };
   } catch {
     return structuredClone(DEFAULT_CONTENT);
@@ -128,6 +134,25 @@ export function scrubUploadRefs(content: SiteContent, publicPath: string): SiteC
               DEFAULT_CONTENT.experiences.cards[0].imageSrc
             : card.imageSrc,
         iconSrc: card.iconSrc === publicPath ? undefined : card.iconSrc,
+      })),
+    },
+    availability: {
+      ...content.availability,
+      cards: (content.availability?.cards ?? []).map((card, index) => ({
+        ...card,
+        imageSrc:
+          card.imageSrc === publicPath
+            ? DEFAULT_CONTENT.availability.cards[index]?.imageSrc ??
+              DEFAULT_CONTENT.availability.cards[0].imageSrc
+            : card.imageSrc,
+        routes: (card.routes ?? []).map((route) => ({
+          ...route,
+          iconSrc: route.iconSrc === publicPath ? undefined : route.iconSrc,
+        })),
+      })),
+      footItems: (content.availability?.footItems ?? []).map((item) => ({
+        ...item,
+        iconSrc: item.iconSrc === publicPath ? undefined : item.iconSrc,
       })),
     },
   };

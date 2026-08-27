@@ -143,7 +143,7 @@ export default function ExperiencesSection() {
   if (!experiences?.visible) return null;
 
   return (
-    <section className="relative border-t border-gold/15 px-4 pb-12 pt-10 sm:px-8 sm:pb-14 sm:pt-12 lg:px-10">
+    <section className="relative border-t border-gold/15 px-4 pb-7 pt-10 sm:px-8 sm:pb-8 sm:pt-12 lg:px-10">
       <div className="mx-auto max-w-[88rem]">
         <div className="mx-auto max-w-3xl text-center">
           <div className="mb-2 flex items-center justify-center gap-4">

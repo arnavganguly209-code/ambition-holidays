@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import OrbitJourneysEditor from "@/components/OrbitJourneysEditor";
 import OrbitWhyEditor from "@/components/OrbitWhyEditor";
 import OrbitExperiencesEditor from "@/components/OrbitExperiencesEditor";
+import OrbitAvailabilityEditor from "@/components/OrbitAvailabilityEditor";
 import type {
   SignatureFeature,
   SiteContent,
@@ -50,7 +51,15 @@ export default function OrbitDashboard({ initial }: Props) {
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("");
   const [tab, setTab] = useState<
-    "hero" | "header" | "stats" | "signature" | "journeys" | "why" | "experiences" | "media"
+    | "hero"
+    | "header"
+    | "stats"
+    | "signature"
+    | "journeys"
+    | "why"
+    | "experiences"
+    | "availability"
+    | "media"
   >("journeys");
   const [uploads, setUploads] = useState<string[]>([]);
 
@@ -145,6 +154,7 @@ export default function OrbitDashboard({ initial }: Props) {
               ["journeys", "Luxury treks"],
               ["why", "Why Ambition"],
               ["experiences", "Experiences"],
+              ["availability", "Availability"],
               ["signature", "Signature"],
               ["hero", "Hero"],
               ["header", "Header / Logo"],
@@ -521,6 +531,10 @@ export default function OrbitDashboard({ initial }: Props) {
 
           {tab === "experiences" ? (
             <OrbitExperiencesEditor content={content} setContent={setContent} save={save} />
+          ) : null}
+
+          {tab === "availability" ? (
+            <OrbitAvailabilityEditor content={content} setContent={setContent} save={save} />
           ) : null}
 
           {tab === "signature" ? (

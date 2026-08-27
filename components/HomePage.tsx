@@ -6,6 +6,7 @@ import LuxuryTreksSection from "@/components/LuxuryTreksSection";
 import SignatureSection from "@/components/SignatureSection";
 import WhyAmbitionSection from "@/components/WhyAmbitionSection";
 import ExperiencesSection from "@/components/ExperiencesSection";
+import AvailabilitySection from "@/components/AvailabilitySection";
 import SiteContentProvider, { useSiteContent } from "@/components/SiteContentProvider";
 import type { SiteContent } from "@/lib/content-types";
 
@@ -20,6 +21,7 @@ function HomeSections() {
         <LuxuryTreksSection />
         <WhyAmbitionSection />
         <ExperiencesSection />
+        <AvailabilitySection />
       </div>
     </>
   );

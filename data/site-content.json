@@ -368,5 +368,91 @@
         "href": "/luxury-treks"
       }
     ]
+  },
+  "availability": {
+    "visible": true,
+    "eyebrow": "LIVE AVAILABILITY",
+    "headlineBefore": "YOUR",
+    "headlineGold": "JOURNEY",
+    "headlineAfter": "AWAITS",
+    "body": "Secure your private Himalayan escape while your preferred dates are available.",
+    "cards": [
+      {
+        "id": "sep",
+        "monthShort": "SEP",
+        "monthFull": "September",
+        "badge": "PEAK SEASON",
+        "imageSrc": "/images/availability/sep.jpg",
+        "imageAlt": "Luxury lodge patio with fire pit overlooking Himalayan peaks at dusk",
+        "routes": [
+          { "id": "sep-1", "label": "Everest Base Camp", "icon": "peaks" },
+          { "id": "sep-2", "label": "Annapurna Luxury Trek", "icon": "temple" },
+          { "id": "sep-3", "label": "Upper Mustang", "icon": "trek" },
+          { "id": "sep-4", "label": "Private Helicopter Experiences", "icon": "heli" }
+        ],
+        "availableCount": 12,
+        "availableLabel": "JOURNEYS AVAILABLE",
+        "ctaLabel": "VIEW AVAILABILITY",
+        "ctaHref": "/luxury-treks"
+      },
+      {
+        "id": "oct",
+        "monthShort": "OCT",
+        "monthFull": "October",
+        "badge": "PRIME SEASON",
+        "imageSrc": "/images/availability/oct.jpg",
+        "imageAlt": "Mountain terrace with stupa overlooking a Himalayan valley",
+        "routes": [
+          { "id": "oct-1", "label": "Everest Region", "icon": "peaks" },
+          { "id": "oct-2", "label": "Annapurna Region", "icon": "temple" },
+          { "id": "oct-3", "label": "Manaslu", "icon": "trek" },
+          { "id": "oct-4", "label": "Luxury Mustang Escape", "icon": "heli" }
+        ],
+        "availableCount": 18,
+        "availableLabel": "JOURNEYS AVAILABLE",
+        "ctaLabel": "VIEW AVAILABILITY",
+        "ctaHref": "/luxury-treks"
+      },
+      {
+        "id": "nov",
+        "monthShort": "NOV",
+        "monthFull": "November",
+        "badge": "GOLDEN SEASON",
+        "imageSrc": "/images/availability/nov.jpg",
+        "imageAlt": "Helicopter flying beside a sunlit Himalayan peak",
+        "routes": [
+          { "id": "nov-1", "label": "Everest", "icon": "peaks" },
+          { "id": "nov-2", "label": "Annapurna", "icon": "temple" },
+          { "id": "nov-3", "label": "Luxury Cultural Journeys", "icon": "trek" },
+          { "id": "nov-4", "label": "Private Mountain Escapes", "icon": "heli" }
+        ],
+        "availableCount": 14,
+        "availableLabel": "JOURNEYS AVAILABLE",
+        "ctaLabel": "VIEW AVAILABILITY",
+        "ctaHref": "/luxury-treks"
+      }
+    ],
+    "footItems": [
+      {
+        "id": "live",
+        "title": "LIVE AVAILABILITY",
+        "body": "Real-time updates from our booking system",
+        "icon": "calendar"
+      },
+      {
+        "id": "secure",
+        "title": "SECURE YOUR DATE",
+        "body": "Limited departures. Book early to secure your date.",
+        "icon": "secure"
+      },
+      {
+        "id": "concierge",
+        "title": "PERSONAL CONCIERGE",
+        "body": "Our travel experts are here to craft your perfect journey.",
+        "icon": "concierge"
+      }
+    ],
+    "liveLabel": "UPDATED LIVE",
+    "liveTimestamp": "24 May 2025, 10:30 AM NPT"
   }
 }
