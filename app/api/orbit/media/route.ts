@@ -3,7 +3,7 @@ import path from "path";
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { readContent, scrubUploadRefs, writeContent } from "@/lib/content";
-import { UPLOAD_DIRS, safeUploadName } from "@/lib/uploads";
+import { uploadDirs, safeUploadName } from "@/lib/uploads";
 import {
   readSessionFromCookieHeader,
   verifySessionToken,
@@ -36,7 +36,7 @@ export async function DELETE(req: Request) {
   if (!filename) {
     return NextResponse.json({ error: "Invalid file" }, { status: 400 });
   }
-  for (const dir of UPLOAD_DIRS) {
+  for (const dir of uploadDirs()) {
     try {
       await fs.unlink(path.join(dir, filename));
     } catch {
@@ -73,7 +73,7 @@ export async function GET(req: Request) {
   }
 
   const names = new Set<string>();
-  for (const dir of UPLOAD_DIRS) {
+  for (const dir of uploadDirs()) {
     try {
       await fs.mkdir(dir, { recursive: true });
       const files = await fs.readdir(dir);

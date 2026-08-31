@@ -1,10 +1,11 @@
 import { promises as fs } from "fs";
 import path from "path";
+import { uploadDirs } from "@/lib/cms-paths";
 
-export const UPLOAD_DIRS = [
-  path.join(process.cwd(), "data", "uploads"),
-  path.join(process.cwd(), "public", "uploads"),
-];
+export { uploadDirs };
+
+/** @deprecated Prefer uploadDirs() */
+export const UPLOAD_DIRS = uploadDirs();
 
 export function safeUploadName(input: string) {
   const base = path.basename(input);
@@ -24,7 +25,7 @@ export function contentTypeFor(name: string) {
 }
 
 export async function writeUpload(name: string, buffer: Buffer) {
-  for (const dir of UPLOAD_DIRS) {
+  for (const dir of uploadDirs()) {
     await fs.mkdir(dir, { recursive: true });
     await fs.writeFile(path.join(dir, name), buffer);
   }
@@ -33,7 +34,7 @@ export async function writeUpload(name: string, buffer: Buffer) {
 export async function readUpload(name: string) {
   const safe = safeUploadName(name);
   if (!safe) return null;
-  for (const dir of UPLOAD_DIRS) {
+  for (const dir of uploadDirs()) {
     const abs = path.join(dir, safe);
     if (!abs.startsWith(dir)) continue;
     try {

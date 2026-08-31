@@ -1,11 +1,11 @@
 import { promises as fs } from "fs";
 import path from "path";
+import { contentDataDir, contentFilePath } from "@/lib/cms-paths";
 import { DEFAULT_CONTENT, type SiteContent } from "@/lib/content-types";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const CONTENT_FILE = path.join(DATA_DIR, "site-content.json");
-
 export async function ensureContentFile(): Promise<void> {
+  const DATA_DIR = contentDataDir();
+  const CONTENT_FILE = contentFilePath();
   await fs.mkdir(DATA_DIR, { recursive: true });
   try {
     await fs.access(CONTENT_FILE);
@@ -17,7 +17,7 @@ export async function ensureContentFile(): Promise<void> {
 export async function readContent(): Promise<SiteContent> {
   try {
     await ensureContentFile();
-    const raw = await fs.readFile(CONTENT_FILE, "utf8");
+    const raw = await fs.readFile(contentFilePath(), "utf8");
     const parsed = JSON.parse(raw) as SiteContent;
     return {
       ...DEFAULT_CONTENT,
@@ -106,6 +106,8 @@ export async function readContent(): Promise<SiteContent> {
 }
 
 export async function writeContent(content: SiteContent): Promise<SiteContent> {
+  const DATA_DIR = contentDataDir();
+  const CONTENT_FILE = contentFilePath();
   await fs.mkdir(DATA_DIR, { recursive: true });
   const next: SiteContent = {
     ...content,

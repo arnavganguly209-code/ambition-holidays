@@ -59,6 +59,8 @@ jobs:
 
             # Hardcoded Ambition Holidays targets only — never other apps/sites/DBs.
             PROJECT_PATH="/var/www/ambition-holidays"
+            # Durable Orbit CMS store OUTSIDE the git tree — survives every deploy forever.
+            CMS_PATH="/var/www/ambition-holidays-cms"
             PM2_APP="ambition-holidays"
             APP_PORT="3004"
             EXPECTED_REPO="arnavganguly209-code/ambition-holidays"
@@ -73,17 +75,35 @@ jobs:
               exit 1
             fi
 
-            echo "Preserving Orbit CMS content + uploads before sync..."
-            CMS_BACKUP="$(mktemp -d /tmp/ambition-cms-XXXXXX)"
+            echo "Preparing durable CMS store at ${CMS_PATH}..."
+            mkdir -p "${CMS_PATH}/uploads" "${CMS_PATH}/data-uploads" "${CMS_PATH}/public-uploads"
+
+            # Always sync LATEST live Orbit content INTO durable store BEFORE git reset.
+            # Prefer project working copy (current running site), then keep existing CMS_PATH.
             if [ -f data/site-content.json ]; then
-              cp -a data/site-content.json "${CMS_BACKUP}/site-content.json"
-              echo "Backed up data/site-content.json"
+              cp -a data/site-content.json "${CMS_PATH}/site-content.json"
+              echo "Synced project site-content.json -> durable CMS store"
+            elif [ -L data/site-content.json ] && [ -f "${CMS_PATH}/site-content.json" ]; then
+              echo "site-content already in durable store"
             fi
-            if [ -d data/uploads ]; then
-              cp -a data/uploads "${CMS_BACKUP}/data-uploads"
+            if [ -d data/uploads ] && [ "$(ls -A data/uploads 2>/dev/null | wc -l)" -gt 0 ]; then
+              cp -a data/uploads/. "${CMS_PATH}/data-uploads/"
+              cp -a data/uploads/. "${CMS_PATH}/uploads/"
+              echo "Synced data/uploads -> durable CMS store"
             fi
-            if [ -d public/uploads ]; then
-              cp -a public/uploads "${CMS_BACKUP}/public-uploads"
+            if [ -d public/uploads ] && [ "$(ls -A public/uploads 2>/dev/null | wc -l)" -gt 0 ]; then
+              cp -a public/uploads/. "${CMS_PATH}/public-uploads/"
+              cp -a public/uploads/. "${CMS_PATH}/uploads/"
+              echo "Synced public/uploads -> durable CMS store"
+            fi
+
+            # Extra safety snapshot (timestamped) before any destructive git op
+            STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
+            mkdir -p "${CMS_PATH}/snapshots"
+            if [ -f "${CMS_PATH}/site-content.json" ]; then
+              cp -a "${CMS_PATH}/site-content.json" "${CMS_PATH}/snapshots/site-content-${STAMP}.json"
+              # keep last 20 snapshots only
+              ls -1t "${CMS_PATH}/snapshots"/site-content-*.json 2>/dev/null | tail -n +21 | xargs -r rm -f
             fi
 
             echo "Syncing origin/main..."
@@ -91,29 +111,47 @@ jobs:
             git checkout main
             git reset --hard origin/main
 
-            echo "Ensuring uploads directory..."
-            mkdir -p public/uploads data/uploads
-
-            echo "Restoring Orbit CMS content + uploads (never wipe editor data)..."
-            if [ -f "${CMS_BACKUP}/site-content.json" ]; then
-              cp -a "${CMS_BACKUP}/site-content.json" data/site-content.json
-              echo "Restored data/site-content.json"
+            echo "Re-linking durable Orbit CMS into project (git reset cannot wipe it)..."
+            mkdir -p data public
+            # Remove any tracked/default copies replaced by reset
+            rm -f data/site-content.json
+            rm -rf data/uploads public/uploads
+            mkdir -p data
+            # Content JSON lives only in CMS_PATH; project gets a symlink for tooling/debug.
+            if [ -f "${CMS_PATH}/site-content.json" ]; then
+              ln -sfn "${CMS_PATH}/site-content.json" data/site-content.json
+              echo "Linked data/site-content.json -> ${CMS_PATH}/site-content.json"
+            else
+              echo "WARNING: No site-content.json in durable store yet; app will seed defaults once."
             fi
-            if [ -d "${CMS_BACKUP}/data-uploads" ]; then
-              cp -a "${CMS_BACKUP}/data-uploads/." data/uploads/
+            mkdir -p "${CMS_PATH}/data-uploads" "${CMS_PATH}/public-uploads" "${CMS_PATH}/uploads"
+            ln -sfn "${CMS_PATH}/data-uploads" data/uploads
+            ln -sfn "${CMS_PATH}/public-uploads" public/uploads
+            # Mirror uploads into shared uploads/ for AMBITION_CMS_DIR readers
+            if [ "$(ls -A ${CMS_PATH}/public-uploads 2>/dev/null | wc -l)" -gt 0 ]; then
+              cp -a "${CMS_PATH}/public-uploads/." "${CMS_PATH}/uploads/" || true
             fi
-            if [ -d "${CMS_BACKUP}/public-uploads" ]; then
-              cp -a "${CMS_BACKUP}/public-uploads/." public/uploads/
+            if [ "$(ls -A ${CMS_PATH}/data-uploads 2>/dev/null | wc -l)" -gt 0 ]; then
+              cp -a "${CMS_PATH}/data-uploads/." "${CMS_PATH}/uploads/" || true
             fi
-            rm -rf "${CMS_BACKUP}"
 
             if [ -n "${ORBIT_PASSKEY:-}" ] && [ -n "${ORBIT_SESSION_SECRET:-}" ]; then
-              echo "Writing Orbit CMS env (.env.local)..."
+              echo "Writing Orbit CMS env (.env.local) with durable CMS path..."
               umask 077
-              printf 'ORBIT_PASSKEY=%s\nORBIT_SESSION_SECRET=%s\n' \
-                "${ORBIT_PASSKEY}" "${ORBIT_SESSION_SECRET}" > .env.local
+              printf 'ORBIT_PASSKEY=%s\nORBIT_SESSION_SECRET=%s\nAMBITION_CMS_DIR=%s\n' \
+                "${ORBIT_PASSKEY}" "${ORBIT_SESSION_SECRET}" "${CMS_PATH}" > .env.local
             else
               echo "WARNING: ORBIT_PASSKEY / ORBIT_SESSION_SECRET secrets missing; /orbit login will stay disabled."
+              umask 077
+              printf 'AMBITION_CMS_DIR=%s\n' "${CMS_PATH}" > .env.local
+            fi
+
+            # Verify CMS content still present after link
+            if [ -f "${CMS_PATH}/site-content.json" ]; then
+              BYTES="$(wc -c < "${CMS_PATH}/site-content.json" | tr -d ' ')"
+              echo "Durable CMS content OK (${BYTES} bytes)"
+            else
+              echo "WARNING: Durable CMS content file missing after deploy setup"
             fi
 
             echo "Installing dependencies..."
