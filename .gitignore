@@ -50,6 +50,9 @@ yarn-error.log*
 /data/uploads/*
 !/data/uploads/.gitkeep
 
+# Orbit CMS live content — never overwrite production edits on deploy
+/data/site-content.json
+
 # vercel
 .vercel
 

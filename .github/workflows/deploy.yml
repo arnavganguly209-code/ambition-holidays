@@ -73,6 +73,19 @@ jobs:
               exit 1
             fi
 
+            echo "Preserving Orbit CMS content + uploads before sync..."
+            CMS_BACKUP="$(mktemp -d /tmp/ambition-cms-XXXXXX)"
+            if [ -f data/site-content.json ]; then
+              cp -a data/site-content.json "${CMS_BACKUP}/site-content.json"
+              echo "Backed up data/site-content.json"
+            fi
+            if [ -d data/uploads ]; then
+              cp -a data/uploads "${CMS_BACKUP}/data-uploads"
+            fi
+            if [ -d public/uploads ]; then
+              cp -a public/uploads "${CMS_BACKUP}/public-uploads"
+            fi
+
             echo "Syncing origin/main..."
             git fetch origin main
             git checkout main
@@ -80,6 +93,19 @@ jobs:
 
             echo "Ensuring uploads directory..."
             mkdir -p public/uploads data/uploads
+
+            echo "Restoring Orbit CMS content + uploads (never wipe editor data)..."
+            if [ -f "${CMS_BACKUP}/site-content.json" ]; then
+              cp -a "${CMS_BACKUP}/site-content.json" data/site-content.json
+              echo "Restored data/site-content.json"
+            fi
+            if [ -d "${CMS_BACKUP}/data-uploads" ]; then
+              cp -a "${CMS_BACKUP}/data-uploads/." data/uploads/
+            fi
+            if [ -d "${CMS_BACKUP}/public-uploads" ]; then
+              cp -a "${CMS_BACKUP}/public-uploads/." public/uploads/
+            fi
+            rm -rf "${CMS_BACKUP}"
 
             if [ -n "${ORBIT_PASSKEY:-}" ] && [ -n "${ORBIT_SESSION_SECRET:-}" ]; then
               echo "Writing Orbit CMS env (.env.local)..."

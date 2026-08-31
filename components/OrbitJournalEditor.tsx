@@ -58,6 +58,14 @@ export default function OrbitJournalEditor({ content, setContent, save }: Props)
     patch({ videos });
   }
 
+  async function saveVideo(index: number, nextVideo: JournalVideo) {
+    const videos = [...journal.videos];
+    videos[index] = nextVideo;
+    const next = { ...content, journal: { ...journal, videos } };
+    setContent(next);
+    await save(next);
+  }
+
   async function replaceThumb(index: number, file: File) {
     setBusy(`thumb-${index}`);
     try {
@@ -92,6 +100,11 @@ export default function OrbitJournalEditor({ content, setContent, save }: Props)
 
   return (
     <div className="space-y-8">
+      <div className="rounded-lg border border-emerald-400/25 bg-emerald-400/5 p-3 text-[0.8rem] text-white/70">
+        Video Journal edits (YouTube/Vimeo link, thumbnail, title, time) are saved to the server and
+        <strong className="text-white/90"> stay after deploy</strong>. After typing a link or text,
+        click outside the field or press <strong className="text-white/90">Save changes</strong>.
+      </div>
       <label className="flex items-center gap-2 text-sm">
         <input
           type="checkbox"
@@ -228,10 +241,14 @@ export default function OrbitJournalEditor({ content, setContent, save }: Props)
                   value={video.videoSrc}
                   placeholder="https://www.youtube.com/watch?v=…  or  https://vimeo.com/…  or  /uploads/…"
                   onChange={(e) => updateVideo(index, { ...video, videoSrc: e.target.value })}
+                  onBlur={(e) =>
+                    void saveVideo(index, { ...video, videoSrc: e.target.value })
+                  }
                 />
               </Field>
               <p className="text-[0.65rem] text-white/40">
                 Card click opens a same-page fullscreen player. Paste YouTube/Vimeo link, or upload MP4.
+                Link/title/time auto-save when you leave the field.
               </p>
               <div className="grid gap-3 sm:grid-cols-2">
                 <Field label="Title">
@@ -239,6 +256,9 @@ export default function OrbitJournalEditor({ content, setContent, save }: Props)
                     className={inputClass}
                     value={video.title}
                     onChange={(e) => updateVideo(index, { ...video, title: e.target.value })}
+                    onBlur={(e) =>
+                      void saveVideo(index, { ...video, title: e.target.value })
+                    }
                   />
                 </Field>
                 <Field label="Subtitle">
@@ -246,6 +266,9 @@ export default function OrbitJournalEditor({ content, setContent, save }: Props)
                     className={inputClass}
                     value={video.subtitle}
                     onChange={(e) => updateVideo(index, { ...video, subtitle: e.target.value })}
+                    onBlur={(e) =>
+                      void saveVideo(index, { ...video, subtitle: e.target.value })
+                    }
                   />
                 </Field>
                 <Field label="Duration label">
@@ -253,6 +276,9 @@ export default function OrbitJournalEditor({ content, setContent, save }: Props)
                     className={inputClass}
                     value={video.duration}
                     onChange={(e) => updateVideo(index, { ...video, duration: e.target.value })}
+                    onBlur={(e) =>
+                      void saveVideo(index, { ...video, duration: e.target.value })
+                    }
                   />
                 </Field>
                 <Field label="Image alt">
@@ -260,6 +286,9 @@ export default function OrbitJournalEditor({ content, setContent, save }: Props)
                     className={inputClass}
                     value={video.imageAlt}
                     onChange={(e) => updateVideo(index, { ...video, imageAlt: e.target.value })}
+                    onBlur={(e) =>
+                      void saveVideo(index, { ...video, imageAlt: e.target.value })
+                    }
                   />
                 </Field>
               </div>

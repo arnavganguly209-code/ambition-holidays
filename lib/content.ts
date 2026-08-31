@@ -111,7 +111,9 @@ export async function writeContent(content: SiteContent): Promise<SiteContent> {
     ...content,
     updatedAt: new Date().toISOString(),
   };
-  await fs.writeFile(CONTENT_FILE, JSON.stringify(next, null, 2), "utf8");
+  const tmp = `${CONTENT_FILE}.${process.pid}.tmp`;
+  await fs.writeFile(tmp, JSON.stringify(next, null, 2), "utf8");
+  await fs.rename(tmp, CONTENT_FILE);
   return next;
 }
 
