@@ -64,6 +64,27 @@ export default function SiteContentProvider({
           videos: data.journal?.videos ?? DEFAULT_CONTENT.journal.videos,
           features: data.journal?.features ?? DEFAULT_CONTENT.journal.features,
         },
+        blog: {
+          ...DEFAULT_CONTENT.blog,
+          ...data.blog,
+          featured: data.blog?.featured ?? DEFAULT_CONTENT.blog.featured,
+          sidePosts: data.blog?.sidePosts ?? DEFAULT_CONTENT.blog.sidePosts,
+          features: data.blog?.features ?? DEFAULT_CONTENT.blog.features,
+        },
+        footer: {
+          ...DEFAULT_CONTENT.footer,
+          ...data.footer,
+          members: data.footer?.members?.some((m) => m.imageSrc)
+            ? data.footer.members
+            : DEFAULT_CONTENT.footer.members,
+          socials: data.footer?.socials ?? DEFAULT_CONTENT.footer.socials,
+          payments: data.footer?.payments ?? DEFAULT_CONTENT.footer.payments,
+          phones: data.footer?.phones ?? DEFAULT_CONTENT.footer.phones,
+          usefulLinks: data.footer?.usefulLinks ?? DEFAULT_CONTENT.footer.usefulLinks,
+          adventureLinks: data.footer?.adventureLinks ?? DEFAULT_CONTENT.footer.adventureLinks,
+          trekLinks: data.footer?.trekLinks ?? DEFAULT_CONTENT.footer.trekLinks,
+          legalLinks: data.footer?.legalLinks ?? DEFAULT_CONTENT.footer.legalLinks,
+        },
       };
       setContent((prev) => (prev.updatedAt === merged.updatedAt ? prev : merged));
     } catch {

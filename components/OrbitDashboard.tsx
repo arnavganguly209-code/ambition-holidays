@@ -7,6 +7,8 @@ import OrbitWhyEditor from "@/components/OrbitWhyEditor";
 import OrbitExperiencesEditor from "@/components/OrbitExperiencesEditor";
 import OrbitAvailabilityEditor from "@/components/OrbitAvailabilityEditor";
 import OrbitJournalEditor from "@/components/OrbitJournalEditor";
+import OrbitBlogEditor from "@/components/OrbitBlogEditor";
+import OrbitFooterEditor from "@/components/OrbitFooterEditor";
 import type {
   SignatureFeature,
   SiteContent,
@@ -61,6 +63,8 @@ export default function OrbitDashboard({ initial }: Props) {
     | "experiences"
     | "availability"
     | "journal"
+    | "blog"
+    | "footer"
     | "media"
   >("journeys");
   const [uploads, setUploads] = useState<string[]>([]);
@@ -158,6 +162,8 @@ export default function OrbitDashboard({ initial }: Props) {
               ["experiences", "Experiences"],
               ["availability", "Availability"],
               ["journal", "Video Journal"],
+              ["blog", "Blog"],
+              ["footer", "Footer"],
               ["signature", "Signature"],
               ["hero", "Hero"],
               ["header", "Header / Logo"],
@@ -542,6 +548,14 @@ export default function OrbitDashboard({ initial }: Props) {
 
           {tab === "journal" ? (
             <OrbitJournalEditor content={content} setContent={setContent} save={save} />
+          ) : null}
+
+          {tab === "blog" ? (
+            <OrbitBlogEditor content={content} setContent={setContent} save={save} />
+          ) : null}
+
+          {tab === "footer" ? (
+            <OrbitFooterEditor content={content} setContent={setContent} save={save} />
           ) : null}
 
           {tab === "signature" ? (

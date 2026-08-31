@@ -205,6 +205,125 @@ export type JournalContent = {
   features: JournalFeature[];
 };
 
+export type BlogBadgeStyle = "featured" | "outline" | "none";
+
+export type BlogPost = {
+  id: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  /** Top-left badge on featured cards, e.g. "★ FEATURED" */
+  badge: string;
+  badgeStyle: BlogBadgeStyle;
+  date: string;
+  readTime: string;
+  authorName: string;
+  authorAvatarSrc: string;
+  imageSrc: string;
+  imageAlt: string;
+  href: string;
+};
+
+export type BlogFeatureIcon = "pen" | "camera" | "peaks" | "compass" | "custom";
+
+export type BlogFeature = {
+  id: string;
+  title: string;
+  body: string;
+  icon: BlogFeatureIcon;
+  iconSrc?: string;
+};
+
+export type BlogContent = {
+  visible: boolean;
+  eyebrow: string;
+  /** e.g. Stories */
+  headlineBefore: string;
+  /** e.g. from the — rendered in gold italic script */
+  headlineScript: string;
+  /** e.g. Himalayas */
+  headlineAfter: string;
+  body: string;
+  ctaLabel: string;
+  ctaHref: string;
+  /** Large image cards (typically 2) */
+  featured: BlogPost[];
+  /** Compact list column (typically 3) */
+  sidePosts: BlogPost[];
+  features: BlogFeature[];
+};
+
+export type FooterLink = {
+  id: string;
+  label: string;
+  href: string;
+};
+
+export type FooterSocialNetwork =
+  | "facebook"
+  | "twitter"
+  | "instagram"
+  | "youtube"
+  | "linkedin"
+  | "custom";
+
+export type FooterSocial = {
+  id: string;
+  label: string;
+  href: string;
+  network: FooterSocialNetwork;
+  iconSrc?: string;
+};
+
+export type FooterBrandLogo = {
+  id: string;
+  label: string;
+  imageSrc: string;
+  href: string;
+};
+
+export type FooterContent = {
+  visible: boolean;
+  membersTitle: string;
+  members: FooterBrandLogo[];
+  socialTitle: string;
+  socials: FooterSocial[];
+  paymentsTitle: string;
+  payments: FooterBrandLogo[];
+  payNowLabel: string;
+  payNowHref: string;
+  showLandscape: boolean;
+  /** Luxury Himalayan silhouette scene (stupa, trekker, elephant, peaks) */
+  landscapeImageSrc: string;
+  /** Brand-row award / art (replaces mountain mark) */
+  brandArtSrc: string;
+  helpTitle: string;
+  helpBody: string;
+  phones: FooterLink[];
+  email: string;
+  emailHref: string;
+  hours: string;
+  usefulTitle: string;
+  usefulLinks: FooterLink[];
+  adventuresTitle: string;
+  adventureLinks: FooterLink[];
+  treksTitle: string;
+  trekLinks: FooterLink[];
+  newsletterTitle: string;
+  newsletterPlaceholder: string;
+  newsletterNote: string;
+  /** Falls back to header logo when empty */
+  logoSrc: string;
+  brandTagline: string;
+  mission: string;
+  missionScript: string;
+  copyright: string;
+  legalLinks: FooterLink[];
+  creditPrefix: string;
+  creditName: string;
+  creditHref: string;
+};
+
 export type SiteContent = {
   updatedAt: string;
   header: {
@@ -236,6 +355,8 @@ export type SiteContent = {
   experiences: ExperiencesContent;
   availability: AvailabilityContent;
   journal: JournalContent;
+  blog: BlogContent;
+  footer: FooterContent;
 };
 
 export const DEFAULT_CONTENT: SiteContent = {
@@ -695,5 +816,221 @@ export const DEFAULT_CONTENT: SiteContent = {
         icon: "heart",
       },
     ],
+  },
+  blog: {
+    visible: true,
+    eyebrow: "OUR BLOG",
+    headlineBefore: "Stories",
+    headlineScript: "from the",
+    headlineAfter: "Himalayas",
+    body: "Inspiring journeys, travel tips, and Himalayan tales from our explorers and local experts.",
+    ctaLabel: "View All Articles",
+    ctaHref: "/blog",
+    featured: [
+      {
+        id: "ebc-guide",
+        title: "The Ultimate Guide to Everest Base Camp Trek",
+        excerpt:
+          "Everything you need to know before embarking on the world's most iconic Himalayan adventure — from preparation to peak experiences.",
+        category: "TREKKING GUIDE",
+        badge: "★ FEATURED",
+        badgeStyle: "featured",
+        date: "March 15, 2025",
+        readTime: "8 min read",
+        authorName: "Rajesh Thapa",
+        authorAvatarSrc: "/images/ambition-holiday-logo.png",
+        imageSrc: "/images/journal/everest-clean.jpg",
+        imageAlt: "Trekkers on the trail toward Everest Base Camp at sunset",
+        href: "/blog/everest-base-camp-guide",
+      },
+      {
+        id: "annapurna-hidden",
+        title: "Hidden Gems of the Annapurna Circuit",
+        excerpt:
+          "Discover secret villages, untouched trails, and authentic experiences beyond the well-trodden path of Nepal's classic circuit.",
+        category: "DESTINATIONS",
+        badge: "DESTINATIONS",
+        badgeStyle: "outline",
+        date: "March 10, 2025",
+        readTime: "6 min read",
+        authorName: "Priya Sharma",
+        authorAvatarSrc: "/images/ambition-holiday-logo.png",
+        imageSrc: "/images/journal/annapurna-clean.jpg",
+        imageAlt: "Traveller overlooking Annapurna peaks from a ridge",
+        href: "/blog/annapurna-hidden-gems",
+      },
+    ],
+    sidePosts: [
+      {
+        id: "altitude",
+        title: "How to Prepare for High Altitude Trekking",
+        excerpt: "",
+        category: "TRAVEL TIPS",
+        badge: "",
+        badgeStyle: "none",
+        date: "Mar 5, 2025",
+        readTime: "5 min",
+        authorName: "",
+        authorAvatarSrc: "",
+        imageSrc: "/images/why/guides-photo.jpg",
+        imageAlt: "Trekkers walking toward a snow peak",
+        href: "/blog/high-altitude-preparation",
+      },
+      {
+        id: "mustang-culture",
+        title: "Cultural Etiquette in Mustang Region",
+        excerpt: "",
+        category: "CULTURE",
+        badge: "",
+        badgeStyle: "none",
+        date: "Feb 28, 2025",
+        readTime: "4 min",
+        authorName: "",
+        authorAvatarSrc: "",
+        imageSrc: "/images/experiences/culture-photo.jpg",
+        imageAlt: "Nepalese stupa and temples at sunset",
+        href: "/blog/mustang-cultural-etiquette",
+      },
+      {
+        id: "pack-list",
+        title: "Essential Packing List for Nepal Treks",
+        excerpt: "",
+        category: "GEAR GUIDE",
+        badge: "",
+        badgeStyle: "none",
+        date: "Feb 20, 2025",
+        readTime: "7 min",
+        authorName: "",
+        authorAvatarSrc: "",
+        imageSrc: "/images/packages/everest.jpg",
+        imageAlt: "Luxury lodge terrace with Himalayan peak views",
+        href: "/blog/nepal-trek-packing-list",
+      },
+    ],
+    features: [],
+  },
+  footer: {
+    visible: true,
+    membersTitle: "PROUDLY MEMBER OF",
+    members: [
+      {
+        id: "m1",
+        label: "Nepal Emblem",
+        imageSrc: "/images/footer/members/01-nepal-emblem.png",
+        href: "#",
+      },
+      {
+        id: "m2",
+        label: "NMA",
+        imageSrc: "/images/footer/members/02-nma.png",
+        href: "#",
+      },
+      {
+        id: "m3",
+        label: "NTB",
+        imageSrc: "/images/footer/members/03-ntb.png",
+        href: "#",
+      },
+      {
+        id: "m4",
+        label: "TAAN",
+        imageSrc: "/images/footer/members/04-taan.png",
+        href: "#",
+      },
+      {
+        id: "m5",
+        label: "KEEP",
+        imageSrc: "/images/footer/members/05-keep.png",
+        href: "#",
+      },
+    ],
+    socialTitle: "FIND & FOLLOW US",
+    socials: [
+      { id: "fb", label: "Facebook", href: "https://facebook.com", network: "facebook" },
+      { id: "tw", label: "X / Twitter", href: "https://x.com", network: "twitter" },
+      { id: "ig", label: "Instagram", href: "https://instagram.com", network: "instagram" },
+      { id: "yt", label: "YouTube", href: "https://youtube.com", network: "youtube" },
+      { id: "li", label: "LinkedIn", href: "https://linkedin.com", network: "linkedin" },
+    ],
+    paymentsTitle: "WE ACCEPT",
+    payments: [
+      {
+        id: "visa",
+        label: "Visa",
+        imageSrc: "/images/footer/payments/visa.png",
+        href: "#",
+      },
+      {
+        id: "mc",
+        label: "Mastercard",
+        imageSrc: "/images/footer/payments/mastercard.png",
+        href: "#",
+      },
+      {
+        id: "amex",
+        label: "American Express",
+        imageSrc: "/images/footer/payments/amex.png",
+        href: "#",
+      },
+    ],
+    payNowLabel: "Pay Now",
+    payNowHref: "/contact",
+    showLandscape: true,
+    landscapeImageSrc: "/images/footer/ambition-art-hq.jpg",
+    brandArtSrc: "/images/footer/tripadvisor-awards.png",
+    helpTitle: "NEED HELP?",
+    helpBody:
+      "Our Himalayan specialists are here to craft your private journey — from first enquiry to the trail.",
+    phones: [
+      { id: "p1", label: "+977-1-4000000", href: "tel:+97714000000" },
+      { id: "p2", label: "+977-9800000000", href: "tel:+9779800000000" },
+    ],
+    email: "info@ambitionholidays.com",
+    emailHref: "mailto:info@ambitionholidays.com",
+    hours: "9:00 AM – 6:00 PM Nepal Time",
+    usefulTitle: "USEFUL LINKS",
+    usefulLinks: [
+      { id: "u1", label: "About Us", href: "/about-us" },
+      { id: "u2", label: "Travel Guide", href: "/travel-guide" },
+      { id: "u3", label: "Journal", href: "/journal" },
+      { id: "u4", label: "Contact", href: "/contact" },
+      { id: "u5", label: "Visa & Entry", href: "/visa-and-entry" },
+      { id: "u6", label: "Best Time to Visit", href: "/best-time-to-visit" },
+    ],
+    adventuresTitle: "DESTINATIONS",
+    adventureLinks: [
+      { id: "a1", label: "Everest Region", href: "/everest-region" },
+      { id: "a2", label: "Annapurna Region", href: "/annapurna-region" },
+      { id: "a3", label: "Manaslu Region", href: "/manaslu-region" },
+      { id: "a4", label: "Langtang Region", href: "/langtang-region" },
+      { id: "a5", label: "Mustang", href: "/mustang" },
+      { id: "a6", label: "Helicopter Tours", href: "/helicopter-tours" },
+    ],
+    treksTitle: "POPULAR TREKS",
+    trekLinks: [
+      { id: "t1", label: "Luxury Everest Base Camp", href: "/luxury-everest-base-camp-trek" },
+      { id: "t2", label: "Luxury Annapurna Base Camp", href: "/luxury-annapurna-base-camp-trek" },
+      { id: "t3", label: "Luxury Annapurna Circuit", href: "/luxury-annapurna-circuit" },
+      { id: "t4", label: "Luxury Manaslu Circuit", href: "/luxury-manaslu-circuit-trek" },
+      { id: "t5", label: "Luxury Upper Mustang", href: "/luxury-upper-mustang-trek" },
+      { id: "t6", label: "Luxury Helicopter Treks", href: "/luxury-helicopter-treks" },
+    ],
+    newsletterTitle: "STAY UPDATED",
+    newsletterPlaceholder: "Your email address",
+    newsletterNote: "I agree to receive travel inspiration and updates from Ambition Holidays.",
+    logoSrc: "",
+    brandTagline: "LUXURY TREKS & EXPEDITIONS",
+    mission:
+      "Crafting luxury Himalayan experiences with passion, expertise and a deep commitment to responsible tourism.",
+    missionScript: "Beyond the ordinary.",
+    copyright: "© 2026 Ambition Holidays Pvt. Ltd. All Rights Reserved.",
+    legalLinks: [
+      { id: "l1", label: "Privacy Policy", href: "/privacy" },
+      { id: "l2", label: "Terms & Conditions", href: "/terms" },
+      { id: "l3", label: "Sitemap", href: "/sitemap" },
+    ],
+    creditPrefix: "Developed By",
+    creditName: "The Global Orbit",
+    creditHref: "https://theglobalorbit.com/",
   },
 };

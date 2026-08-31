@@ -8,6 +8,8 @@ import WhyAmbitionSection from "@/components/WhyAmbitionSection";
 import ExperiencesSection from "@/components/ExperiencesSection";
 import AvailabilitySection from "@/components/AvailabilitySection";
 import VideoJournalSection from "@/components/VideoJournalSection";
+import BlogSection from "@/components/BlogSection";
+import SiteFooter from "@/components/SiteFooter";
 import SiteContentProvider, { useSiteContent } from "@/components/SiteContentProvider";
 import type { SiteContent } from "@/lib/content-types";
 
@@ -24,7 +26,9 @@ function HomeSections() {
         <ExperiencesSection />
         <AvailabilitySection />
         <VideoJournalSection />
+        <BlogSection />
       </div>
+      <SiteFooter />
     </>
   );
 }

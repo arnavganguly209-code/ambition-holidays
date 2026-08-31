@@ -63,6 +63,42 @@ export async function readContent(): Promise<SiteContent> {
         videos: parsed.journal?.videos ?? DEFAULT_CONTENT.journal.videos,
         features: parsed.journal?.features ?? DEFAULT_CONTENT.journal.features,
       },
+      blog: {
+        ...DEFAULT_CONTENT.blog,
+        ...parsed.blog,
+        featured: parsed.blog?.featured ?? DEFAULT_CONTENT.blog.featured,
+        sidePosts: parsed.blog?.sidePosts ?? DEFAULT_CONTENT.blog.sidePosts,
+        features: parsed.blog?.features ?? DEFAULT_CONTENT.blog.features,
+      },
+      footer: {
+        ...DEFAULT_CONTENT.footer,
+        ...parsed.footer,
+        members:
+          parsed.footer?.members?.some((m) => m.imageSrc)
+            ? parsed.footer.members
+            : DEFAULT_CONTENT.footer.members,
+        socials: parsed.footer?.socials ?? DEFAULT_CONTENT.footer.socials,
+        payments:
+          parsed.footer?.payments?.some((p) => p.imageSrc)
+            ? parsed.footer.payments
+            : DEFAULT_CONTENT.footer.payments,
+        phones: parsed.footer?.phones ?? DEFAULT_CONTENT.footer.phones,
+        usefulLinks: parsed.footer?.usefulLinks ?? DEFAULT_CONTENT.footer.usefulLinks,
+        adventureLinks: parsed.footer?.adventureLinks ?? DEFAULT_CONTENT.footer.adventureLinks,
+        trekLinks: parsed.footer?.trekLinks ?? DEFAULT_CONTENT.footer.trekLinks,
+        legalLinks: parsed.footer?.legalLinks ?? DEFAULT_CONTENT.footer.legalLinks,
+        landscapeImageSrc:
+          !parsed.footer?.landscapeImageSrc ||
+          parsed.footer.landscapeImageSrc.includes("luxury-himalaya") ||
+          parsed.footer.landscapeImageSrc.includes("ambition-luxury-scene") ||
+          parsed.footer.landscapeImageSrc.includes("ambition-silhouette") ||
+          parsed.footer.landscapeImageSrc.includes("ambition-art-clean")
+            ? DEFAULT_CONTENT.footer.landscapeImageSrc
+            : parsed.footer.landscapeImageSrc,
+        creditPrefix: parsed.footer?.creditPrefix ?? DEFAULT_CONTENT.footer.creditPrefix,
+        creditName: parsed.footer?.creditName ?? DEFAULT_CONTENT.footer.creditName,
+        creditHref: parsed.footer?.creditHref ?? DEFAULT_CONTENT.footer.creditHref,
+      },
     };
   } catch {
     return structuredClone(DEFAULT_CONTENT);
@@ -175,6 +211,55 @@ export function scrubUploadRefs(content: SiteContent, publicPath: string): SiteC
       features: (content.journal?.features ?? []).map((feature) => ({
         ...feature,
         iconSrc: feature.iconSrc === publicPath ? undefined : feature.iconSrc,
+      })),
+    },
+    blog: {
+      ...content.blog,
+      featured: (content.blog?.featured ?? []).map((post, index) => ({
+        ...post,
+        imageSrc:
+          post.imageSrc === publicPath
+            ? DEFAULT_CONTENT.blog.featured[index]?.imageSrc ??
+              DEFAULT_CONTENT.blog.featured[0].imageSrc
+            : post.imageSrc,
+        authorAvatarSrc:
+          post.authorAvatarSrc === publicPath
+            ? DEFAULT_CONTENT.blog.featured[0].authorAvatarSrc
+            : post.authorAvatarSrc,
+      })),
+      sidePosts: (content.blog?.sidePosts ?? []).map((post, index) => ({
+        ...post,
+        imageSrc:
+          post.imageSrc === publicPath
+            ? DEFAULT_CONTENT.blog.sidePosts[index]?.imageSrc ??
+              DEFAULT_CONTENT.blog.sidePosts[0].imageSrc
+            : post.imageSrc,
+        authorAvatarSrc:
+          post.authorAvatarSrc === publicPath ? "" : post.authorAvatarSrc,
+      })),
+      features: (content.blog?.features ?? []).map((feature) => ({
+        ...feature,
+        iconSrc: feature.iconSrc === publicPath ? undefined : feature.iconSrc,
+      })),
+    },
+    footer: {
+      ...content.footer,
+      logoSrc: content.footer?.logoSrc === publicPath ? "" : content.footer?.logoSrc ?? "",
+      landscapeImageSrc:
+        content.footer?.landscapeImageSrc === publicPath
+          ? DEFAULT_CONTENT.footer.landscapeImageSrc
+          : content.footer?.landscapeImageSrc ?? DEFAULT_CONTENT.footer.landscapeImageSrc,
+      members: (content.footer?.members ?? []).map((m) => ({
+        ...m,
+        imageSrc: m.imageSrc === publicPath ? "" : m.imageSrc,
+      })),
+      payments: (content.footer?.payments ?? []).map((p) => ({
+        ...p,
+        imageSrc: p.imageSrc === publicPath ? "" : p.imageSrc,
+      })),
+      socials: (content.footer?.socials ?? []).map((s) => ({
+        ...s,
+        iconSrc: s.iconSrc === publicPath ? undefined : s.iconSrc,
       })),
     },
   };
