@@ -97,23 +97,24 @@ export default function SiteContentProvider({
   }, [initial]);
 
   useEffect(() => {
+    // Public site: no focus/visibility refetch (avoids mobile hang when switching apps).
+    // Orbit (pollMs > 0): keep live refresh while editing.
+    if (pollMs <= 0) return;
+
     const onWake = () => {
       void refresh();
     };
     window.addEventListener("focus", onWake);
     document.addEventListener("visibilitychange", onWake);
 
-    let id: number | undefined;
-    if (pollMs > 0) {
-      id = window.setInterval(() => {
-        void refresh();
-      }, pollMs);
-    }
+    const id = window.setInterval(() => {
+      void refresh();
+    }, pollMs);
 
     return () => {
       window.removeEventListener("focus", onWake);
       document.removeEventListener("visibilitychange", onWake);
-      if (id) window.clearInterval(id);
+      window.clearInterval(id);
     };
   }, [pollMs, refresh]);
 

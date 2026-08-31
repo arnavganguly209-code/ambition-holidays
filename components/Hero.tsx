@@ -98,7 +98,7 @@ export default function Hero() {
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="none"
           poster={hero.posterSrc}
           aria-hidden="true"
           src={videoSrc}
@@ -125,12 +125,12 @@ export default function Hero() {
       <Header />
 
       <div className="relative z-10 flex flex-1 flex-col">
-        <div className="flex flex-1 flex-col items-center justify-center px-4 pb-6 pt-24 sm:pt-28 lg:pb-8 lg:pt-24">
+        <div className="flex flex-1 flex-col items-center justify-center px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(6rem,calc(env(safe-area-inset-top)+4.5rem))] sm:pt-28 lg:pb-8 lg:pt-24">
           <div className="relative w-full max-w-5xl">
             <div className="relative">
               <HeroTagline words={hero.taglineWords} />
 
-              <h1 className="animate-fade-up-delay-1 mb-7 text-center font-sans text-[clamp(2.15rem,5vw,3.9rem)] font-bold leading-[1.1] tracking-tight text-white drop-shadow-[0_2px_18px_rgba(0,0,0,0.55)] sm:mb-8 sm:whitespace-nowrap">
+              <h1 className="animate-fade-up-delay-1 mb-7 px-1 text-center font-sans text-[clamp(1.85rem,7.2vw,3.9rem)] font-bold leading-[1.12] tracking-tight text-white drop-shadow-[0_2px_18px_rgba(0,0,0,0.55)] sm:mb-8 lg:whitespace-nowrap">
                 {hero.headline}
               </h1>
 

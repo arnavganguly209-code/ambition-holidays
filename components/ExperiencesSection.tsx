@@ -166,7 +166,7 @@ export default function ExperiencesSection() {
           {experiences.cards?.map((card) => (
             <article
               key={card.id}
-              className="group flex h-full origin-center flex-col overflow-hidden rounded-[0.9rem] border border-gold/55 bg-[#1c222c]/55 px-3 pb-4 pt-5 text-center transition-transform duration-500 ease-out hover:z-10 hover:scale-[1.06] hover:border-gold sm:px-3.5"
+              className="group flex h-full min-w-0 origin-center flex-col overflow-hidden rounded-[0.9rem] border border-gold/55 bg-[#1c222c]/55 px-3 pb-4 pt-5 text-center transition-transform duration-500 ease-out [@media(hover:hover)]:hover:z-10 [@media(hover:hover)]:hover:scale-[1.06] [@media(hover:hover)]:hover:border-gold sm:px-3.5"
             >
               <CardIcon icon={card.icon} iconSrc={card.iconSrc} />
               <div className="mt-4 overflow-hidden rounded-md">

@@ -5,6 +5,12 @@ import { useSiteContent } from "@/components/SiteContentProvider";
 import type { FooterSocialNetwork } from "@/lib/content-types";
 import { mediaSrc } from "@/lib/media-src";
 
+/** Shared mark size — slightly smaller on phones so 5 logos never crop/scroll */
+const TRUST_H = "h-10 sm:h-[2.88rem]";
+const TRUST_W = "w-10 sm:w-[2.88rem]";
+const TRUST_W_CARD = "w-[3.35rem] sm:w-[4.55rem]";
+const TRUST_ICON = "h-7 w-7 sm:h-[2.15rem] sm:w-[2.15rem]";
+
 function PeakMark({ className = "h-4 w-4" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">
@@ -21,7 +27,7 @@ function PeakMark({ className = "h-4 w-4" }: { className?: string }) {
 
 function SocialIcon({ network }: { network: FooterSocialNetwork }) {
   /* Fills trust mark so social matches Members / Payments height */
-  const cls = "h-[2.15rem] w-[2.15rem]";
+  const cls = TRUST_ICON;
   if (network === "facebook") {
     return (
       <svg viewBox="0 0 24 24" className={cls} fill="currentColor" aria-hidden="true">
@@ -118,11 +124,7 @@ function ChevronLink({ href, label }: { href: string; label: string }) {
   );
 }
 
-/** One shared mark size across Members / Social / Payments (+20% from prior social) */
-const TRUST_H = "h-[2.88rem]";
-const TRUST_W = "w-[2.88rem]";
-const TRUST_W_CARD = "w-[4.55rem]";
-
+/** Brand / payment chip */
 function BrandChip({
   label,
   imageSrc,
@@ -214,7 +216,7 @@ export default function SiteFooter() {
                 {footer.socialTitle}
               </p>
             </div>
-            <div className="flex flex-nowrap items-center justify-center gap-2 sm:gap-2.5">
+            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
               {(footer.socials ?? []).map((s) => (
                 <Link
                   key={s.id}
@@ -227,7 +229,7 @@ export default function SiteFooter() {
                     <img
                       src={mediaSrc(s.iconSrc, updatedAt)}
                       alt=""
-                      className="h-[2.15rem] w-[2.15rem] object-contain"
+                      className={`${TRUST_ICON} object-contain`}
                     />
                   ) : (
                     <SocialIcon network={s.network} />
@@ -244,7 +246,7 @@ export default function SiteFooter() {
                 {footer.paymentsTitle}
               </p>
             </div>
-            <div className="flex flex-nowrap items-center justify-center gap-2 sm:gap-2.5">
+            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2.5">
               {(footer.payments ?? []).map((p) => (
                 <BrandChip
                   key={p.id}

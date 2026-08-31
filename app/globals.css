@@ -12,6 +12,10 @@
   --ink: #f7f4ef;
   --glass: rgba(8, 12, 18, 0.55);
   --glass-border: rgba(201, 162, 39, 0.28);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
 }
 
 @theme inline {
@@ -32,6 +36,9 @@
 
 html {
   scroll-behavior: auto;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overflow-x: clip;
 }
 
 @media (min-width: 768px) {
@@ -45,7 +52,28 @@ body {
   color: var(--foreground);
   font-family: var(--font-outfit), sans-serif;
   margin: 0;
+  min-width: 0;
   overflow-x: clip;
+  overscroll-behavior-y: contain;
+  -webkit-tap-highlight-color: transparent;
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+}
+
+img,
+video {
+  max-width: 100%;
+}
+
+/* App-like: never let long CMS text blow the layout */
+h1,
+h2,
+h3,
+h4,
+p,
+li {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 ::selection {
@@ -161,6 +189,13 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-fade-up-delay-1,
+  .animate-fade-up-delay-2,
+  .animate-fade-up-delay-3,
+  .animate-dropdown {
+    animation: none;
+  }
   .whatsapp-call-pulse {
     animation: none;
   }
@@ -169,6 +204,21 @@ body {
   }
   .avail-card-glow {
     animation: none;
+  }
+}
+
+/* Phone: drop continuous motion for battery + smoothness */
+@media (max-width: 767px) {
+  .whatsapp-call-pulse,
+  .live-dot-pulse,
+  .avail-card-glow {
+    animation: none;
+  }
+  .animate-fade-up,
+  .animate-fade-up-delay-1,
+  .animate-fade-up-delay-2,
+  .animate-fade-up-delay-3 {
+    animation-duration: 0.45s;
   }
 }
 

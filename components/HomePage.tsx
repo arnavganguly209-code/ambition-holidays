@@ -36,7 +36,7 @@ function HomeSections() {
 export default function HomePage({ initial }: { initial: SiteContent }) {
   return (
     <SiteContentProvider initial={initial}>
-      <main>
+      <main className="min-w-0 overflow-x-clip pb-[env(safe-area-inset-bottom)]">
         <HomeSections />
       </main>
     </SiteContentProvider>
