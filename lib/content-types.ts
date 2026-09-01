@@ -104,12 +104,27 @@ export type ExperienceIcon =
 export type ExperienceCard = {
   id: string;
   title: string;
+  /** e.g. "12 Experiences" */
+  countLabel: string;
   body: string;
   imageSrc: string;
   imageAlt: string;
   icon: ExperienceIcon;
   iconSrc?: string;
   href: string;
+  ctaLabel: string;
+};
+
+export type ExperiencesTheme = {
+  sectionBg: string;
+  cardBg: string;
+  textColor: string;
+  mutedTextColor: string;
+  goldColor: string;
+  borderColor: string;
+  /** Optional mountain / art band at section bottom */
+  backgroundImageSrc: string;
+  showBackgroundArt: boolean;
 };
 
 export type ExperiencesContent = {
@@ -120,6 +135,7 @@ export type ExperiencesContent = {
   body: string;
   ctaLabel: string;
   ctaHref: string;
+  theme: ExperiencesTheme;
   cards: ExperienceCard[];
 };
 
@@ -607,62 +623,62 @@ export const DEFAULT_CONTENT: SiteContent = {
     headlineWhite: "More Than Treks.",
     headlineGold: "Extraordinary Experiences.",
     body: "Go beyond the ordinary and discover the Himalayas in the most exclusive ways. Curated experiences that elevate your journey and create memories for a lifetime.",
-    ctaLabel: "Explore All Experiences",
+    ctaLabel: "EXPLORE ALL EXPERIENCES",
     ctaHref: "/luxury-treks",
+    theme: {
+      sectionBg: "#0c1016",
+      cardBg: "#121820",
+      textColor: "#ffffff",
+      mutedTextColor: "rgba(255,255,255,0.72)",
+      goldColor: "#c9a227",
+      borderColor: "rgba(201,162,39,0.55)",
+      backgroundImageSrc: "",
+      showBackgroundArt: true,
+    },
     cards: [
-      {
-        id: "heli",
-        title: "Helicopter Experiences",
-        body: "Scenic flights, heli-tours and private transfers to explore Nepal from the sky.",
-        imageSrc: "/images/experiences/heli-photo.jpg",
-        imageAlt: "Helicopter flying over snow-capped Himalayan peaks",
-        icon: "heli",
-        href: "/luxury-helicopter-treks",
-      },
       {
         id: "lodges",
         title: "Luxury Lodges & Stays",
+        countLabel: "10 Experiences",
         body: "Handpicked luxury lodges and hotels offering comfort, elegance and world-class hospitality.",
         imageSrc: "/images/experiences/lodges-photo.jpg",
         imageAlt: "Luxury mountain lodge interior with a fireplace and peak views",
         icon: "lodge",
         href: "/luxury-treks",
+        ctaLabel: "EXPLORE MORE",
       },
       {
         id: "culture",
         title: "Private Cultural Journeys",
+        countLabel: "9 Experiences",
         body: "Immerse in authentic local culture, heritage sites and spiritual experiences with private guides.",
         imageSrc: "/images/experiences/culture-photo.jpg",
         imageAlt: "Nepalese stupa and temples at sunset",
         icon: "culture",
         href: "/luxury-treks",
+        ctaLabel: "EXPLORE MORE",
       },
       {
         id: "flights",
         title: "Mountain Flights",
+        countLabel: "8 Experiences",
         body: "Breathtaking scenic flights over Everest and the Himalayas for unforgettable views.",
         imageSrc: "/images/experiences/flights-photo.jpg",
         imageAlt: "Small aircraft flying past Himalayan snow peaks",
         icon: "flight",
         href: "/luxury-helicopter-treks",
-      },
-      {
-        id: "wellness",
-        title: "Wellness Journeys",
-        body: "Rejuvenate your mind, body and soul with yoga retreats, spa therapies and mindful experiences.",
-        imageSrc: "/images/experiences/wellness-photo.jpg",
-        imageAlt: "Guest meditating toward a Himalayan sunrise",
-        icon: "wellness",
-        href: "/luxury-treks",
+        ctaLabel: "EXPLORE MORE",
       },
       {
         id: "wildlife",
         title: "Wildlife & Jungle Safaris",
+        countLabel: "6 Experiences",
         body: "Explore Nepal's rich wildlife with private jungle safaris in Chitwan and beyond.",
         imageSrc: "/images/experiences/wildlife-photo.jpg",
-        imageAlt: "Leopard resting in a jungle setting",
+        imageAlt: "Rhinoceros in tall grass during a jungle safari",
         icon: "wildlife",
         href: "/luxury-treks",
+        ctaLabel: "EXPLORE MORE",
       },
     ],
   },

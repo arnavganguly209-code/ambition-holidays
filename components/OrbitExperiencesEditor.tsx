@@ -1,20 +1,10 @@
 "use client";
 
-import { DEFAULT_CONTENT, type ExperienceCard, type ExperienceIcon, type SiteContent } from "@/lib/content-types";
+import { DEFAULT_CONTENT, type ExperienceCard, type ExperiencesTheme, type SiteContent } from "@/lib/content-types";
 import { mediaSrc } from "@/lib/media-src";
 
 const inputClass =
   "w-full rounded-md border border-white/15 bg-black/35 px-3 py-2 text-sm text-white outline-none focus:border-gold/50";
-
-const ICON_OPTIONS: { id: ExperienceIcon; label: string }[] = [
-  { id: "heli", label: "Helicopter" },
-  { id: "lodge", label: "Lodge / bed" },
-  { id: "culture", label: "Temple / culture" },
-  { id: "flight", label: "Mountain peaks" },
-  { id: "wellness", label: "Lotus / wellness" },
-  { id: "wildlife", label: "Paw / wildlife" },
-  { id: "custom", label: "Custom uploaded icon" },
-];
 
 function Field({
   label,
@@ -51,9 +41,14 @@ type Props = {
 
 export default function OrbitExperiencesEditor({ content, setContent, save }: Props) {
   const experiences = content.experiences ?? DEFAULT_CONTENT.experiences;
+  const theme = experiences.theme ?? DEFAULT_CONTENT.experiences.theme;
 
   function patch(partial: Partial<SiteContent["experiences"]>) {
     setContent({ ...content, experiences: { ...experiences, ...partial } });
+  }
+
+  function patchTheme(partial: Partial<ExperiencesTheme>) {
+    patch({ theme: { ...theme, ...partial } });
   }
 
   function updateCard(index: number, next: ExperienceCard) {
@@ -71,11 +66,15 @@ export default function OrbitExperiencesEditor({ content, setContent, save }: Pr
     await save(next);
   }
 
-  async function replaceIcon(index: number, file: File) {
+  async function replaceBackground(file: File) {
     const url = await uploadFile(file);
-    const cards = [...experiences.cards];
-    cards[index] = { ...cards[index], icon: "custom", iconSrc: url };
-    const next = { ...content, experiences: { ...experiences, cards } };
+    const next = {
+      ...content,
+      experiences: {
+        ...experiences,
+        theme: { ...theme, backgroundImageSrc: url, showBackgroundArt: true },
+      },
+    };
     setContent(next);
     await save(next);
   }
@@ -100,62 +99,188 @@ export default function OrbitExperiencesEditor({ content, setContent, save }: Pr
         Show Signature Experiences section
       </label>
 
-      <Field label="Eyebrow">
-        <input
-          className={inputClass}
-          value={experiences.eyebrow}
-          onChange={(e) => patch({ eyebrow: e.target.value })}
-        />
-      </Field>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Headline (white)">
-          <input
-            className={inputClass}
-            value={experiences.headlineWhite}
-            onChange={(e) => patch({ headlineWhite: e.target.value })}
-          />
-        </Field>
-        <Field label="Headline (gold)">
-          <input
-            className={inputClass}
-            value={experiences.headlineGold}
-            onChange={(e) => patch({ headlineGold: e.target.value })}
-          />
-        </Field>
+      <div className="rounded-lg border border-white/10 p-4">
+        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-gold">
+          Section text
+        </p>
+        <div className="space-y-4">
+          <Field label="Eyebrow label">
+            <input
+              className={inputClass}
+              value={experiences.eyebrow}
+              onChange={(e) => patch({ eyebrow: e.target.value })}
+            />
+          </Field>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Headline (white)">
+              <input
+                className={inputClass}
+                value={experiences.headlineWhite}
+                onChange={(e) => patch({ headlineWhite: e.target.value })}
+              />
+            </Field>
+            <Field label="Headline (gold italic)">
+              <input
+                className={inputClass}
+                value={experiences.headlineGold}
+                onChange={(e) => patch({ headlineGold: e.target.value })}
+              />
+            </Field>
+          </div>
+          <Field label="Intro text">
+            <textarea
+              className={`${inputClass} min-h-24`}
+              value={experiences.body}
+              onChange={(e) => patch({ body: e.target.value })}
+            />
+          </Field>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Bottom button label">
+              <input
+                className={inputClass}
+                value={experiences.ctaLabel}
+                onChange={(e) => patch({ ctaLabel: e.target.value })}
+              />
+            </Field>
+            <Field label="Bottom button link">
+              <input
+                className={inputClass}
+                value={experiences.ctaHref}
+                onChange={(e) => patch({ ctaHref: e.target.value })}
+              />
+            </Field>
+          </div>
+        </div>
       </div>
-      <Field label="Intro text">
-        <textarea
-          className={`${inputClass} min-h-24`}
-          value={experiences.body}
-          onChange={(e) => patch({ body: e.target.value })}
-        />
-      </Field>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Bottom button label">
-          <input
-            className={inputClass}
-            value={experiences.ctaLabel}
-            onChange={(e) => patch({ ctaLabel: e.target.value })}
-          />
-        </Field>
-        <Field label="Bottom button link">
-          <input
-            className={inputClass}
-            value={experiences.ctaHref}
-            onChange={(e) => patch({ ctaHref: e.target.value })}
-          />
-        </Field>
+
+      <div className="rounded-lg border border-white/10 p-4">
+        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-gold">
+          Theme &amp; colors
+        </p>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <Field label="Section background">
+            <input
+              type="color"
+              className="h-10 w-full cursor-pointer rounded border border-white/15 bg-transparent"
+              value={theme.sectionBg.startsWith("#") ? theme.sectionBg : "#0c1016"}
+              onChange={(e) => patchTheme({ sectionBg: e.target.value })}
+            />
+            <input
+              className={`${inputClass} mt-2`}
+              value={theme.sectionBg}
+              onChange={(e) => patchTheme({ sectionBg: e.target.value })}
+            />
+          </Field>
+          <Field label="Card background">
+            <input
+              type="color"
+              className="h-10 w-full cursor-pointer rounded border border-white/15 bg-transparent"
+              value={theme.cardBg.startsWith("#") ? theme.cardBg : "#121820"}
+              onChange={(e) => patchTheme({ cardBg: e.target.value })}
+            />
+            <input
+              className={`${inputClass} mt-2`}
+              value={theme.cardBg}
+              onChange={(e) => patchTheme({ cardBg: e.target.value })}
+            />
+          </Field>
+          <Field label="Text color">
+            <input
+              type="color"
+              className="h-10 w-full cursor-pointer rounded border border-white/15 bg-transparent"
+              value={theme.textColor.startsWith("#") ? theme.textColor : "#ffffff"}
+              onChange={(e) => patchTheme({ textColor: e.target.value })}
+            />
+            <input
+              className={`${inputClass} mt-2`}
+              value={theme.textColor}
+              onChange={(e) => patchTheme({ textColor: e.target.value })}
+            />
+          </Field>
+          <Field label="Muted text color">
+            <input
+              className={inputClass}
+              value={theme.mutedTextColor}
+              onChange={(e) => patchTheme({ mutedTextColor: e.target.value })}
+              placeholder="rgba(255,255,255,0.72)"
+            />
+          </Field>
+          <Field label="Gold accent">
+            <input
+              type="color"
+              className="h-10 w-full cursor-pointer rounded border border-white/15 bg-transparent"
+              value={theme.goldColor.startsWith("#") ? theme.goldColor : "#c9a227"}
+              onChange={(e) => patchTheme({ goldColor: e.target.value })}
+            />
+            <input
+              className={`${inputClass} mt-2`}
+              value={theme.goldColor}
+              onChange={(e) => patchTheme({ goldColor: e.target.value })}
+            />
+          </Field>
+          <Field label="Border color">
+            <input
+              className={inputClass}
+              value={theme.borderColor}
+              onChange={(e) => patchTheme({ borderColor: e.target.value })}
+              placeholder="rgba(201,162,39,0.55)"
+            />
+          </Field>
+        </div>
+
+        <div className="mt-4 space-y-3">
+          <label className="flex items-center gap-2 text-sm text-white/80">
+            <input
+              type="checkbox"
+              checked={theme.showBackgroundArt}
+              onChange={(e) => patchTheme({ showBackgroundArt: e.target.checked })}
+            />
+            Show bottom mountain / background art
+          </label>
+          {theme.backgroundImageSrc ? (
+            <div className="relative aspect-[21/6] overflow-hidden rounded-md border border-white/10">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={mediaSrc(theme.backgroundImageSrc, content.updatedAt)}
+                alt=""
+                className="h-full w-full object-cover object-bottom"
+              />
+            </div>
+          ) : null}
+          <Field label="Background image URL (optional)">
+            <input
+              className={inputClass}
+              value={theme.backgroundImageSrc}
+              onChange={(e) => patchTheme({ backgroundImageSrc: e.target.value })}
+              placeholder="Leave empty for built-in mountain band"
+            />
+          </Field>
+          <label className="inline-flex cursor-pointer rounded-md border border-gold/40 px-3 py-2 text-xs font-semibold text-gold">
+            Upload background image
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                e.target.value = "";
+                if (!file) return;
+                await replaceBackground(file);
+              }}
+            />
+          </label>
+        </div>
       </div>
 
       <div>
         <p className="mb-3 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-white/50">
-          Experience boxes
+          Experience cards
         </p>
         <div className="grid gap-4 lg:grid-cols-2">
           {experiences.cards.map((card, index) => (
             <div key={card.id} className="space-y-3 rounded-lg border border-white/10 p-4">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-xs font-semibold text-gold">Box {index + 1}</p>
+                <p className="text-xs font-semibold text-gold">Card {index + 1}</p>
                 <div className="flex gap-1">
                   <button
                     type="button"
@@ -182,9 +307,13 @@ export default function OrbitExperiencesEditor({ content, setContent, save }: Pr
                   </button>
                 </div>
               </div>
-              <div className="relative aspect-[16/10] overflow-hidden rounded-md bg-black/40">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-md bg-black/40">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={mediaSrc(card.imageSrc, content.updatedAt)} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                <img
+                  src={mediaSrc(card.imageSrc, content.updatedAt)}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
               </div>
               <label className="inline-flex cursor-pointer rounded-md border border-gold/40 px-3 py-2 text-xs font-semibold text-gold">
                 Replace image
@@ -214,6 +343,13 @@ export default function OrbitExperiencesEditor({ content, setContent, save }: Pr
                   onChange={(e) => updateCard(index, { ...card, title: e.target.value })}
                 />
               </Field>
+              <Field label="Count label (e.g. 12 Experiences)">
+                <input
+                  className={inputClass}
+                  value={card.countLabel ?? ""}
+                  onChange={(e) => updateCard(index, { ...card, countLabel: e.target.value })}
+                />
+              </Field>
               <Field label="Description">
                 <textarea
                   className={`${inputClass} min-h-20`}
@@ -228,42 +364,22 @@ export default function OrbitExperiencesEditor({ content, setContent, save }: Pr
                   onChange={(e) => updateCard(index, { ...card, imageAlt: e.target.value })}
                 />
               </Field>
-              <Field label="Learn More link">
-                <input
-                  className={inputClass}
-                  value={card.href}
-                  onChange={(e) => updateCard(index, { ...card, href: e.target.value })}
-                />
-              </Field>
-              <Field label="Icon style">
-                <select
-                  className={inputClass}
-                  value={card.icon}
-                  onChange={(e) =>
-                    updateCard(index, { ...card, icon: e.target.value as ExperienceIcon })
-                  }
-                >
-                  {ICON_OPTIONS.map((opt) => (
-                    <option key={opt.id} value={opt.id}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <label className="inline-flex cursor-pointer rounded-md border border-white/20 px-3 py-2 text-xs text-white/80">
-                Upload custom icon
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    e.target.value = "";
-                    if (!file) return;
-                    await replaceIcon(index, file);
-                  }}
-                />
-              </label>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Card button label">
+                  <input
+                    className={inputClass}
+                    value={card.ctaLabel ?? "EXPLORE MORE"}
+                    onChange={(e) => updateCard(index, { ...card, ctaLabel: e.target.value })}
+                  />
+                </Field>
+                <Field label="Card link">
+                  <input
+                    className={inputClass}
+                    value={card.href}
+                    onChange={(e) => updateCard(index, { ...card, href: e.target.value })}
+                  />
+                </Field>
+              </div>
             </div>
           ))}
         </div>
@@ -277,17 +393,19 @@ export default function OrbitExperiencesEditor({ content, setContent, save }: Pr
                 {
                   id: `exp-${Date.now()}`,
                   title: "New experience",
+                  countLabel: "0 Experiences",
                   body: "Add a short description.",
                   imageSrc: DEFAULT_CONTENT.experiences.cards[0].imageSrc,
                   imageAlt: "Experience image",
                   icon: "heli",
                   href: "/luxury-treks",
+                  ctaLabel: "EXPLORE MORE",
                 },
               ],
             })
           }
         >
-          Add box
+          Add card
         </button>
       </div>
     </div>

@@ -48,7 +48,34 @@ export async function readContent(): Promise<SiteContent> {
       experiences: {
         ...DEFAULT_CONTENT.experiences,
         ...parsed.experiences,
-        cards: parsed.experiences?.cards ?? DEFAULT_CONTENT.experiences.cards,
+        theme: {
+          ...DEFAULT_CONTENT.experiences.theme,
+          ...parsed.experiences?.theme,
+        },
+        cards: (() => {
+          const removed = new Set(["heli", "wellness"]);
+          const fromSaved = (parsed.experiences?.cards ?? [])
+            .filter((card) => !removed.has(card.id))
+            .filter(
+              (card) =>
+                !/helicopter experience/i.test(card.title) &&
+                !/wellness journey/i.test(card.title),
+            );
+          const source =
+            fromSaved.length > 0 ? fromSaved : DEFAULT_CONTENT.experiences.cards;
+          return source.map((card, index) => ({
+            ...DEFAULT_CONTENT.experiences.cards[index],
+            ...card,
+            countLabel:
+              card.countLabel ??
+              DEFAULT_CONTENT.experiences.cards[index]?.countLabel ??
+              "",
+            ctaLabel:
+              card.ctaLabel ??
+              DEFAULT_CONTENT.experiences.cards[index]?.ctaLabel ??
+              "EXPLORE MORE",
+          }));
+        })(),
       },
       availability: {
         ...DEFAULT_CONTENT.availability,
@@ -171,6 +198,13 @@ export function scrubUploadRefs(content: SiteContent, publicPath: string): SiteC
     },
     experiences: {
       ...content.experiences,
+      theme: {
+        ...content.experiences?.theme,
+        backgroundImageSrc:
+          content.experiences?.theme?.backgroundImageSrc === publicPath
+            ? ""
+            : content.experiences?.theme?.backgroundImageSrc ?? "",
+      },
       cards: (content.experiences?.cards ?? []).map((card, index) => ({
         ...card,
         imageSrc:
