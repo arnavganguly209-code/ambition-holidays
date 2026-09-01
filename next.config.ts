@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
     return {
       beforeFiles: [
         {
+          source: "/orbit/login",
+          destination: "/orbit-login",
+        },
+        {
           source: "/uploads/:filename",
           destination: "/api/media/:filename",
         },

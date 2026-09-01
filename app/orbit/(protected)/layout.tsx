@@ -12,9 +12,13 @@ export default async function OrbitProtectedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const jar = await cookies();
-  const token = jar.get(getSessionCookieName())?.value;
-  if (!verifySessionToken(token)) {
+  try {
+    const jar = await cookies();
+    const token = jar.get(getSessionCookieName())?.value;
+    if (!verifySessionToken(token)) {
+      redirect("/orbit/login");
+    }
+  } catch {
     redirect("/orbit/login");
   }
 
