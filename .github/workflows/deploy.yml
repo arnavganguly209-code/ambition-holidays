@@ -157,12 +157,29 @@ jobs:
             echo "Installing dependencies..."
             npm install --no-audit --no-fund
 
+            echo "Backing up current .next (restore if build fails)..."
+            if [ -d .next ]; then
+              rm -rf .next.deploy-backup
+              cp -a .next .next.deploy-backup
+            fi
+
             echo "Building production app..."
-            # If build fails, set -e stops here — PM2 is NOT restarted.
-            if ! npm run build; then
-              echo "ERROR: npm run build failed"
+            build_ok=0
+            if npm run build; then
+              build_ok=1
+              rm -rf .next.deploy-backup
+            else
+              echo "ERROR: npm run build failed — restoring previous .next"
+              rm -rf .next
+              if [ -d .next.deploy-backup ]; then
+                mv .next.deploy-backup .next
+                echo "Restored .next from deploy backup"
+              fi
               df -h "${PROJECT_PATH}" || df -h || true
               free -m || true
+              exit 1
+            fi
+            if [ "${build_ok}" -ne 1 ]; then
               exit 1
             fi
 
@@ -211,42 +228,38 @@ jobs:
               exit 1
             fi
 
-            echo "Local HTTP check (curl -I)..."
+            echo "Local HTTP check (homepage + Orbit login)..."
             local_ok=0
             for i in $(seq 1 30); do
-              LOCAL_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 5 -I "http://127.0.0.1:${APP_PORT}" || true)"
-              echo "Local HTTP status attempt ${i}: ${LOCAL_CODE}"
-              if [ "${LOCAL_CODE}" = "200" ]; then
+              HOME_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 5 "http://127.0.0.1:${APP_PORT}/" || true)"
+              ORBIT_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 5 "http://127.0.0.1:${APP_PORT}/orbit/login" || true)"
+              echo "Local HTTP attempt ${i}: home=${HOME_CODE} orbit_login=${ORBIT_CODE}"
+              if [ "${HOME_CODE}" = "200" ] && [ "${ORBIT_CODE}" = "200" ]; then
                 local_ok=1
                 break
               fi
               sleep 2
             done
             if [ "${local_ok}" -ne 1 ]; then
-              echo "ERROR: Local health check failed for http://127.0.0.1:${APP_PORT}"
+              echo "ERROR: Local health check failed (need home=200 and orbit/login=200)"
               exit 1
             fi
 
-            echo "Public HTTPS check (curl -I)..."
+            echo "Public HTTPS check (homepage + Orbit login)..."
             public_ok=0
             for i in $(seq 1 20); do
-              PUBLIC_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 -I "${PUBLIC_URL}" || true)"
-              echo "Public HTTP status attempt ${i}: ${PUBLIC_CODE}"
-              if [ "${PUBLIC_CODE}" = "200" ]; then
-                public_ok=1
-                break
-              fi
-              PUBLIC_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "${PUBLIC_URL}" || true)"
-              echo "Public HTTP GET status attempt ${i}: ${PUBLIC_CODE}"
-              if [ "${PUBLIC_CODE}" = "200" ]; then
+              PUBLIC_HOME="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "${PUBLIC_URL}/" || true)"
+              PUBLIC_ORBIT="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "${PUBLIC_URL}/orbit/login" || true)"
+              echo "Public HTTP attempt ${i}: home=${PUBLIC_HOME} orbit_login=${PUBLIC_ORBIT}"
+              if [ "${PUBLIC_HOME}" = "200" ] && [ "${PUBLIC_ORBIT}" = "200" ]; then
                 public_ok=1
                 break
               fi
               sleep 3
             done
             if [ "${public_ok}" -ne 1 ]; then
-              echo "ERROR: Public site did not return HTTP 200 (${PUBLIC_URL})"
+              echo "ERROR: Public site health failed (${PUBLIC_URL} — need home=200 and orbit/login=200)"
               exit 1
             fi
 
-            echo "Deploy complete: ${PM2_APP} online; ${PUBLIC_URL} returned 200."
+            echo "Deploy complete: ${PM2_APP} online; ${PUBLIC_URL} and /orbit/login returned 200."

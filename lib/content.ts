@@ -1,5 +1,4 @@
 import { promises as fs } from "fs";
-import path from "path";
 import { contentDataDir, contentFilePath } from "@/lib/cms-paths";
 import { DEFAULT_CONTENT, type SiteContent } from "@/lib/content-types";
 
