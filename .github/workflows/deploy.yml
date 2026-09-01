@@ -163,6 +163,10 @@ jobs:
             echo "Installing dependencies..."
             npm install --no-audit --no-fund
 
+            echo "Preparing production build environment..."
+            export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=4096}"
+            export NEXT_TELEMETRY_DISABLED=1
+
             echo "Backing up current .next (restore if build fails)..."
             if [ -d .next ]; then
               rm -rf .next.deploy-backup
