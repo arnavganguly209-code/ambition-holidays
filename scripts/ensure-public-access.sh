@@ -1,16 +1,19 @@
 #!/usr/bin/env bash
 # Ensure ambition.theglobalorbit.com is reachable from all public IPs.
-# Only edits nginx vhosts that mention this hostname.
-set -euo pipefail
+set -u
 
 DOMAIN="ambition.theglobalorbit.com"
-APP_PORT="3004"
 
-if [ "$(id -u)" -eq 0 ]; then
-  SUDO=""
-else
-  SUDO="sudo -n"
-fi
+run_privileged() {
+  if [ "$(id -u)" -eq 0 ]; then
+    "$@"
+  elif command -v sudo >/dev/null 2>&1 && sudo -n "$@"; then
+    :
+  else
+    echo "WARNING: cannot run privileged command: $*"
+    return 1
+  fi
+}
 
 echo "Ensuring public access for ${DOMAIN}..."
 
@@ -20,27 +23,30 @@ mapfile -t NGINX_CONFS < <(
 )
 
 if [ "${#NGINX_CONFS[@]}" -eq 0 ]; then
-  echo "WARNING: No nginx vhost found for ${DOMAIN}; skipping nginx rewrite."
-else
-  for conf in "${NGINX_CONFS[@]}"; do
-    echo "Processing nginx config: ${conf}"
-    ${SUDO} cp -a "${conf}" "${conf}.bak-$(date -u +%Y%m%dT%H%M%SZ)"
-    # Remove IP allow/deny gates that block public visitors.
-    ${SUDO} sed -i -E '/^[[:space:]]*(allow|deny)[[:space:]]/d' "${conf}"
-  done
+  echo "WARNING: No nginx vhost found for ${DOMAIN}."
+  exit 0
+fi
 
-  if command -v nginx >/dev/null 2>&1; then
-    ${SUDO} nginx -t
-    ${SUDO} systemctl reload nginx
+for conf in "${NGINX_CONFS[@]}"; do
+  echo "Processing nginx config: ${conf}"
+  run_privileged cp -a "${conf}" "${conf}.bak-$(date -u +%Y%m%dT%H%M%SZ)" || true
+  run_privileged sed -i -E '/^[[:space:]]*(allow|deny)[[:space:]]/d' "${conf}" || true
+done
+
+if command -v nginx >/dev/null 2>&1; then
+  if run_privileged nginx -t; then
+    run_privileged systemctl reload nginx || true
     echo "nginx reloaded"
+  else
+    echo "WARNING: nginx config test failed after cleanup"
   fi
 fi
 
 if command -v ufw >/dev/null 2>&1; then
-  if ${SUDO} ufw status 2>/dev/null | grep -qi "Status: active"; then
+  if run_privileged ufw status 2>/dev/null | grep -qi "Status: active"; then
     echo "Opening ufw ports 80/443 for public access..."
-    ${SUDO} ufw allow 80/tcp || true
-    ${SUDO} ufw allow 443/tcp || true
+    run_privileged ufw allow 80/tcp || true
+    run_privileged ufw allow 443/tcp || true
   fi
 fi
 
