@@ -202,6 +202,10 @@ jobs:
 
             pm2 save
 
+            echo "Ensuring public nginx + firewall access for ${PUBLIC_URL}..."
+            chmod +x scripts/ensure-public-access.sh
+            bash scripts/ensure-public-access.sh
+
             echo "Waiting for ${PM2_APP} to come online..."
             online_ok=0
             for i in $(seq 1 30); do
@@ -280,3 +284,19 @@ jobs:
             echo "Public Orbit login codes: /orbit/login=${PUBLIC_ORBIT} /orbit-login=${PUBLIC_ORBIT_ALT}"
 
             echo "Deploy complete: ${PM2_APP} online; ${PUBLIC_URL} returned 200."
+
+      - name: Verify public access from GitHub runner
+        run: |
+          set -e
+          for i in $(seq 1 12); do
+            code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 25 https://ambition.theglobalorbit.com/ || true)"
+            echo "External check ${i}: home=${code}"
+            if [ "${code}" = "200" ]; then
+              orbit="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 25 https://ambition.theglobalorbit.com/orbit/login || true)"
+              echo "External orbit login=${orbit}"
+              exit 0
+            fi
+            sleep 4
+          done
+          echo "ERROR: Site not reachable from public internet (GitHub runner)."
+          exit 1
