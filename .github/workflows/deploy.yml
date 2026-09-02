@@ -297,12 +297,20 @@ jobs:
       - name: Verify public access from GitHub runner
         run: |
           set -e
+          echo "Runner public IP: $(curl -sS --max-time 10 https://api.ipify.org || true)"
           for i in $(seq 1 12); do
             code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 25 https://ambition.theglobalorbit.com/ || true)"
-            echo "External check ${i}: home=${code}"
+            echo "External HTTPS check ${i}: home=${code}"
+            http_code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 25 http://ambition.theglobalorbit.com/ || true)"
+            echo "External HTTP check ${i}: home=${http_code}"
             if [ "${code}" = "200" ]; then
               orbit="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 25 https://ambition.theglobalorbit.com/orbit/login || true)"
               echo "External orbit login=${orbit}"
+              # TCP connect probe (matches Chrome ERR_CONNECTION_REFUSED)
+              if command -v nc >/dev/null 2>&1; then
+                nc -zv -w 5 200.97.170.235 443 && echo "TCP 443 open from runner"
+                nc -zv -w 5 200.97.170.235 80 && echo "TCP 80 open from runner"
+              fi
               exit 0
             fi
             sleep 4
