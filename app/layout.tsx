@@ -25,8 +25,15 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "Ambition Holidays",
   },
+  icons: {
+    icon: "/images/ambition-holiday-logo.png",
+    apple: "/images/ambition-holiday-logo.png",
+  },
   formatDetection: {
     telephone: true,
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
   },
 };
 

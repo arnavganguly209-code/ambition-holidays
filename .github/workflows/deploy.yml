@@ -317,3 +317,36 @@ jobs:
           done
           echo "ERROR: Site not reachable from public internet (GitHub runner)."
           exit 1
+
+  verify-apple:
+    name: Verify from macOS (Safari/iPhone UAs)
+    needs: deploy
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+      - name: Apple / Safari / iPhone live checks
+        run: |
+          set -e
+          echo "macOS runner IP: $(curl -sS --max-time 10 https://api.ipify.org || true)"
+          HOST="https://ambition.theglobalorbit.com"
+          UAS=(
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.6 Safari/605.1.15"
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 17_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.6 Mobile/15E148 Safari/604.1"
+            "Mozilla/5.0 (iPad; CPU OS 17_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.6 Mobile/15E148 Safari/604.1"
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 17_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/128.0.0.0 Mobile/15E148 Safari/604.1"
+          )
+          PATHS=("/" "/orbit/login" "/api/content")
+          for ua in "${UAS[@]}"; do
+            for path in "${PATHS[@]}"; do
+              code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 30 -A "$ua" "${HOST}${path}" || true)"
+              echo "UA_CHECK path=${path} code=${code}"
+              if [ "${code}" != "200" ]; then
+                echo "ERROR: Apple client check failed for ${path} (code=${code})"
+                exit 1
+              fi
+            done
+          done
+          nc -zv -w 8 200.97.170.235 443
+          nc -zv -w 8 200.97.170.235 80
+          echo "Apple/macOS live verification passed."
