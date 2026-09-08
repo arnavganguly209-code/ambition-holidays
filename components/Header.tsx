@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
-import { NAV_ITEMS, type NavItem } from "@/lib/nav";
+import { NAV_ITEMS, type NavGroup, type NavItem } from "@/lib/nav";
 import { useSiteContent } from "@/components/SiteContentProvider";
 
 const WHATSAPP_URL = "https://wa.me/9779851148898";
@@ -28,12 +28,160 @@ function hasMenu(item: NavItem) {
   return Boolean(item.groups?.length || item.children?.length);
 }
 
+function megaPanelLabels(navLabel: string) {
+  if (navLabel === "Destinations") {
+    return { sidebar: "Regions", content: "Destinations" };
+  }
+  if (navLabel === "Luxury Tour & Trek") {
+    return { sidebar: "Categories", content: "Packages" };
+  }
+  if (navLabel === "Experiences") {
+    return { sidebar: "Categories", content: "Experiences" };
+  }
+  if (navLabel === "Travel Guide") {
+    return { sidebar: "Topics", content: "Guides" };
+  }
+  return { sidebar: "Categories", content: "Explore" };
+}
+
+function DestinationsMegaPanel({
+  groups,
+  activeTitle,
+  sidebarLabel,
+  contentLabel,
+  onSelectCategory,
+  onNavigate,
+}: {
+  groups: NavGroup[];
+  activeTitle: string;
+  sidebarLabel: string;
+  contentLabel: string;
+  onSelectCategory: (title: string) => void;
+  onNavigate: () => void;
+}) {
+  const active = groups.find((g) => g.title === activeTitle) ?? groups[0];
+
+  return (
+    <div
+      className="overflow-hidden rounded-[1.35rem] border border-[#9ec4de] shadow-[0_28px_70px_rgba(28,48,72,0.28),inset_0_1px_0_rgba(255,255,255,0.7)]"
+      style={{
+        /* Solid sky-blue glass — not white, not see-through */
+        background: "linear-gradient(148deg, #cfe6f6 0%, #b9daf0 42%, #dce8f2 72%, #e8efe6 100%)",
+        fontFamily: "var(--font-manrope), ui-sans-serif, system-ui, sans-serif",
+      }}
+    >
+      <div className="grid min-h-[19rem] grid-cols-[minmax(14rem,17.5rem)_1fr]">
+        <aside
+          className="relative border-r border-[#c9a227]/35 p-3 sm:p-3.5"
+          style={{
+            background: "linear-gradient(185deg, #d9e8a8 0%, #a8d0eb 36%, #c5dff0 100%)",
+          }}
+        >
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(120% 70% at 10% 0%, rgba(255,255,255,0.35), transparent 55%)",
+            }}
+            aria-hidden="true"
+          />
+          <p className="relative mb-3 px-2.5 text-[0.68rem] font-extrabold uppercase tracking-[0.18em] text-[#7a5e0c]">
+            {sidebarLabel}
+          </p>
+          <ul className="relative space-y-1">
+            {groups.map((section) => {
+              const on = section.title === active?.title;
+              return (
+                <li key={section.title}>
+                  <button
+                    type="button"
+                    onMouseEnter={() => onSelectCategory(section.title)}
+                    onFocus={() => onSelectCategory(section.title)}
+                    onClick={() => onSelectCategory(section.title)}
+                    className={`focus-ring relative flex w-full items-center justify-between overflow-hidden rounded-xl px-3.5 py-3 text-left text-[0.86rem] font-extrabold tracking-[0.01em] transition-all duration-200 ${
+                      on
+                        ? "bg-[#f7fbff] text-[#12151c] shadow-[0_8px_22px_rgba(40,60,85,0.14)] ring-1 ring-[#c9a227]/55"
+                        : "text-[#2a3340] hover:bg-[#eef6fc] hover:text-[#12151c]"
+                    }`}
+                  >
+                    {on ? (
+                      <span
+                        className="absolute inset-y-2 left-0 w-[3px] rounded-full bg-[#c9a227]"
+                        aria-hidden="true"
+                      />
+                    ) : null}
+                    <span className="pr-2">{section.title}</span>
+                    <span
+                      className={`shrink-0 text-[0.72rem] transition-transform ${
+                        on ? "translate-x-0.5 text-[#9a7b18]" : "text-[#9a7b18]/65"
+                      }`}
+                      aria-hidden="true"
+                    >
+                      →
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </aside>
+
+        <div
+          className="relative px-5 py-4 sm:px-7 sm:py-5"
+          style={{
+            background: "linear-gradient(180deg, #e4f1fa 0%, #cfe6f5 100%)",
+          }}
+        >
+          <div className="mb-4 flex flex-wrap items-end justify-between gap-2 border-b border-[#c9a227]/28 pb-3.5">
+            <div>
+              <p className="text-[0.64rem] font-extrabold uppercase tracking-[0.18em] text-[#7a5e0c]">
+                {contentLabel}
+              </p>
+              <h3 className="mt-1 text-[1.2rem] font-extrabold tracking-tight text-[#12151c] sm:text-[1.32rem]">
+                {active?.title}
+              </h3>
+            </div>
+            {active ? (
+              <Link
+                href={active.href}
+                onClick={onNavigate}
+                className="focus-ring inline-flex items-center gap-1.5 rounded-full border border-[#c9a227]/60 bg-[#f7fbff] px-3.5 py-1.5 text-[0.74rem] font-extrabold text-[#7a5e0c] shadow-sm transition-colors hover:bg-[#f0e4b8]"
+              >
+                View all <span aria-hidden="true">→</span>
+              </Link>
+            ) : null}
+          </div>
+
+          <ul className="grid grid-cols-1 gap-x-10 gap-y-0.5 sm:grid-cols-2 lg:grid-cols-3">
+            {(active?.links ?? []).map((child) => (
+              <li key={child.label}>
+                <Link
+                  href={child.href}
+                  onClick={onNavigate}
+                  className="focus-ring group flex items-center gap-2.5 rounded-xl px-2.5 py-2.5 text-[0.94rem] font-bold text-[#1a1f27] transition-colors hover:bg-[#f7fbff] hover:text-[#8f6f12]"
+                >
+                  <span
+                    className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#c9a227] shadow-[0_0_0_3px_rgba(201,162,39,0.2)] transition-transform group-hover:scale-125"
+                    aria-hidden="true"
+                  />
+                  <span className="leading-snug">{child.label}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Header() {
   const { header } = useSiteContent();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const [mobileGroup, setMobileGroup] = useState<string | null>(null);
+  const [megaCategory, setMegaCategory] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const navId = useId();
   const headerRef = useRef<HTMLElement>(null);
@@ -81,6 +229,24 @@ export default function Header() {
     (item) => item.label === openDropdown && Boolean(item.groups?.length),
   );
 
+  useEffect(() => {
+    if (openMegaItem?.groups?.length) {
+      setMegaCategory((current) => {
+        if (current && openMegaItem.groups!.some((g) => g.title === current)) {
+          return current;
+        }
+        return openMegaItem.groups![0].title;
+      });
+    } else {
+      setMegaCategory(null);
+    }
+  }, [openMegaItem]);
+
+  const isSidebarMega = Boolean(openMegaItem?.groups?.length);
+  const megaLabels = openMegaItem
+    ? megaPanelLabels(openMegaItem.label)
+    : { sidebar: "Categories", content: "Explore" };
+
   return (
     <header
       ref={headerRef}
@@ -92,50 +258,50 @@ export default function Header() {
     >
       <div className="relative mx-auto max-w-[92rem] px-4 sm:px-5 lg:px-6 xl:px-8">
         <div className="flex h-[5rem] items-center gap-3 sm:h-[5.25rem] lg:gap-4">
-        <Link href="/" className="focus-ring relative z-10 shrink-0" aria-label="Ambition Holiday home">
-          <Image
-            src={header.logoSrc}
-            alt="Ambition Holidays — Journeys Beyond Limits"
-            width={977}
-            height={258}
-            priority
-            className="h-[2.60rem] w-auto object-contain sm:h-[2.83rem] lg:h-[3.16rem]"
-            key={header.logoSrc}
-          />
-        </Link>
+          <Link href="/" className="focus-ring relative z-10 shrink-0" aria-label="Ambition Holiday home">
+            <Image
+              src={header.logoSrc}
+              alt="Ambition Holidays — Journeys Beyond Limits"
+              width={977}
+              height={258}
+              priority
+              className="h-[2.60rem] w-auto object-contain sm:h-[2.83rem] lg:h-[3.16rem]"
+              key={header.logoSrc}
+            />
+          </Link>
 
-        <nav
-          className="hidden min-w-0 flex-1 items-center justify-center xl:flex"
-          aria-label="Primary"
-        >
-          <ul className="flex items-center gap-0.5 2xl:gap-1">
-            {NAV_ITEMS.map((item) => {
-              const menu = hasMenu(item);
-              const isOpen = openDropdown === item.label;
-              const isMega = Boolean(item.groups?.length);
+          <nav
+            className="hidden min-w-0 flex-1 items-center justify-center xl:flex"
+            aria-label="Primary"
+          >
+            <ul className="flex items-center gap-0.5 2xl:gap-1">
+              {NAV_ITEMS.map((item) => {
+                const menu = hasMenu(item);
+                const isOpen = openDropdown === item.label;
+                const isMega = Boolean(item.groups?.length);
 
-              return (
-                <li key={item.label} className={isMega ? undefined : "relative"}>
-                  {menu ? (
-                    <>
-                      <button
-                        type="button"
-                        className={`focus-ring inline-flex items-center gap-1.5 rounded-md px-2.5 py-2 text-[0.90rem] font-bold tracking-[0.04em] text-white transition-colors duration-200 hover:text-gold 2xl:px-3 2xl:text-[0.97rem] ${
-                          isOpen ? "text-gold" : ""
-                        }`}
-                        aria-expanded={isOpen}
-                        aria-haspopup="true"
-                        onClick={() =>
-                          setOpenDropdown((current) =>
-                            current === item.label ? null : item.label,
-                          )
-                        }
-                        onMouseEnter={() => setOpenDropdown(item.label)}
-                      >
-                        {item.label}
-                        <Chevron open={isOpen} />
-                      </button>
-                      {isOpen && !isMega ? (
+                return (
+                  <li key={item.label} className={isMega ? undefined : "relative"}>
+                    {menu ? (
+                      <>
+                        <button
+                          type="button"
+                          className={`focus-ring inline-flex items-center gap-1.5 rounded-md px-2.5 py-2 text-[0.90rem] font-bold tracking-[0.04em] text-white transition-colors duration-200 hover:text-gold 2xl:px-3 2xl:text-[0.97rem] ${
+                            isOpen ? "text-gold" : ""
+                          }`}
+                          aria-expanded={isOpen}
+                          aria-haspopup="true"
+                          onClick={() =>
+                            setOpenDropdown((current) =>
+                              current === item.label ? null : item.label,
+                            )
+                          }
+                          onMouseEnter={() => setOpenDropdown(item.label)}
+                        >
+                          {item.label}
+                          <Chevron open={isOpen} />
+                        </button>
+                        {isOpen && !isMega ? (
                           <div
                             className="animate-dropdown absolute left-1/2 top-full z-50 mt-1 min-w-[14rem] -translate-x-1/2 rounded-lg border border-white/10 bg-[rgba(10,14,20,0.96)] py-2 shadow-xl backdrop-blur-md"
                             onMouseLeave={() => setOpenDropdown(null)}
@@ -155,123 +321,103 @@ export default function Header() {
                               ))}
                             </ul>
                           </div>
-                      ) : null}
-                    </>
-                  ) : (
-                    <Link
-                      href={item.href}
-                      className="focus-ring inline-flex items-center rounded-md px-2.5 py-2 text-[0.90rem] font-bold tracking-[0.04em] text-white transition-colors duration-200 hover:text-gold 2xl:px-3 2xl:text-[0.97rem]"
-                    >
-                      {item.label}
-                    </Link>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
+                        ) : null}
+                      </>
+                    ) : (
+                      <Link
+                        href={item.href}
+                        className="focus-ring inline-flex items-center rounded-md px-2.5 py-2 text-[0.90rem] font-bold tracking-[0.04em] text-white transition-colors duration-200 hover:text-gold 2xl:px-3 2xl:text-[0.97rem]"
+                      >
+                        {item.label}
+                      </Link>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
 
-        <div className="ml-auto flex items-center gap-1.5 sm:gap-2 lg:gap-2.5">
-          <button
-            type="button"
-            aria-label="Favourites"
-            className="focus-ring mr-3.5 hidden rounded-full p-2 text-white transition-colors hover:text-gold md:inline-flex lg:mr-5"
-          >
-            <svg viewBox="0 0 24 24" className="h-[1.33rem] w-[1.33rem]" fill="none" stroke="currentColor" strokeWidth="1.9" aria-hidden="true">
-              <path
-                d="M12 20.4S4.8 15.7 4.8 10.4A3.95 3.95 0 0 1 12 7.35a3.95 3.95 0 0 1 7.2 3.05c0 5.3-7.2 10-7.2 10Z"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
+          <div className="ml-auto flex items-center gap-1.5 sm:gap-2 lg:gap-2.5">
+            <button
+              type="button"
+              aria-label="Favourites"
+              className="focus-ring mr-3.5 hidden rounded-full p-2 text-white transition-colors hover:text-gold md:inline-flex lg:mr-5"
+            >
+              <svg viewBox="0 0 24 24" className="h-[1.33rem] w-[1.33rem]" fill="none" stroke="currentColor" strokeWidth="1.9" aria-hidden="true">
+                <path
+                  d="M12 20.4S4.8 15.7 4.8 10.4A3.95 3.95 0 0 1 12 7.35a3.95 3.95 0 0 1 7.2 3.05c0 5.3-7.2 10-7.2 10Z"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
 
-          <a
-            href={WHATSAPP_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="focus-ring hidden items-center gap-2.5 rounded-md border border-gold/80 px-2.5 py-1.5 transition-colors hover:border-gold hover:bg-white/5 lg:inline-flex"
-            aria-label={`Call or WhatsApp ${PHONE_DISPLAY}`}
-          >
-            <span className="whatsapp-call-pulse relative flex h-9 w-9 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_0_0_0_rgba(37,211,102,0.55)]">
-              <svg viewBox="0 0 24 24" className="h-[1.05rem] w-[1.05rem]" fill="currentColor" aria-hidden="true">
-                <path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.2 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.8 21 3 13.2 3 3.7c0-.6.4-1 1-1H7c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.3 1.1l-2.2 2.2Z" />
-              </svg>
-            </span>
-            <span className="text-[0.84rem] font-semibold tracking-wide text-gold">
-              {PHONE_DISPLAY}
-            </span>
-          </a>
+            <a
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="focus-ring hidden items-center gap-2.5 rounded-md border border-gold/80 px-2.5 py-1.5 transition-colors hover:border-gold hover:bg-white/5 lg:inline-flex"
+              aria-label={`Call or WhatsApp ${PHONE_DISPLAY}`}
+            >
+              <span className="whatsapp-call-pulse relative flex h-9 w-9 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_0_0_0_rgba(37,211,102,0.55)]">
+                <svg viewBox="0 0 24 24" className="h-[1.05rem] w-[1.05rem]" fill="currentColor" aria-hidden="true">
+                  <path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.2 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.8 21 3 13.2 3 3.7c0-.6.4-1 1-1H7c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.3 1.1l-2.2 2.2Z" />
+                </svg>
+              </span>
+              <span className="text-[0.84rem] font-semibold tracking-wide text-gold">
+                {PHONE_DISPLAY}
+              </span>
+            </a>
 
-          <button
-            type="button"
-            className="focus-ring inline-flex rounded-md p-2 text-white xl:hidden"
-            aria-expanded={mobileOpen}
-            aria-controls={navId}
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
-            onClick={() => setMobileOpen((value) => !value)}
-          >
-            {mobileOpen ? (
-              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <path d="M6 6l12 12M18 6 6 18" strokeLinecap="round" />
-              </svg>
-            ) : (
-              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
-              </svg>
-            )}
-          </button>
-        </div>
+            <button
+              type="button"
+              className="focus-ring inline-flex rounded-md p-2 text-white xl:hidden"
+              aria-expanded={mobileOpen}
+              aria-controls={navId}
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              onClick={() => setMobileOpen((value) => !value)}
+            >
+              {mobileOpen ? (
+                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <path d="M6 6l12 12M18 6 6 18" strokeLinecap="round" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
 
         {openMegaItem ? (
           <div
-            className="animate-dropdown fixed left-1/2 top-[5rem] z-[60] hidden w-[min(calc(100vw-2rem),72rem)] -translate-x-1/2 pt-2 sm:top-[5.25rem] xl:block"
+            className="animate-dropdown fixed left-1/2 top-[5rem] z-[60] hidden w-[min(calc(100vw-1.5rem),74rem)] -translate-x-1/2 pt-2 sm:top-[5.25rem] xl:block"
             onMouseLeave={() => setOpenDropdown(null)}
           >
-            <div className="rounded-xl border border-white/10 bg-[rgba(10,14,20,0.97)] p-6 shadow-2xl backdrop-blur-md">
-              <div
-                className={`grid gap-x-8 gap-y-6 ${
-                  openMegaItem.label === "Destinations"
-                    ? "grid-cols-3"
-                    : "grid-cols-3"
-                }`}
-              >
-                {openMegaItem.groups!.map((section) => (
-                  <div key={section.title} className="min-w-0">
-                    <Link
-                      href={section.href}
-                      className="focus-ring mb-2.5 block text-[0.72rem] font-bold uppercase tracking-[0.12em] text-gold"
-                      onClick={() => setOpenDropdown(null)}
-                    >
-                      {section.title}
-                    </Link>
-                    <ul className="space-y-0.5">
-                      {section.links.map((child) => (
-                        <li key={child.label}>
-                          <Link
-                            href={child.href}
-                            className="focus-ring block rounded-md px-1 py-1.5 text-[0.82rem] text-white/85 transition-colors hover:bg-white/5 hover:text-gold"
-                            onClick={() => setOpenDropdown(null)}
-                          >
-                            {child.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </div>
+            {isSidebarMega ? (
+              <DestinationsMegaPanel
+                groups={openMegaItem.groups!}
+                activeTitle={megaCategory || openMegaItem.groups![0].title}
+                sidebarLabel={megaLabels.sidebar}
+                contentLabel={megaLabels.content}
+                onSelectCategory={setMegaCategory}
+                onNavigate={() => setOpenDropdown(null)}
+              />
+            ) : null}
           </div>
         ) : null}
       </div>
 
       <div id={navId} className={`xl:hidden ${mobileOpen ? "block" : "hidden"}`}>
-        <div className="max-h-[calc(100vh-4.75rem)] overflow-y-auto border-t border-white/10 bg-[rgba(8,12,18,0.96)] px-4 pb-8 pt-3 backdrop-blur-lg">
+        <div
+          className="max-h-[calc(100vh-4.75rem)] overflow-y-auto border-t border-white/10 bg-[rgba(8,12,18,0.96)] px-4 pb-8 pt-3 backdrop-blur-lg"
+          style={{ fontFamily: "var(--font-manrope), ui-sans-serif, system-ui, sans-serif" }}
+        >
           <ul className="space-y-1">
             {NAV_ITEMS.map((item) => {
               const menu = hasMenu(item);
               const expanded = mobileExpanded === item.label;
+              const useSidebarMobile = Boolean(item.groups?.length);
 
               return (
                 <li key={item.label} className="border-b border-white/10">
@@ -285,14 +431,89 @@ export default function Header() {
                           setMobileExpanded((current) =>
                             current === item.label ? null : item.label,
                           );
-                          setMobileGroup(null);
+                          setMobileGroup(
+                            item.groups?.length ? item.groups[0].title : null,
+                          );
                         }}
                       >
                         {item.label}
                         <Chevron open={expanded} />
                       </button>
                       {expanded ? (
-                        item.groups ? (
+                        item.groups && useSidebarMobile ? (
+                          <div
+                            className="animate-dropdown mb-3 overflow-hidden rounded-2xl border border-[#9ec4de] p-2.5 shadow-[0_12px_32px_rgba(0,0,0,0.22)]"
+                            style={{
+                              background: "linear-gradient(155deg, #cfe6f6 0%, #b9daf0 50%, #dce8f2 100%)",
+                            }}
+                          >
+                            <p className="mb-2 px-1 text-[0.62rem] font-extrabold uppercase tracking-[0.16em] text-[#7a5e0c]">
+                              {megaPanelLabels(item.label).sidebar}
+                            </p>
+                            <div className="mb-2.5 flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                              {item.groups.map((section) => {
+                                const on = mobileGroup === section.title;
+                                return (
+                                  <button
+                                    key={section.title}
+                                    type="button"
+                                    onClick={() => setMobileGroup(section.title)}
+                                    className={`focus-ring shrink-0 rounded-full px-3.5 py-2 text-[0.74rem] font-extrabold tracking-wide transition-colors ${
+                                      on
+                                        ? "bg-[#c9a227] text-[#12151c] shadow-md"
+                                        : "bg-[#e8f3fb] text-[#2a3340] ring-1 ring-[#9ec4de]"
+                                    }`}
+                                  >
+                                    {section.title}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                            {(() => {
+                              const active =
+                                item.groups.find((g) => g.title === mobileGroup) ??
+                                item.groups[0];
+                              return (
+                                <div
+                                  className="rounded-xl border border-[#9ec4de] p-3.5"
+                                  style={{
+                                    background: "linear-gradient(180deg, #e4f1fa, #cfe6f5)",
+                                  }}
+                                >
+                                  <div className="mb-2.5 flex items-center justify-between gap-2 border-b border-[#c9a227]/25 pb-2">
+                                    <p className="text-[0.9rem] font-extrabold text-[#12151c]">
+                                      {active.title}
+                                    </p>
+                                    <Link
+                                      href={active.href}
+                                      className="text-[0.7rem] font-extrabold text-[#7a5e0c]"
+                                      onClick={() => setMobileOpen(false)}
+                                    >
+                                      View all →
+                                    </Link>
+                                  </div>
+                                  <ul className="space-y-0.5">
+                                    {active.links.map((child) => (
+                                      <li key={child.label}>
+                                        <Link
+                                          href={child.href}
+                                          className="focus-ring flex items-center gap-2 rounded-lg px-2 py-2.5 text-[0.9rem] font-bold text-[#1a1f27] hover:bg-[#f7fbff] hover:text-[#8f6f12]"
+                                          onClick={() => setMobileOpen(false)}
+                                        >
+                                          <span
+                                            className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#c9a227]"
+                                            aria-hidden="true"
+                                          />
+                                          {child.label}
+                                        </Link>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              );
+                            })()}
+                          </div>
+                        ) : item.groups ? (
                           <div className="animate-dropdown space-y-1 pb-3 pl-1">
                             {item.groups.map((section) => {
                               const groupOpen = mobileGroup === `${item.label}:${section.title}`;

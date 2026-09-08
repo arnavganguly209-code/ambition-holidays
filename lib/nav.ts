@@ -78,7 +78,7 @@ export const NAV_ITEMS: NavItem[] = [
     ],
   },
   {
-    label: "Luxury Tour",
+    label: "Luxury Tour & Trek",
     href: "/luxury-treks",
     groups: [
       group("Featured Luxury Treks", [
@@ -109,23 +109,31 @@ export const NAV_ITEMS: NavItem[] = [
   {
     label: "Experiences",
     href: "/experiences",
-    children: [
-      link("Helicopter Tours"),
-      link("Luxury Mountain Experiences"),
-      link("Private Guided Expeditions"),
-      link("Cultural Journeys"),
-      link("Photography Treks"),
+    groups: [
+      group("Adventure", [
+        "Helicopter Tours",
+        "Photography Treks",
+      ]),
+      group("Luxury & Private", [
+        "Luxury Mountain Experiences",
+        "Private Guided Expeditions",
+      ]),
+      group("Culture", ["Cultural Journeys"]),
     ],
   },
   {
     label: "Travel Guide",
     href: "/travel-guide",
-    children: [
-      link("Visa & Entry"),
-      link("Best Time to Visit"),
-      link("Packing Guide"),
-      link("Altitude Tips"),
-      link("Permits & Fees"),
+    groups: [
+      group("Before You Go", [
+        "Visa & Entry",
+        "Best Time to Visit",
+        "Packing Guide",
+      ]),
+      group("On The Trail", [
+        "Altitude Tips",
+        "Permits & Fees",
+      ]),
     ],
   },
   { label: "About Us", href: "/about-us" },
