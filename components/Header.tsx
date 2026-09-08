@@ -35,13 +35,76 @@ function megaPanelLabels(navLabel: string) {
   if (navLabel === "Luxury Tour & Trek") {
     return { sidebar: "Categories", content: "Packages" };
   }
-  if (navLabel === "Experiences") {
-    return { sidebar: "Categories", content: "Experiences" };
-  }
-  if (navLabel === "Travel Guide") {
-    return { sidebar: "Topics", content: "Guides" };
-  }
   return { sidebar: "Categories", content: "Explore" };
+}
+
+function usesSidebarMega(label: string) {
+  return label === "Destinations" || label === "Luxury Tour & Trek";
+}
+
+function usesStackDropdown(label: string) {
+  return label === "Experiences" || label === "Travel Guide";
+}
+
+function flattenNavLinks(item: NavItem) {
+  if (item.children?.length) return item.children;
+  if (item.groups?.length) {
+    return item.groups.flatMap((group) => group.links);
+  }
+  return [];
+}
+
+/** Solid sky–cream glass — frosted feel, not see-through */
+const MEGA_SHELL =
+  "linear-gradient(148deg, #d8ebf6 0%, #e8f2f8 48%, #f2eee4 100%)";
+const MEGA_SIDE =
+  "linear-gradient(185deg, #e8d9a4 0%, #c5dff0 42%, #dceaf4 100%)";
+const MEGA_MAIN = "linear-gradient(180deg, #eef5fa 0%, #e2eef7 100%)";
+const DROP_SHELL =
+  "linear-gradient(180deg, #f8fbfd 0%, #eef4f8 55%, #f5f0e6 100%)";
+
+function StackGlassDropdown({
+  links,
+  onNavigate,
+}: {
+  links: { label: string; href: string }[];
+  onNavigate: () => void;
+}) {
+  return (
+    <div
+      className="animate-dropdown absolute left-1/2 top-full z-50 mt-1.5 min-w-[15.5rem] -translate-x-1/2 overflow-hidden rounded-xl border border-[#c9a227]/40 shadow-[0_18px_42px_rgba(18,32,48,0.28)]"
+      style={{
+        background: DROP_SHELL,
+        fontFamily: "var(--font-manrope), ui-sans-serif, system-ui, sans-serif",
+      }}
+      onMouseLeave={onNavigate}
+    >
+      <div
+        className="h-[2px] w-full"
+        style={{
+          background:
+            "linear-gradient(90deg, transparent, #c9a227 25%, #e8d48a 50%, #c9a227 75%, transparent)",
+        }}
+        aria-hidden="true"
+      />
+      <ul role="menu" className="py-1">
+        {links.map((child, index) => (
+          <li key={child.href} role="none">
+            <Link
+              href={child.href}
+              role="menuitem"
+              className={`focus-ring block px-4 py-2.5 text-[0.86rem] font-semibold text-[#1a1f27] transition-colors hover:bg-[#c9a227]/12 hover:text-[#8f6f12] ${
+                index < links.length - 1 ? "border-b border-dashed border-[#c9a227]/28" : ""
+              }`}
+              onClick={onNavigate}
+            >
+              {child.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
 
 function DestinationsMegaPanel({
@@ -63,32 +126,30 @@ function DestinationsMegaPanel({
 
   return (
     <div
-      className="overflow-hidden rounded-[1.35rem] border border-[#9ec4de] shadow-[0_28px_70px_rgba(28,48,72,0.28),inset_0_1px_0_rgba(255,255,255,0.7)]"
+      className="overflow-hidden rounded-[1.15rem] border border-[#c9a227]/35 shadow-[0_26px_64px_rgba(18,32,48,0.3)]"
       style={{
-        /* Solid sky-blue glass — not white, not see-through */
-        background: "linear-gradient(148deg, #cfe6f6 0%, #b9daf0 42%, #dce8f2 72%, #e8efe6 100%)",
+        background: MEGA_SHELL,
         fontFamily: "var(--font-manrope), ui-sans-serif, system-ui, sans-serif",
       }}
     >
-      <div className="grid min-h-[19rem] grid-cols-[minmax(14rem,17.5rem)_1fr]">
+      <div
+        className="h-[2px] w-full"
+        style={{
+          background:
+            "linear-gradient(90deg, transparent, #c9a227 20%, #e8d48a 50%, #c9a227 80%, transparent)",
+        }}
+        aria-hidden="true"
+      />
+
+      <div className="grid grid-cols-[minmax(13rem,15rem)_1fr]">
         <aside
-          className="relative border-r border-[#c9a227]/35 p-3 sm:p-3.5"
-          style={{
-            background: "linear-gradient(185deg, #d9e8a8 0%, #a8d0eb 36%, #c5dff0 100%)",
-          }}
+          className="relative border-r border-[#c9a227]/30 px-3 py-3.5"
+          style={{ background: MEGA_SIDE }}
         >
-          <div
-            className="pointer-events-none absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(120% 70% at 10% 0%, rgba(255,255,255,0.35), transparent 55%)",
-            }}
-            aria-hidden="true"
-          />
-          <p className="relative mb-3 px-2.5 text-[0.68rem] font-extrabold uppercase tracking-[0.18em] text-[#7a5e0c]">
+          <p className="mb-2 px-2 text-[0.62rem] font-bold uppercase tracking-[0.18em] text-[#7a5e0c]">
             {sidebarLabel}
           </p>
-          <ul className="relative space-y-1">
+          <ul className="space-y-0.5">
             {groups.map((section) => {
               const on = section.title === active?.title;
               return (
@@ -98,26 +159,18 @@ function DestinationsMegaPanel({
                     onMouseEnter={() => onSelectCategory(section.title)}
                     onFocus={() => onSelectCategory(section.title)}
                     onClick={() => onSelectCategory(section.title)}
-                    className={`focus-ring relative flex w-full items-center justify-between overflow-hidden rounded-xl px-3.5 py-3 text-left text-[0.86rem] font-extrabold tracking-[0.01em] transition-all duration-200 ${
+                    className={`focus-ring flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-[0.82rem] font-bold leading-snug tracking-[0.01em] transition-colors duration-150 ${
                       on
-                        ? "bg-[#f7fbff] text-[#12151c] shadow-[0_8px_22px_rgba(40,60,85,0.14)] ring-1 ring-[#c9a227]/55"
-                        : "text-[#2a3340] hover:bg-[#eef6fc] hover:text-[#12151c]"
+                        ? "bg-[#fbfcfe] text-[#12151c] shadow-[0_6px_16px_rgba(40,60,85,0.12)] ring-1 ring-[#c9a227]/50"
+                        : "text-[#243040] hover:bg-[#fbfcfe]/85"
                     }`}
                   >
-                    {on ? (
-                      <span
-                        className="absolute inset-y-2 left-0 w-[3px] rounded-full bg-[#c9a227]"
-                        aria-hidden="true"
-                      />
-                    ) : null}
-                    <span className="pr-2">{section.title}</span>
+                    <span className="pr-1">{section.title}</span>
                     <span
-                      className={`shrink-0 text-[0.72rem] transition-transform ${
-                        on ? "translate-x-0.5 text-[#9a7b18]" : "text-[#9a7b18]/65"
-                      }`}
+                      className={`shrink-0 text-[0.7rem] ${on ? "text-[#9a7b18]" : "text-[#9a7b18]/50"}`}
                       aria-hidden="true"
                     >
-                      →
+                      ›
                     </span>
                   </button>
                 </li>
@@ -126,18 +179,13 @@ function DestinationsMegaPanel({
           </ul>
         </aside>
 
-        <div
-          className="relative px-5 py-4 sm:px-7 sm:py-5"
-          style={{
-            background: "linear-gradient(180deg, #e4f1fa 0%, #cfe6f5 100%)",
-          }}
-        >
-          <div className="mb-4 flex flex-wrap items-end justify-between gap-2 border-b border-[#c9a227]/28 pb-3.5">
-            <div>
-              <p className="text-[0.64rem] font-extrabold uppercase tracking-[0.18em] text-[#7a5e0c]">
+        <div className="px-5 py-4 sm:px-6 sm:py-5" style={{ background: MEGA_MAIN }}>
+          <div className="mb-3.5 flex items-end justify-between gap-3 border-b border-[#c9a227]/22 pb-2.5">
+            <div className="min-w-0">
+              <p className="text-[0.58rem] font-bold uppercase tracking-[0.18em] text-[#9a7b18]">
                 {contentLabel}
               </p>
-              <h3 className="mt-1 text-[1.2rem] font-extrabold tracking-tight text-[#12151c] sm:text-[1.32rem]">
+              <h3 className="mt-0.5 text-[1.12rem] font-extrabold tracking-tight text-[#12151c] sm:text-[1.2rem]">
                 {active?.title}
               </h3>
             </div>
@@ -145,23 +193,23 @@ function DestinationsMegaPanel({
               <Link
                 href={active.href}
                 onClick={onNavigate}
-                className="focus-ring inline-flex items-center gap-1.5 rounded-full border border-[#c9a227]/60 bg-[#f7fbff] px-3.5 py-1.5 text-[0.74rem] font-extrabold text-[#7a5e0c] shadow-sm transition-colors hover:bg-[#f0e4b8]"
+                className="focus-ring shrink-0 rounded-full border border-[#c9a227]/55 bg-[#fbfcfe] px-3 py-1 text-[0.68rem] font-bold text-[#7a5e0c] transition-colors hover:bg-[#f0e4b8]"
               >
-                View all <span aria-hidden="true">→</span>
+                View all →
               </Link>
             ) : null}
           </div>
 
-          <ul className="grid grid-cols-1 gap-x-10 gap-y-0.5 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
             {(active?.links ?? []).map((child) => (
               <li key={child.label}>
                 <Link
                   href={child.href}
                   onClick={onNavigate}
-                  className="focus-ring group flex items-center gap-2.5 rounded-xl px-2.5 py-2.5 text-[0.94rem] font-bold text-[#1a1f27] transition-colors hover:bg-[#f7fbff] hover:text-[#8f6f12]"
+                  className="focus-ring group flex items-center gap-2 rounded-lg border border-transparent px-2.5 py-2.5 text-[0.88rem] font-semibold text-[#1a1f27] transition-colors hover:border-[#c9a227]/35 hover:bg-[#fbfcfe] hover:text-[#8f6f12]"
                 >
                   <span
-                    className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#c9a227] shadow-[0_0_0_3px_rgba(201,162,39,0.2)] transition-transform group-hover:scale-125"
+                    className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#c9a227] shadow-[0_0_0_3px_rgba(201,162,39,0.15)]"
                     aria-hidden="true"
                   />
                   <span className="leading-snug">{child.label}</span>
@@ -226,7 +274,7 @@ export default function Header() {
   }, []);
 
   const openMegaItem = NAV_ITEMS.find(
-    (item) => item.label === openDropdown && Boolean(item.groups?.length),
+    (item) => item.label === openDropdown && usesSidebarMega(item.label),
   );
 
   useEffect(() => {
@@ -278,10 +326,12 @@ export default function Header() {
               {NAV_ITEMS.map((item) => {
                 const menu = hasMenu(item);
                 const isOpen = openDropdown === item.label;
-                const isMega = Boolean(item.groups?.length);
+                const isWideMega = usesSidebarMega(item.label);
+                const isStack = usesStackDropdown(item.label) || Boolean(item.children?.length);
+                const stackLinks = isStack ? flattenNavLinks(item) : [];
 
                 return (
-                  <li key={item.label} className={isMega ? undefined : "relative"}>
+                  <li key={item.label} className={isWideMega ? undefined : "relative"}>
                     {menu ? (
                       <>
                         <button
@@ -301,26 +351,11 @@ export default function Header() {
                           {item.label}
                           <Chevron open={isOpen} />
                         </button>
-                        {isOpen && !isMega ? (
-                          <div
-                            className="animate-dropdown absolute left-1/2 top-full z-50 mt-1 min-w-[14rem] -translate-x-1/2 rounded-lg border border-white/10 bg-[rgba(10,14,20,0.96)] py-2 shadow-xl backdrop-blur-md"
-                            onMouseLeave={() => setOpenDropdown(null)}
-                          >
-                            <ul role="menu">
-                              {item.children!.map((child) => (
-                                <li key={child.label} role="none">
-                                  <Link
-                                    href={child.href}
-                                    role="menuitem"
-                                    className="focus-ring block px-4 py-2 text-[0.8rem] text-white/85 transition-colors hover:bg-white/5 hover:text-gold"
-                                    onClick={() => setOpenDropdown(null)}
-                                  >
-                                    {child.label}
-                                  </Link>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
+                        {isOpen && isStack && stackLinks.length ? (
+                          <StackGlassDropdown
+                            links={stackLinks}
+                            onNavigate={() => setOpenDropdown(null)}
+                          />
                         ) : null}
                       </>
                     ) : (
@@ -391,7 +426,7 @@ export default function Header() {
 
         {openMegaItem ? (
           <div
-            className="animate-dropdown fixed left-1/2 top-[5rem] z-[60] hidden w-[min(calc(100vw-1.5rem),74rem)] -translate-x-1/2 pt-2 sm:top-[5.25rem] xl:block"
+            className="animate-dropdown fixed left-1/2 top-[5rem] z-[60] hidden w-[min(calc(100vw-2rem),64rem)] -translate-x-1/2 pt-1.5 sm:top-[5.25rem] xl:block"
             onMouseLeave={() => setOpenDropdown(null)}
           >
             {isSidebarMega ? (
@@ -417,7 +452,9 @@ export default function Header() {
             {NAV_ITEMS.map((item) => {
               const menu = hasMenu(item);
               const expanded = mobileExpanded === item.label;
-              const useSidebarMobile = Boolean(item.groups?.length);
+              const useSidebarMobile = usesSidebarMega(item.label);
+              const useStackMobile = usesStackDropdown(item.label);
+              const stackLinks = useStackMobile ? flattenNavLinks(item) : [];
 
               return (
                 <li key={item.label} className="border-b border-white/10">
@@ -442,15 +479,21 @@ export default function Header() {
                       {expanded ? (
                         item.groups && useSidebarMobile ? (
                           <div
-                            className="animate-dropdown mb-3 overflow-hidden rounded-2xl border border-[#9ec4de] p-2.5 shadow-[0_12px_32px_rgba(0,0,0,0.22)]"
-                            style={{
-                              background: "linear-gradient(155deg, #cfe6f6 0%, #b9daf0 50%, #dce8f2 100%)",
-                            }}
+                            className="animate-dropdown mb-3 overflow-hidden rounded-[1.15rem] border border-[#c9a227]/35 p-2.5 shadow-[0_14px_36px_rgba(0,0,0,0.22)]"
+                            style={{ background: MEGA_SHELL }}
                           >
-                            <p className="mb-2 px-1 text-[0.62rem] font-extrabold uppercase tracking-[0.16em] text-[#7a5e0c]">
+                            <div
+                              className="mb-2 h-[2px] w-full rounded-full"
+                              style={{
+                                background:
+                                  "linear-gradient(90deg, transparent, #c9a227 20%, #e8d48a 50%, #c9a227 80%, transparent)",
+                              }}
+                              aria-hidden="true"
+                            />
+                            <p className="mb-2 px-1 text-[0.6rem] font-bold uppercase tracking-[0.18em] text-[#7a5e0c]">
                               {megaPanelLabels(item.label).sidebar}
                             </p>
-                            <div className="mb-2.5 flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                            <div className="mb-2 flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                               {item.groups.map((section) => {
                                 const on = mobileGroup === section.title;
                                 return (
@@ -458,10 +501,10 @@ export default function Header() {
                                     key={section.title}
                                     type="button"
                                     onClick={() => setMobileGroup(section.title)}
-                                    className={`focus-ring shrink-0 rounded-full px-3.5 py-2 text-[0.74rem] font-extrabold tracking-wide transition-colors ${
+                                    className={`focus-ring shrink-0 rounded-lg px-3 py-1.5 text-[0.72rem] font-bold tracking-wide transition-colors ${
                                       on
-                                        ? "bg-[#c9a227] text-[#12151c] shadow-md"
-                                        : "bg-[#e8f3fb] text-[#2a3340] ring-1 ring-[#9ec4de]"
+                                        ? "bg-[#c9a227] text-[#12151c]"
+                                        : "bg-[#fbfcfe] text-[#2a3340] ring-1 ring-[#c9a227]/30"
                                     }`}
                                   >
                                     {section.title}
@@ -475,18 +518,16 @@ export default function Header() {
                                 item.groups[0];
                               return (
                                 <div
-                                  className="rounded-xl border border-[#9ec4de] p-3.5"
-                                  style={{
-                                    background: "linear-gradient(180deg, #e4f1fa, #cfe6f5)",
-                                  }}
+                                  className="rounded-xl p-3 ring-1 ring-[#c9a227]/20"
+                                  style={{ background: MEGA_MAIN }}
                                 >
-                                  <div className="mb-2.5 flex items-center justify-between gap-2 border-b border-[#c9a227]/25 pb-2">
-                                    <p className="text-[0.9rem] font-extrabold text-[#12151c]">
+                                  <div className="mb-2 flex items-center justify-between gap-2">
+                                    <p className="text-[0.84rem] font-extrabold text-[#12151c]">
                                       {active.title}
                                     </p>
                                     <Link
                                       href={active.href}
-                                      className="text-[0.7rem] font-extrabold text-[#7a5e0c]"
+                                      className="text-[0.68rem] font-bold text-[#7a5e0c]"
                                       onClick={() => setMobileOpen(false)}
                                     >
                                       View all →
@@ -497,7 +538,7 @@ export default function Header() {
                                       <li key={child.label}>
                                         <Link
                                           href={child.href}
-                                          className="focus-ring flex items-center gap-2 rounded-lg px-2 py-2.5 text-[0.9rem] font-bold text-[#1a1f27] hover:bg-[#f7fbff] hover:text-[#8f6f12]"
+                                          className="focus-ring flex items-center gap-2 rounded-lg px-2 py-2 text-[0.86rem] font-semibold text-[#1a1f27] hover:bg-[#fbfcfe] hover:text-[#8f6f12]"
                                           onClick={() => setMobileOpen(false)}
                                         >
                                           <span
@@ -513,49 +554,40 @@ export default function Header() {
                               );
                             })()}
                           </div>
-                        ) : item.groups ? (
-                          <div className="animate-dropdown space-y-1 pb-3 pl-1">
-                            {item.groups.map((section) => {
-                              const groupOpen = mobileGroup === `${item.label}:${section.title}`;
-                              return (
-                                <div key={section.title}>
-                                  <button
-                                    type="button"
-                                    className="focus-ring flex w-full items-center justify-between py-2.5 pl-2 text-left text-sm font-semibold text-gold"
-                                    aria-expanded={groupOpen}
-                                    onClick={() =>
-                                      setMobileGroup((current) =>
-                                        current === `${item.label}:${section.title}`
-                                          ? null
-                                          : `${item.label}:${section.title}`,
-                                      )
-                                    }
+                        ) : useStackMobile && stackLinks.length ? (
+                          <div
+                            className="animate-dropdown mb-3 overflow-hidden rounded-xl border border-[#c9a227]/40"
+                            style={{ background: DROP_SHELL }}
+                          >
+                            <div
+                              className="h-[2px] w-full"
+                              style={{
+                                background:
+                                  "linear-gradient(90deg, transparent, #c9a227 25%, #e8d48a 50%, #c9a227 75%, transparent)",
+                              }}
+                              aria-hidden="true"
+                            />
+                            <ul>
+                              {stackLinks.map((child, index) => (
+                                <li key={child.href}>
+                                  <Link
+                                    href={child.href}
+                                    className={`focus-ring block px-4 py-3 text-[0.9rem] font-semibold text-[#1a1f27] hover:bg-[#c9a227]/12 hover:text-[#8f6f12] ${
+                                      index < stackLinks.length - 1
+                                        ? "border-b border-dashed border-[#c9a227]/28"
+                                        : ""
+                                    }`}
+                                    onClick={() => setMobileOpen(false)}
                                   >
-                                    {section.title}
-                                    <Chevron open={groupOpen} />
-                                  </button>
-                                  {groupOpen ? (
-                                    <ul className="space-y-0.5 pb-2 pl-4">
-                                      {section.links.map((child) => (
-                                        <li key={child.label}>
-                                          <Link
-                                            href={child.href}
-                                            className="focus-ring block py-2 text-sm text-white/75 hover:text-gold"
-                                            onClick={() => setMobileOpen(false)}
-                                          >
-                                            {child.label}
-                                          </Link>
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  ) : null}
-                                </div>
-                              );
-                            })}
+                                    {child.label}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
                           </div>
-                        ) : (
+                        ) : item.children?.length ? (
                           <ul className="animate-dropdown space-y-1 pb-3 pl-3">
-                            {item.children!.map((child) => (
+                            {item.children.map((child) => (
                               <li key={child.label}>
                                 <Link
                                   href={child.href}
@@ -567,7 +599,7 @@ export default function Header() {
                               </li>
                             ))}
                           </ul>
-                        )
+                        ) : null
                       ) : null}
                     </>
                   ) : (

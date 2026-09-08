@@ -179,3 +179,8 @@ export function getAllRoutes(): RouteMeta[] {
 export function getRouteBySlug(slug: string): RouteMeta | undefined {
   return getAllRoutes().find((route) => route.slug === slug);
 }
+
+export function getNavItemBySlug(slug: string): NavItem | undefined {
+  const href = `/${slug}`;
+  return NAV_ITEMS.find((item) => item.href === href && Boolean(item.groups?.length));
+}

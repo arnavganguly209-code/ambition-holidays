@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import NavHubPage from "@/components/NavHubPage";
 import PageShell from "@/components/PageShell";
-import { getAllRoutes, getRouteBySlug } from "@/lib/nav";
+import { getAllRoutes, getNavItemBySlug, getRouteBySlug } from "@/lib/nav";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -31,6 +32,11 @@ export default async function SlugPage({ params }: Props) {
   const { slug } = await params;
   const route = getRouteBySlug(slug);
   if (!route) notFound();
+
+  const hub = getNavItemBySlug(slug);
+  if (hub?.groups?.length) {
+    return <NavHubPage item={hub} />;
+  }
 
   return <PageShell title={route.title} description={route.description} />;
 }
