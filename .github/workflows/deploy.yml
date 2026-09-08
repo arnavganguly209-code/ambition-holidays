@@ -174,14 +174,11 @@ jobs:
               cp -a .next .next.deploy-backup
             fi
 
-            echo "Clean production build (remove stale .next to avoid missing CSS)..."
+            echo "Clean production build (wipe .next — prevents missing CSS after cancelled deploys)..."
             rm -rf .next
 
             echo "Building production app..."
-            build_ok=0
-            if npm run build; then
-              build_ok=1
-            else
+            if ! npm run build; then
               echo "ERROR: npm run build failed - restoring previous .next"
               rm -rf .next
               if [ -d .next.deploy-backup ]; then
@@ -193,6 +190,17 @@ jobs:
               exit 1
             fi
 
+            echo "Verifying build artifacts on disk..."
+            if [ ! -f .next/BUILD_ID ]; then
+              echo "ERROR: .next/BUILD_ID missing"
+              exit 1
+            fi
+            BUILD_ID="$(tr -d '\n' < .next/BUILD_ID)"
+            echo "BUILD_ID=${BUILD_ID}"
+            if [ ! -f ".next/static/${BUILD_ID}/_buildManifest.js" ]; then
+              echo "ERROR: missing .next/static/${BUILD_ID}/_buildManifest.js"
+              exit 1
+            fi
             CSS_COUNT="$(find .next/static/css -type f -name '*.css' 2>/dev/null | wc -l | tr -d ' ')"
             echo "Built CSS files: ${CSS_COUNT}"
             ls -lah .next/static/css 2>/dev/null || true
@@ -206,36 +214,17 @@ jobs:
             fi
             rm -rf .next.deploy-backup
 
-            if [ "${build_ok}" -ne 1 ]; then
-              exit 1
-            fi
-
             echo "Updating PM2 process ${PM2_APP} only..."
             if pm2 describe "${PM2_APP}" >/dev/null 2>&1; then
-              pm2 restart "${PM2_APP}" --update-env
+              pm2 delete "${PM2_APP}" || true
+              pm2 start npm --name "${PM2_APP}" -- start -- -p "${APP_PORT}"
             else
               pm2 start npm --name "${PM2_APP}" -- start -- -p "${APP_PORT}"
             fi
 
             pm2 save
 
-            echo "Verifying critical CSS is served..."
-            sleep 3
-            HTML="$(curl -fsS "http://127.0.0.1:${APP_PORT}/" || true)"
-            CSS_PATH="$(printf '%s' "${HTML}" | grep -oE '/_next/static/css/[^\" ]+\.css' | head -n 5 || true)"
-            echo "CSS refs from homepage:"
-            echo "${CSS_PATH}"
-            while IFS= read -r href; do
-              [ -z "${href}" ] && continue
-              CODE="$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:${APP_PORT}${href}" || echo 000)"
-              echo "  ${href} -> ${CODE}"
-              if [ "${CODE}" != "200" ]; then
-                echo "ERROR: CSS asset not served (${CODE}): ${href}"
-                exit 1
-              fi
-            done <<EOF
-${CSS_PATH}
-EOF
+            echo "Ensuring public nginx + firewall access for ${PUBLIC_URL}..."
             chmod +x scripts/ensure-public-access.sh
             if ! bash scripts/ensure-public-access.sh; then
               echo "WARNING: ensure-public-access script failed; trying inline nginx cleanup..."
@@ -300,12 +289,7 @@ EOF
               exit 1
             fi
 
-            echo "Local Orbit login check (non-blocking during rollout)..."
-            ORBIT_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 5 "http://127.0.0.1:${APP_PORT}/orbit/login" || true)"
-            ORBIT_ALT="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 5 "http://127.0.0.1:${APP_PORT}/orbit-login" || true)"
-            echo "Orbit login codes: /orbit/login=${ORBIT_CODE} /orbit-login=${ORBIT_ALT}"
-
-            echo "Public HTTPS check (homepage)..."
+            echo "Public HTTPS check (homepage + CSS assets)..."
             public_ok=0
             for i in $(seq 1 20); do
               PUBLIC_HOME="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "${PUBLIC_URL}/" || true)"
@@ -321,11 +305,33 @@ EOF
               exit 1
             fi
 
+            PUB_HTML="$(curl -fsS --max-time 20 "${PUBLIC_URL}/" || true)"
+            PUB_CSS="$(printf '%s\n' "${PUB_HTML}" | grep -oE '/_next/static/css/[A-Za-z0-9._-]+\.css' | sort -u || true)"
+            echo "Public CSS refs:"
+            echo "${PUB_CSS}"
+            if [ -z "${PUB_CSS}" ]; then
+              echo "ERROR: Homepage HTML has no CSS refs"
+              exit 1
+            fi
+            for href in ${PUB_CSS}; do
+              CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "${PUBLIC_URL}${href}" || echo 000)"
+              echo "  ${href} -> ${CODE}"
+              if [ "${CODE}" != "200" ]; then
+                echo "ERROR: Public CSS asset failed (${CODE}): ${href}"
+                exit 1
+              fi
+            done
+
+            echo "Local Orbit login check (non-blocking during rollout)..."
+            ORBIT_CODE="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 5 "http://127.0.0.1:${APP_PORT}/orbit/login" || true)"
+            ORBIT_ALT="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 5 "http://127.0.0.1:${APP_PORT}/orbit-login" || true)"
+            echo "Orbit login codes: /orbit/login=${ORBIT_CODE} /orbit-login=${ORBIT_ALT}"
+
             PUBLIC_ORBIT="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "${PUBLIC_URL}/orbit/login" || true)"
             PUBLIC_ORBIT_ALT="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "${PUBLIC_URL}/orbit-login" || true)"
             echo "Public Orbit login codes: /orbit/login=${PUBLIC_ORBIT} /orbit-login=${PUBLIC_ORBIT_ALT}"
 
-            echo "Deploy complete: ${PM2_APP} online; ${PUBLIC_URL} returned 200."
+            echo "Deploy complete: ${PM2_APP} online; ${PUBLIC_URL} returned 200 with CSS OK."
 
       - name: Verify public access from GitHub runner
         run: |
