@@ -108,15 +108,15 @@ export default function AvailabilitySection() {
           {availability.cards?.map((card) => (
             <article
               key={card.id}
-              className="avail-card-glow hl-card group flex h-full origin-center flex-col overflow-hidden rounded-[0.85rem] border border-emerald-500/40 transition-transform duration-500 ease-out hover:z-10 hover:scale-[1.03]"
+              className="avail-card-glow hl-card group flex h-full origin-center flex-col overflow-hidden rounded-[0.85rem] border border-emerald-500/40 transition-transform duration-500 ease-out [@media(hover:hover)]:hover:z-10 [@media(hover:hover)]:hover:scale-[1.02]"
             >
               {/* Full-bleed image to the top of the card */}
-              <div className="relative h-[13.5rem] w-full overflow-hidden sm:h-[14.5rem]">
+              <div className="relative aspect-[16/10] w-full overflow-hidden sm:aspect-[3/2]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={mediaSrc(card.imageSrc, updatedAt)}
                   alt={card.imageAlt}
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                  className="absolute inset-0 h-full w-full object-cover object-[center_28%] transition-transform duration-700 ease-out [@media(hover:hover)]:group-hover:scale-105"
                 />
                 <div
                   className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/55 via-black/15 to-black/35"

@@ -250,7 +250,7 @@ export default function Header() {
   return (
     <header
       ref={headerRef}
-      className={`absolute inset-x-0 top-0 z-50 transition-colors duration-300 ${
+      className={`absolute inset-x-0 top-0 z-50 pt-[var(--safe-top)] transition-colors duration-300 ${
         scrolled || mobileOpen
           ? "bg-[rgba(8,12,18,0.88)] backdrop-blur-md"
           : "bg-transparent"
@@ -410,7 +410,7 @@ export default function Header() {
 
       <div id={navId} className={`xl:hidden ${mobileOpen ? "block" : "hidden"}`}>
         <div
-          className="max-h-[calc(100vh-4.75rem)] overflow-y-auto border-t border-white/10 bg-[rgba(8,12,18,0.96)] px-4 pb-8 pt-3 backdrop-blur-lg"
+          className="max-h-[calc(100dvh-4.75rem-var(--safe-top))] overflow-y-auto overscroll-contain border-t border-white/10 bg-[rgba(8,12,18,0.96)] px-4 pb-[max(2rem,var(--safe-bottom))] pt-3 backdrop-blur-lg"
           style={{ fontFamily: "var(--font-manrope), ui-sans-serif, system-ui, sans-serif" }}
         >
           <ul className="space-y-1">

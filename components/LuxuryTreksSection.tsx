@@ -157,30 +157,30 @@ function PackageCard({
           {pkg.location}
         </p>
 
-        <div className="mt-3.5 grid grid-cols-3 gap-2 border-y border-white/12 py-3">
-          <div className="flex items-start gap-2">
+        <div className="mt-3.5 grid grid-cols-3 gap-1.5 border-y border-white/12 py-3 sm:gap-2">
+          <div className="flex min-w-0 items-start gap-1.5 sm:gap-2">
             <CalendarIcon />
-            <div>
-              <p className="text-[0.78rem] font-medium leading-tight text-white">{pkg.days} Days</p>
+            <div className="min-w-0">
+              <p className="text-[0.72rem] font-medium leading-snug text-white sm:text-[0.78rem]">{pkg.days} Days</p>
             </div>
           </div>
-          <div className="flex items-start gap-2 border-l border-white/12 pl-2 sm:pl-3">
+          <div className="flex min-w-0 items-start gap-1.5 border-l border-white/12 pl-1.5 sm:gap-2 sm:pl-3">
             <PeakIcon />
-            <div>
-              <p className="text-[0.78rem] font-medium leading-tight text-white">{pkg.maxAltitude}</p>
-              <p className="mt-0.5 text-[0.62rem] text-white/50">Max Altitude</p>
+            <div className="min-w-0">
+              <p className="text-[0.72rem] font-medium leading-snug text-white sm:text-[0.78rem]">{pkg.maxAltitude}</p>
+              <p className="mt-0.5 text-[0.58rem] text-white/50 sm:text-[0.62rem]">Max Altitude</p>
             </div>
           </div>
-          <div className="flex items-start gap-2 border-l border-white/12 pl-2 sm:pl-3">
+          <div className="flex min-w-0 items-start gap-1.5 border-l border-white/12 pl-1.5 sm:gap-2 sm:pl-3">
             <SignalIcon />
-            <div>
-              <p className="text-[0.78rem] font-medium leading-tight text-white">{pkg.difficulty}</p>
-              <p className="mt-0.5 text-[0.62rem] text-white/50">Difficulty</p>
+            <div className="min-w-0">
+              <p className="text-[0.72rem] font-medium leading-snug text-white sm:text-[0.78rem]">{pkg.difficulty}</p>
+              <p className="mt-0.5 text-[0.58rem] text-white/50 sm:text-[0.62rem]">Difficulty</p>
             </div>
           </div>
         </div>
 
-        <p className="mt-3.5 line-clamp-3 text-[0.82rem] leading-relaxed text-white/72 sm:text-[0.86rem]">
+        <p className="mt-3.5 line-clamp-4 text-[0.84rem] leading-relaxed text-white/72 sm:line-clamp-3 sm:text-[0.86rem]">
           {pkg.description}
         </p>
 

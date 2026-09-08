@@ -8,13 +8,23 @@ type Props = {
   className?: string;
   sizes: string;
   priority?: boolean;
+  objectPosition?: string;
 };
 
 function isRuntimeUpload(src: string) {
   return src.startsWith("/uploads/") || src.startsWith("/api/media/");
 }
 
-export default function MediaImage({ src, alt, className, sizes, priority = false }: Props) {
+export default function MediaImage({
+  src,
+  alt,
+  className,
+  sizes,
+  priority = false,
+  objectPosition = "center 28%",
+}: Props) {
+  const style = { objectPosition };
+
   if (isRuntimeUpload(src)) {
     return (
       // Runtime CMS uploads are served from disk, not the build-time public folder.
@@ -23,6 +33,7 @@ export default function MediaImage({ src, alt, className, sizes, priority = fals
         src={src}
         alt={alt}
         className={`h-full w-full ${className ?? ""}`}
+        style={style}
         loading={priority ? "eager" : "lazy"}
         decoding="async"
         draggable={false}
@@ -36,12 +47,13 @@ export default function MediaImage({ src, alt, className, sizes, priority = fals
       alt={alt}
       fill
       sizes={sizes}
-      quality={68}
+      quality={78}
       priority={priority}
       loading={priority ? "eager" : "lazy"}
       decoding="async"
       draggable={false}
       className={className}
+      style={style}
     />
   );
 }

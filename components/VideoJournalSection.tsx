@@ -88,20 +88,20 @@ function VideoLightbox({
       <button
         type="button"
         onClick={onClose}
-        className="absolute right-3 top-3 z-[91] rounded-full border border-white/25 bg-black/50 px-3 py-1.5 text-xs font-semibold text-white hover:border-gold/60 hover:text-gold sm:right-5 sm:top-5"
+        className="absolute right-[max(0.75rem,env(safe-area-inset-right))] top-[max(0.75rem,env(safe-area-inset-top))] z-[91] rounded-full border border-white/25 bg-black/50 px-3 py-1.5 text-xs font-semibold text-white hover:border-gold/60 hover:text-gold sm:right-5 sm:top-5"
       >
         Close ✕
       </button>
       <div
-        className="relative flex h-[min(92vh,100%)] w-full max-w-6xl flex-col overflow-hidden rounded-lg border border-gold/25 bg-black shadow-2xl"
+        className="relative flex h-[min(92dvh,100%)] w-full max-w-6xl flex-col overflow-hidden rounded-lg border border-gold/25 bg-black shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-2.5">
           <div className="min-w-0">
-            <p id={titleId} className="truncate font-[family-name:var(--font-cormorant)] text-base text-white sm:text-lg">
+            <p id={titleId} className="line-clamp-2 font-[family-name:var(--font-cormorant)] text-base text-white sm:text-lg">
               {video.title}
             </p>
-            <p className="truncate text-[0.7rem] text-gold/90">{video.subtitle}</p>
+            <p className="line-clamp-1 text-[0.7rem] text-gold/90">{video.subtitle}</p>
           </div>
         </div>
         <div className="relative min-h-0 flex-1 bg-black">
@@ -177,13 +177,13 @@ export default function VideoJournalSection() {
               key={video.id}
               type="button"
               onClick={() => setActive(video)}
-              className="group on-photo relative aspect-[16/10] overflow-hidden rounded-[0.85rem] border border-gold/35 text-left transition-transform duration-500 hover:scale-[1.02] hover:border-gold/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+              className="group on-photo relative aspect-[16/10] overflow-hidden rounded-[0.85rem] border border-gold/35 text-left transition-transform duration-500 [@media(hover:hover)]:hover:scale-[1.02] hover:border-gold/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={mediaSrc(video.imageSrc, updatedAt)}
                 alt={video.imageAlt}
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                className="absolute inset-0 h-full w-full object-cover object-[center_28%] transition-transform duration-700 [@media(hover:hover)]:group-hover:scale-105"
               />
               <div
                 className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/15"
@@ -191,7 +191,7 @@ export default function VideoJournalSection() {
               />
               {/* Single gold play button — thumbnail images must stay clean (no baked-in play) */}
               <span
-                className="pointer-events-none absolute left-1/2 top-1/2 flex h-[3.35rem] w-[3.35rem] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[1.5px] border-gold bg-black/55 shadow-[0_0_20px_rgba(201,162,39,0.28)] transition-transform duration-300 group-hover:scale-110 sm:h-14 sm:w-14"
+                className="pointer-events-none absolute left-1/2 top-1/2 flex h-[3.35rem] w-[3.35rem] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-[1.5px] border-gold bg-black/55 shadow-[0_0_20px_rgba(201,162,39,0.28)] transition-transform duration-300 [@media(hover:hover)]:group-hover:scale-110 sm:h-14 sm:w-14"
                 aria-hidden="true"
               >
                 <svg viewBox="0 0 24 24" className="ml-0.5 h-5 w-5 text-white sm:h-6 sm:w-6" fill="currentColor">

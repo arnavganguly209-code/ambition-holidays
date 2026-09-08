@@ -122,8 +122,8 @@ export default function SignatureGallery({ images }: Props) {
                   : ""
             }`}
             style={{
-              width: "clamp(7.5rem, 28vw, 11.25rem)",
-              aspectRatio: "9 / 16",
+              width: "clamp(9.5rem, 42vw, 13.5rem)",
+              aspectRatio: "3 / 4",
               backgroundColor: "#1e252f",
             }}
           >
@@ -134,7 +134,7 @@ export default function SignatureGallery({ images }: Props) {
               draggable={false}
               loading={index < 2 ? "eager" : "lazy"}
               decoding="async"
-              className="pointer-events-none absolute inset-0 h-full w-full select-none object-cover object-center"
+              className="pointer-events-none absolute inset-0 h-full w-full select-none object-cover object-[center_22%]"
             />
           </figure>
         ))}

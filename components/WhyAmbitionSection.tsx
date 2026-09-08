@@ -217,7 +217,7 @@ export default function WhyAmbitionSection() {
                 <img
                   src={mediaSrc(card.imageSrc, updatedAt)}
                   alt={card.imageAlt}
-                  className="h-[6.6rem] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 sm:h-[7.2rem]"
+                  className="aspect-[16/10] w-full object-cover object-[center_28%] transition-transform duration-700 ease-out [@media(hover:hover)]:group-hover:scale-105"
                 />
               </div>
             </article>

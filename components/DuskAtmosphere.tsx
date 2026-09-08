@@ -36,7 +36,7 @@ export default function DuskAtmosphere() {
         <svg
           viewBox="0 0 1440 480"
           className="absolute inset-0 h-full w-full"
-          preserveAspectRatio="xMidYMax slice"
+          preserveAspectRatio="xMidYMax meet"
         >
           <defs>
             <linearGradient id="skyMtnFar" x1="0" y1="0" x2="0" y2="1">
@@ -80,7 +80,7 @@ export default function DuskAtmosphere() {
           <path d="M1210 185 L1240 155 L1275 195 L1240 168 L1215 198 Z" fill="url(#snowCap)" opacity="0.85" />
         </svg>
 
-        <div className="absolute inset-x-0 bottom-0 h-[72%] bg-[url('/images/footer/ambition-silhouette-clear.jpg')] bg-[length:100%_100%] bg-bottom bg-no-repeat opacity-[0.22] mix-blend-multiply" />
+        <div className="absolute inset-x-0 bottom-0 h-[72%] bg-[url('/images/footer/ambition-silhouette-clear.jpg')] bg-cover bg-bottom bg-no-repeat opacity-[0.22] mix-blend-multiply" />
         <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#e4ecf4] via-[#e8eef5]/80 to-transparent" />
       </div>
     </>

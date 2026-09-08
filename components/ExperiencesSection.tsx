@@ -42,7 +42,7 @@ export default function ExperiencesSection() {
 
   return (
     <section
-      className="relative overflow-hidden border-t px-4 pb-10 pt-10 sm:px-8 sm:pb-12 sm:pt-12 lg:px-10"
+      className="relative border-t px-4 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-10 sm:px-8 sm:pb-12 sm:pt-12 lg:px-10"
       style={{
         backgroundColor: "transparent",
         borderColor: border,
@@ -109,7 +109,7 @@ export default function ExperiencesSection() {
                 <img
                   src={mediaSrc(card.imageSrc, updatedAt)}
                   alt={card.imageAlt}
-                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="h-full w-full object-cover object-[center_28%] transition-transform duration-700 [@media(hover:hover)]:group-hover:scale-105"
                 />
                 <div
                   className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 to-transparent"

@@ -86,14 +86,14 @@ export default function Hero() {
         alt=""
         fetchPriority="high"
         decoding="async"
-        className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover object-[center_28%] sm:object-center"
         aria-hidden="true"
       />
       {showVideo ? (
         <video
           ref={videoRef}
           key={videoSrc}
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover object-[center_28%] sm:object-center"
           autoPlay
           muted
           loop

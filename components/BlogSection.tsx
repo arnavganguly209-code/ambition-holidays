@@ -25,76 +25,72 @@ function ClockIcon() {
 
 function FeaturedCard({ post, updatedAt }: { post: BlogPost; updatedAt: string }) {
   return (
-    <article className="group relative flex min-h-[22rem] flex-col overflow-hidden rounded-[0.9rem] border border-gold/30 sm:min-h-[26rem]">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={mediaSrc(post.imageSrc, updatedAt)}
-        alt={post.imageAlt}
-        className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/20" aria-hidden="true" />
-
-      <div className="on-photo relative z-[1] flex h-full flex-col p-4 sm:p-5">
+    <article className="hl-card group flex flex-col overflow-hidden rounded-[0.9rem] border border-gold/30">
+      <div className="relative aspect-[16/10] w-full overflow-hidden sm:aspect-[16/9]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={mediaSrc(post.imageSrc, updatedAt)}
+          alt={post.imageAlt}
+          className="absolute inset-0 h-full w-full object-cover object-[center_28%] transition-transform duration-700 [@media(hover:hover)]:group-hover:scale-105"
+        />
         {post.badge && post.badgeStyle !== "none" ? (
-          <div className="mb-auto">
+          <div className="absolute left-3 top-3 z-[1]">
             <span
               className={
                 post.badgeStyle === "featured"
                   ? "inline-flex items-center rounded-full bg-gold px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.08em] text-[#1a1f27]"
-                  : "inline-flex items-center rounded-full border border-white/55 bg-black/25 px-2.5 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.08em] text-white/95 backdrop-blur-sm"
+                  : "inline-flex items-center rounded-full border border-white/55 bg-black/45 px-2.5 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.08em] text-white/95 backdrop-blur-sm"
               }
             >
               {post.badge}
             </span>
           </div>
-        ) : (
-          <div className="mb-auto" />
-        )}
+        ) : null}
+      </div>
 
-        <div className="mt-auto space-y-2.5">
-          {post.category ? (
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-gold">{post.category}</p>
-          ) : null}
-          <h3 className="font-[family-name:var(--font-cormorant)] text-[1.35rem] font-semibold leading-snug text-white sm:text-[1.55rem]">
-            {post.title}
-          </h3>
-          {post.excerpt ? (
-            <p className="line-clamp-2 text-[0.82rem] leading-relaxed text-white/78 sm:text-[0.88rem]">{post.excerpt}</p>
-          ) : null}
+      <div className="flex flex-1 flex-col gap-2.5 p-4 sm:p-5">
+        {post.category ? (
+          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-gold">{post.category}</p>
+        ) : null}
+        <h3 className="font-[family-name:var(--font-cormorant)] text-[1.28rem] font-semibold leading-snug text-white sm:text-[1.45rem]">
+          {post.title}
+        </h3>
+        {post.excerpt ? (
+          <p className="line-clamp-3 text-[0.84rem] leading-relaxed text-white/78 sm:text-[0.9rem]">{post.excerpt}</p>
+        ) : null}
 
-          <div className="flex flex-wrap items-end justify-between gap-3 pt-1">
-            <div className="flex min-w-0 items-center gap-2.5">
-              {post.authorAvatarSrc ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={mediaSrc(post.authorAvatarSrc, updatedAt)}
-                  alt=""
-                  className="h-8 w-8 rounded-full border border-white/25 object-cover bg-black/40"
-                />
-              ) : null}
-              <div className="min-w-0 text-[0.72rem] text-white/80">
-                {post.authorName ? <p className="truncate font-medium text-white">{post.authorName}</p> : null}
-                <p className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-white/65">
-                  <span>{post.date}</span>
-                  {post.readTime ? (
-                    <>
-                      <span aria-hidden="true">·</span>
-                      <span className="inline-flex items-center gap-1">
-                        <ClockIcon />
-                        {post.readTime}
-                      </span>
-                    </>
-                  ) : null}
-                </p>
-              </div>
+        <div className="mt-auto flex flex-wrap items-end justify-between gap-3 pt-1">
+          <div className="flex min-w-0 items-center gap-2.5">
+            {post.authorAvatarSrc ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={mediaSrc(post.authorAvatarSrc, updatedAt)}
+                alt=""
+                className="h-8 w-8 rounded-full border border-white/25 object-cover bg-black/40"
+              />
+            ) : null}
+            <div className="min-w-0 text-[0.72rem] text-white/80">
+              {post.authorName ? <p className="font-medium text-white">{post.authorName}</p> : null}
+              <p className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-white/65">
+                <span>{post.date}</span>
+                {post.readTime ? (
+                  <>
+                    <span aria-hidden="true">·</span>
+                    <span className="inline-flex items-center gap-1">
+                      <ClockIcon />
+                      {post.readTime}
+                    </span>
+                  </>
+                ) : null}
+              </p>
             </div>
-            <Link
-              href={post.href || "#"}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-gold px-3.5 py-2 text-[0.72rem] font-semibold tracking-wide text-[#1a1f27] transition-colors hover:bg-[#d4b45a]"
-            >
-              Read More <span aria-hidden="true">→</span>
-            </Link>
           </div>
+          <Link
+            href={post.href || "#"}
+            className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-md bg-gold px-3.5 py-2.5 text-[0.72rem] font-semibold tracking-wide text-[#1a1f27] transition-colors hover:bg-[#d4b45a]"
+          >
+            Read More <span aria-hidden="true">→</span>
+          </Link>
         </div>
       </div>
     </article>
@@ -112,7 +108,7 @@ function SidePostRow({ post, updatedAt }: { post: BlogPost; updatedAt: string })
         <img
           src={mediaSrc(post.imageSrc, updatedAt)}
           alt={post.imageAlt}
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className="absolute inset-0 h-full w-full object-cover object-[center_28%] transition-transform duration-500 [@media(hover:hover)]:group-hover:scale-105"
         />
       </div>
       <div className="min-w-0 flex-1 py-0.5">
