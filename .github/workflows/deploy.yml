@@ -8,7 +8,8 @@ on:
 
 concurrency:
   group: ambition-holidays-production-deploy
-  cancel-in-progress: false
+  # Cancel hung/stuck deploys so a fresh push can go live immediately.
+  cancel-in-progress: true
 
 jobs:
   deploy:
