@@ -8,8 +8,8 @@ on:
 
 concurrency:
   group: ambition-holidays-production-deploy
-  # Cancel hung/stuck deploys so a fresh push can go live immediately.
-  cancel-in-progress: true
+  # Never cancel mid-deploy — a killed SSH build leaves a broken .next (missing CSS).
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -174,11 +174,13 @@ jobs:
               cp -a .next .next.deploy-backup
             fi
 
+            echo "Clean production build (remove stale .next to avoid missing CSS)..."
+            rm -rf .next
+
             echo "Building production app..."
             build_ok=0
             if npm run build; then
               build_ok=1
-              rm -rf .next.deploy-backup
             else
               echo "ERROR: npm run build failed - restoring previous .next"
               rm -rf .next
@@ -190,6 +192,20 @@ jobs:
               free -m || true
               exit 1
             fi
+
+            CSS_COUNT="$(find .next/static/css -type f -name '*.css' 2>/dev/null | wc -l | tr -d ' ')"
+            echo "Built CSS files: ${CSS_COUNT}"
+            ls -lah .next/static/css 2>/dev/null || true
+            if [ "${CSS_COUNT}" = "0" ]; then
+              echo "ERROR: No CSS emitted in .next/static/css — refusing broken deploy"
+              rm -rf .next
+              if [ -d .next.deploy-backup ]; then
+                mv .next.deploy-backup .next
+              fi
+              exit 1
+            fi
+            rm -rf .next.deploy-backup
+
             if [ "${build_ok}" -ne 1 ]; then
               exit 1
             fi
@@ -203,7 +219,23 @@ jobs:
 
             pm2 save
 
-            echo "Ensuring public nginx + firewall access for ${PUBLIC_URL}..."
+            echo "Verifying critical CSS is served..."
+            sleep 3
+            HTML="$(curl -fsS "http://127.0.0.1:${APP_PORT}/" || true)"
+            CSS_PATH="$(printf '%s' "${HTML}" | grep -oE '/_next/static/css/[^\" ]+\.css' | head -n 5 || true)"
+            echo "CSS refs from homepage:"
+            echo "${CSS_PATH}"
+            while IFS= read -r href; do
+              [ -z "${href}" ] && continue
+              CODE="$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:${APP_PORT}${href}" || echo 000)"
+              echo "  ${href} -> ${CODE}"
+              if [ "${CODE}" != "200" ]; then
+                echo "ERROR: CSS asset not served (${CODE}): ${href}"
+                exit 1
+              fi
+            done <<EOF
+${CSS_PATH}
+EOF
             chmod +x scripts/ensure-public-access.sh
             if ! bash scripts/ensure-public-access.sh; then
               echo "WARNING: ensure-public-access script failed; trying inline nginx cleanup..."
