@@ -177,7 +177,7 @@ export default function VideoJournalSection() {
               key={video.id}
               type="button"
               onClick={() => setActive(video)}
-              className="group relative aspect-[16/10] overflow-hidden rounded-[0.85rem] border border-gold/35 text-left transition-transform duration-500 hover:scale-[1.02] hover:border-gold/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+              className="group on-photo relative aspect-[16/10] overflow-hidden rounded-[0.85rem] border border-gold/35 text-left transition-transform duration-500 hover:scale-[1.02] hover:border-gold/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -214,7 +214,7 @@ export default function VideoJournalSection() {
         <div className="mt-7 flex justify-center">
           <Link
             href={journal.ctaHref || "#"}
-            className="focus-ring inline-flex items-center gap-2 rounded-md border border-gold/80 px-5 py-2.5 text-[0.78rem] font-semibold tracking-[0.1em] text-gold transition-colors hover:bg-gold/10 hover:text-white"
+            className="focus-ring inline-flex items-center gap-2 rounded-md border border-gold/80 px-5 py-2.5 text-[0.78rem] font-semibold tracking-[0.1em] text-gold transition-colors hover:bg-gold/10"
           >
             {journal.ctaLabel} <span aria-hidden="true">→</span>
           </Link>

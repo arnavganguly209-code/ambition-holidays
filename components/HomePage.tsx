@@ -18,7 +18,7 @@ function HomeSections() {
   return (
     <>
       <Hero />
-      <div className="relative isolate overflow-x-clip bg-[#1a1f27] text-white">
+      <div className="home-light relative isolate overflow-x-clip text-[color:var(--hl-ink,#151820)]">
         <DuskAtmosphere />
         <SignatureSection content={content.signature} />
         <LuxuryTreksSection />
@@ -27,8 +27,8 @@ function HomeSections() {
         <AvailabilitySection />
         <VideoJournalSection />
         <BlogSection />
+        <SiteFooter />
       </div>
-      <SiteFooter />
     </>
   );
 }

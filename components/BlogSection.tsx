@@ -34,7 +34,7 @@ function FeaturedCard({ post, updatedAt }: { post: BlogPost; updatedAt: string }
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/20" aria-hidden="true" />
 
-      <div className="relative z-[1] flex h-full flex-col p-4 sm:p-5">
+      <div className="on-photo relative z-[1] flex h-full flex-col p-4 sm:p-5">
         {post.badge && post.badgeStyle !== "none" ? (
           <div className="mb-auto">
             <span
@@ -105,7 +105,7 @@ function SidePostRow({ post, updatedAt }: { post: BlogPost; updatedAt: string })
   return (
     <Link
       href={post.href || "#"}
-      className="group flex gap-3 rounded-lg border border-gold/20 bg-white/[0.03] p-2.5 transition-colors hover:border-gold/45 hover:bg-white/[0.05] sm:gap-3.5 sm:p-3"
+      className="group flex gap-3 rounded-lg border border-gold/30 bg-white/75 p-2.5 shadow-[0_8px_24px_rgba(40,55,75,0.06)] transition-colors hover:border-gold/55 hover:bg-white/90 sm:gap-3.5 sm:p-3"
     >
       <div className="relative h-[4.6rem] w-[4.6rem] shrink-0 overflow-hidden rounded-md border border-white/10 sm:h-[5.1rem] sm:w-[5.1rem]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -192,7 +192,7 @@ export default function BlogSection() {
           <span className="hidden h-px w-16 bg-gold/40 sm:block" aria-hidden="true" />
           <Link
             href={blog.ctaHref || "#"}
-            className="focus-ring inline-flex items-center gap-2 rounded-md border border-gold/70 bg-[#12161c] px-6 py-2.5 text-[0.78rem] font-semibold tracking-[0.1em] text-white transition-colors hover:border-gold hover:bg-gold/10 hover:text-gold"
+            className="focus-ring inline-flex items-center gap-2 rounded-md border border-gold/70 bg-white/80 px-6 py-2.5 text-[0.78rem] font-semibold tracking-[0.1em] text-[color:var(--hl-ink,#151820)] transition-colors hover:border-gold hover:bg-gold/10 hover:text-[color:var(--hl-gold,#9a7b18)]"
           >
             {blog.ctaLabel} <span aria-hidden="true">→</span>
           </Link>

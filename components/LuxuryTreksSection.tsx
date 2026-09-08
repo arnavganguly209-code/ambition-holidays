@@ -105,7 +105,7 @@ function PackageCard({
   priority?: boolean;
 }) {
   return (
-    <article className="flex h-full min-w-0 snap-start flex-col overflow-hidden rounded-[1.15rem] border border-gold/35 bg-[#1c222c]/80 shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
+    <article className="hl-card flex h-full min-w-0 snap-start flex-col overflow-hidden rounded-[1.15rem] border border-gold/40 shadow-[0_14px_40px_rgba(40,55,75,0.1)]">
       <div className="relative mx-3 mt-3 overflow-hidden rounded-[0.9rem] border border-gold/25">
         <div className="relative aspect-[16/10] w-full sm:aspect-[16/9.4]">
           <MediaImage
@@ -352,7 +352,7 @@ export default function LuxuryTreksSection() {
             className={`focus-ring absolute left-0 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border sm:inline-flex ${
               canPrev
                 ? "border-gold bg-gold text-[#1a1f27] hover:bg-gold-soft"
-                : "border-gold/40 bg-[#1a1f27]/80 text-gold/40"
+                : "border-gold/35 bg-white/70 text-gold/40"
             }`}
           >
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden="true">
@@ -367,7 +367,7 @@ export default function LuxuryTreksSection() {
             className={`focus-ring absolute right-0 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border sm:inline-flex ${
               canNext
                 ? "border-gold bg-gold text-[#1a1f27] hover:bg-gold-soft"
-                : "border-gold/40 bg-[#1a1f27]/80 text-gold/40"
+                : "border-gold/35 bg-white/70 text-gold/40"
             }`}
           >
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden="true">

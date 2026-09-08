@@ -78,7 +78,7 @@ export const NAV_ITEMS: NavItem[] = [
     ],
   },
   {
-    label: "Luxury Treks",
+    label: "Luxury Tour",
     href: "/luxury-treks",
     groups: [
       group("Featured Luxury Treks", [

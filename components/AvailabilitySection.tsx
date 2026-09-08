@@ -108,7 +108,7 @@ export default function AvailabilitySection() {
           {availability.cards?.map((card) => (
             <article
               key={card.id}
-              className="avail-card-glow group flex h-full origin-center flex-col overflow-hidden rounded-[0.85rem] border border-emerald-400/45 bg-[#141820]/85 transition-transform duration-500 ease-out hover:z-10 hover:scale-[1.03]"
+              className="avail-card-glow hl-card group flex h-full origin-center flex-col overflow-hidden rounded-[0.85rem] border border-emerald-500/40 transition-transform duration-500 ease-out hover:z-10 hover:scale-[1.03]"
             >
               {/* Full-bleed image to the top of the card */}
               <div className="relative h-[13.5rem] w-full overflow-hidden sm:h-[14.5rem]">
@@ -131,7 +131,7 @@ export default function AvailabilitySection() {
                     Live
                   </span>
                 </div>
-                <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-3.5 pt-10 sm:p-4 sm:pt-11">
+                <div className="on-photo absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-3.5 pt-10 sm:p-4 sm:pt-11">
                   <div>
                     <p className="font-[family-name:var(--font-cormorant)] text-[1.9rem] font-semibold leading-none tracking-wide text-gold drop-shadow sm:text-[2.15rem]">
                       {card.monthShort}

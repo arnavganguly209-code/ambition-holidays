@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Outfit } from "next/font/google";
+import { Cormorant_Garamond, Manrope, Outfit } from "next/font/google";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -7,6 +7,13 @@ const outfit = Outfit({
   subsets: ["latin"],
   display: "swap",
   weight: ["400", "500", "600", "700"],
+});
+
+const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 const cormorant = Cormorant_Garamond({
@@ -55,7 +62,7 @@ export default function RootLayout({
       <head>
         <link rel="preload" as="image" href="/images/hero-video-poster.jpg" />
       </head>
-      <body className={`${outfit.variable} ${cormorant.variable} antialiased`}>
+      <body className={`${outfit.variable} ${manrope.variable} ${cormorant.variable} antialiased`}>
         {children}
       </body>
     </html>

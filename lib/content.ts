@@ -38,6 +38,15 @@ export async function readContent(): Promise<SiteContent> {
         ...parsed.journeys,
         categories: parsed.journeys?.categories ?? DEFAULT_CONTENT.journeys.categories,
         packages: parsed.journeys?.packages ?? DEFAULT_CONTENT.journeys.packages,
+        headlineGold:
+          !parsed.journeys?.headlineGold ||
+          parsed.journeys.headlineGold === "Luxury Treks"
+            ? DEFAULT_CONTENT.journeys.headlineGold
+            : parsed.journeys.headlineGold,
+        headlineWhite:
+          !parsed.journeys?.headlineWhite || parsed.journeys.headlineWhite === "in Nepal"
+            ? DEFAULT_CONTENT.journeys.headlineWhite
+            : parsed.journeys.headlineWhite,
       },
       why: {
         ...DEFAULT_CONTENT.why,
@@ -51,6 +60,35 @@ export async function readContent(): Promise<SiteContent> {
         theme: {
           ...DEFAULT_CONTENT.experiences.theme,
           ...parsed.experiences?.theme,
+          // Homepage light luxury theme: coerce legacy dark CMS colors.
+          sectionBg: "transparent",
+          cardBg:
+            !parsed.experiences?.theme?.cardBg ||
+            parsed.experiences.theme.cardBg === "#121820" ||
+            parsed.experiences.theme.cardBg === "#0c1016"
+              ? DEFAULT_CONTENT.experiences.theme.cardBg
+              : parsed.experiences.theme.cardBg,
+          textColor:
+            !parsed.experiences?.theme?.textColor ||
+            parsed.experiences.theme.textColor === "#ffffff" ||
+            parsed.experiences.theme.textColor === "#fff"
+              ? DEFAULT_CONTENT.experiences.theme.textColor
+              : parsed.experiences.theme.textColor,
+          mutedTextColor:
+            !parsed.experiences?.theme?.mutedTextColor ||
+            parsed.experiences.theme.mutedTextColor.includes("255,255,255")
+              ? DEFAULT_CONTENT.experiences.theme.mutedTextColor
+              : parsed.experiences.theme.mutedTextColor,
+          goldColor:
+            !parsed.experiences?.theme?.goldColor ||
+            parsed.experiences.theme.goldColor === "#c9a227"
+              ? DEFAULT_CONTENT.experiences.theme.goldColor
+              : parsed.experiences.theme.goldColor,
+          borderColor:
+            !parsed.experiences?.theme?.borderColor ||
+            parsed.experiences.theme.borderColor.includes("201,162,39")
+              ? DEFAULT_CONTENT.experiences.theme.borderColor
+              : parsed.experiences.theme.borderColor,
         },
         cards: (() => {
           const removed = new Set(["heli", "wellness"]);

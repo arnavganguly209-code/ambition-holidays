@@ -77,7 +77,7 @@ function FooterLandscape({
   updatedAt: string;
 }) {
   return (
-    <div className="relative w-full overflow-hidden bg-[#12161c]" aria-hidden="true">
+    <div className="relative w-full overflow-hidden bg-[#e4ecf4]" aria-hidden="true">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={mediaSrc(src, updatedAt)}
@@ -85,7 +85,7 @@ function FooterLandscape({
         decoding="async"
         className="block h-auto w-full max-w-none object-contain object-center"
       />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-3 bg-gradient-to-b from-[#1a1f27]/55 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-4 bg-gradient-to-b from-[#e8eef5] to-transparent" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-3 bg-gradient-to-t from-[#12161c]/60 to-transparent" />
     </div>
   );
@@ -185,9 +185,9 @@ export default function SiteFooter() {
   }
 
   return (
-    <footer className="relative border-t border-gold/20 bg-[#12161c] text-white">
-      {/* Trust / social / payments — slim premium bar */}
-      <div className="border-b border-gold/10 bg-[#1a1f27]">
+    <footer className="relative border-t border-gold/25 bg-transparent text-[color:var(--hl-ink,#151820)]">
+      {/* Trust / social / payments — cream-sky glass bar */}
+      <div className="border-b border-gold/20 bg-[linear-gradient(180deg,rgba(236,242,248,0.55),rgba(245,240,230,0.42))] backdrop-blur-md">
         <div className="mx-auto grid max-w-[88rem] grid-cols-1 gap-4 px-4 py-3.5 sm:px-8 lg:grid-cols-3 lg:gap-0 lg:px-10 lg:py-4">
           <div className="lg:border-r lg:border-gold/15 lg:pr-6">
             <div className="mb-2 flex flex-col items-center text-center">
@@ -222,7 +222,7 @@ export default function SiteFooter() {
                   key={s.id}
                   href={s.href || "#"}
                   aria-label={s.label}
-                  className={`${TRUST_H} ${TRUST_W} flex items-center justify-center rounded text-white/90 transition-colors hover:text-gold`}
+                  className={`${TRUST_H} ${TRUST_W} flex items-center justify-center rounded text-[color:var(--hl-ink,#151820)]/85 transition-colors hover:text-[color:var(--hl-gold,#9a7b18)]`}
                 >
                   {s.iconSrc ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -386,7 +386,7 @@ export default function SiteFooter() {
               <input
                 type="email"
                 placeholder={footer.newsletterPlaceholder}
-                className="min-w-0 flex-1 rounded-md border border-gold/40 bg-black/40 px-3 py-2.5 text-sm text-white outline-none placeholder:text-white/40 focus:border-gold"
+                className="min-w-0 flex-1 rounded-md border border-gold/40 bg-white/80 px-3 py-2.5 text-sm text-[color:var(--hl-ink,#151820)] outline-none placeholder:text-[color:var(--hl-ink,#151820)]/40 focus:border-gold"
               />
               <button
                 type="submit"
@@ -405,14 +405,14 @@ export default function SiteFooter() {
           </div>
         </div>
 
-        {/* Brand row — TripAdvisor awards art */}
-        <div className="relative mt-10 overflow-hidden rounded-xl border border-gold/25 bg-gradient-to-br from-[#1c222c] via-[#141920] to-[#0e1218]">
+        {/* Brand row — light-black premium glass */}
+        <div className="hl-dark-glass relative mt-10 overflow-hidden rounded-xl">
           <div
-            className="pointer-events-none absolute inset-0 opacity-[0.07]"
+            className="pointer-events-none absolute inset-0 opacity-40"
             aria-hidden="true"
             style={{
               backgroundImage:
-                "radial-gradient(ellipse at 80% 40%, rgba(201,162,39,0.35), transparent 55%)",
+                "radial-gradient(ellipse at 78% 40%, rgba(201,162,39,0.22), transparent 55%), linear-gradient(120deg, rgba(255,255,255,0.08), transparent 45%)",
             }}
           />
           <div className="relative grid grid-cols-1 items-center gap-6 px-5 py-7 sm:px-7 sm:py-8 lg:grid-cols-[minmax(11rem,auto)_1fr_minmax(10rem,14rem)] lg:gap-8">
@@ -421,14 +421,14 @@ export default function SiteFooter() {
               <img
                 src={mediaSrc(logoSrc, updatedAt)}
                 alt="Ambition Holidays"
-                className="h-16 w-auto object-contain sm:h-[4.5rem]"
+                className="h-16 w-auto object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.25)] sm:h-[4.5rem]"
               />
             </div>
             <div className="text-center lg:px-4">
               <p className="mx-auto max-w-xl text-[0.95rem] font-semibold leading-relaxed text-white/90">
                 {footer.mission}
               </p>
-              <p className="mt-2.5 font-[family-name:var(--font-cormorant)] text-[1.35rem] font-semibold italic text-gold sm:text-[1.45rem]">
+              <p className="mt-2.5 text-[1.35rem] font-semibold italic text-gold sm:text-[1.45rem]">
                 {footer.missionScript}
               </p>
             </div>
@@ -440,7 +440,7 @@ export default function SiteFooter() {
                   updatedAt
                 )}
                 alt="Tripadvisor Travelers' Choice Awards"
-                className="h-auto w-full max-h-[7.5rem] object-contain object-center sm:max-h-[8.25rem]"
+                className="h-auto w-full max-h-[7.5rem] object-contain object-center drop-shadow-[0_6px_18px_rgba(0,0,0,0.2)] sm:max-h-[8.25rem]"
               />
             </div>
           </div>
@@ -448,8 +448,8 @@ export default function SiteFooter() {
       </div>
 
       {/* Copyright bar */}
-      <div className="border-t border-gold/15 bg-[#0c1016]">
-        <div className="mx-auto flex max-w-[88rem] flex-col items-center gap-3 px-4 py-3.5 text-[0.74rem] font-semibold text-white/65 sm:flex-row sm:justify-between sm:gap-4 sm:px-8 lg:px-10">
+      <div className="border-t border-gold/20 bg-[linear-gradient(180deg,rgba(236,242,248,0.65),rgba(245,240,230,0.5))] backdrop-blur-md">
+        <div className="mx-auto flex max-w-[88rem] flex-col items-center gap-3 px-4 py-3.5 text-[0.74rem] font-semibold text-[color:var(--hl-ink,#151820)]/70 sm:flex-row sm:justify-between sm:gap-4 sm:px-8 lg:px-10">
           <p>{footer.copyright}</p>
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
             {(footer.legalLinks ?? []).map((l, i) => (
